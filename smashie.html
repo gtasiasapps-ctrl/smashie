@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smashie — Burgers with Soul</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0806;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ─── 3D Canvas ─── */
+    #bg-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+
+    /* ─── Content ─── */
+    .content { position: relative; z-index: 1; }
+
+    /* ─── Nav ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.2rem 2.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(10,8,6,0.7);
+      backdrop-filter: blur(30px) saturate(1.5);
+      -webkit-backdrop-filter: blur(30px) saturate(1.5);
+      border-bottom: 1px solid rgba(232,138,52,0.08);
+      transition: all 0.3s;
+    }
+    nav .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem; font-weight: 800;
+      color: #e88a34;
+      letter-spacing: -0.02em;
+      text-shadow: 0 0 40px rgba(232,138,52,0.2);
+    }
+    nav .links { display: flex; gap: 2.5rem; align-items: center; }
+    nav .links a {
+      color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.8rem;
+      font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+      transition: color 0.3s; position: relative;
+    }
+    nav .links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 1.5px; background: #e88a34; border-radius: 2px;
+      transform: scaleX(0); transition: transform 0.3s;
+    }
+    nav .links a:hover { color: rgba(255,255,255,0.85); }
+    nav .links a:hover::after { transform: scaleX(1); }
+    nav .links .order-btn {
+      padding: 0.6rem 1.8rem;
+      background: linear-gradient(135deg, #e88a34, #d4712b);
+      border-radius: 100px; color: #fff !important; font-weight: 600;
+      letter-spacing: 0.05em; border: none;
+    }
+    nav .links .order-btn::after { display: none; }
+    nav .links .order-btn:hover { transform: scale(1.04); box-shadow: 0 8px 30px rgba(232,138,52,0.3); }
+    .mobile-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: rgba(255,255,255,0.5); }
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.2rem; }
+      nav .links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0;
+        background: rgba(10,8,6,0.95); backdrop-filter: blur(30px);
+        padding: 1.5rem; gap: 1.2rem; border-bottom: 1px solid rgba(232,138,52,0.1); }
+      nav .links.open { display: flex; }
+      .mobile-toggle { display: block; }
+    }
+
+    /* ─── Hero ─── */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center;
+      padding: 8rem 2rem 4rem;
+      opacity: 0; transform: translateY(30px);
+      animation: fadeUp 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .hero .tag {
+      display: inline-block; padding: 0.4rem 1.2rem;
+      background: rgba(232,138,52,0.1); backdrop-filter: blur(20px);
+      border: 1px solid rgba(232,138,52,0.2); border-radius: 100px;
+      font-size: 0.7rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.2em; color: #e88a34;
+      margin-bottom: 1.5rem; font-family: 'Inter', sans-serif;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.5rem, 14vw, 9rem); font-weight: 800;
+      line-height: 0.95; letter-spacing: -0.04em;
+      color: #fff;
+      text-shadow: 0 0 60px rgba(0,0,0,0.5);
+    }
+    .hero h1 .accent { color: #e88a34; }
+    .hero .sub {
+      font-size: clamp(1rem, 1.8vw, 1.2rem); color: rgba(255,255,255,0.45);
+      max-width: 500px; line-height: 1.6; font-weight: 300;
+      margin-top: 1.5rem;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    }
+    .hero .buttons { margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .hero .btn {
+      padding: 1rem 2.5rem; border-radius: 100px; font-weight: 600;
+      font-size: 0.9rem; text-decoration: none; transition: all 0.3s;
+      letter-spacing: 0.03em;
+    }
+    .hero .btn-primary {
+      background: linear-gradient(135deg, #e88a34, #d4712b);
+      color: #fff; border: none;
+    }
+    .hero .btn-primary:hover { transform: scale(1.05); box-shadow: 0 12px 40px rgba(232,138,52,0.3); }
+    .hero .btn-outline {
+      border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7);
+      background: transparent;
+    }
+    .hero .btn-outline:hover { border-color: #e88a34; color: #fff; background: rgba(232,138,52,0.08); }
+    .scroll-indicator {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      opacity: 0; animation: fadeIn 1s 2s forwards;
+    }
+    .mouse { width: 22px; height: 36px; border: 1.5px solid rgba(232,138,52,0.2); border-radius: 12px; position: relative; }
+    .mouse::after { content: ''; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 2px; height: 7px; background: #e88a34; border-radius: 2px; animation: scrollAnim 2s ease infinite; }
+
+    /* ─── Sections ─── */
+    section { padding: 6rem 2rem; position: relative; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 700;
+      margin-bottom: 0.8rem; text-align: center;
+      letter-spacing: -0.03em; color: #fff;
+      text-shadow: 0 2px 30px rgba(0,0,0,0.5);
+    }
+    .section-title .accent { color: #e88a34; }
+    .section-sub {
+      text-align: center; color: rgba(255,255,255,0.45);
+      max-width: 600px; margin: 0 auto 3.5rem;
+      font-size: 1rem; line-height: 1.7; font-weight: 300;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    }
+
+    /* ─── Glass card ─── */
+    .glass {
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(24px) saturate(1.3);
+      -webkit-backdrop-filter: blur(24px) saturate(1.3);
+      border: 1px solid rgba(232,138,52,0.06);
+    }
+
+    /* ─── Menu Grid ─── */
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+    .menu-card {
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(24px) saturate(1.3);
+      -webkit-backdrop-filter: blur(24px) saturate(1.3);
+      border: 1px solid rgba(232,138,52,0.06);
+      border-radius: 24px; padding: 2.5rem 2rem;
+      transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .menu-card::before {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle at center, rgba(232,138,52,0.03), transparent 70%);
+      opacity: 0; transition: opacity 0.6s;
+    }
+    .menu-card:hover::before { opacity: 1; }
+    .menu-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: rgba(232,138,52,0.2);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+    }
+    .menu-card .burger-visual {
+      width: 200px; height: 140px; margin: 0 auto 1.5rem;
+      position: relative;
+    }
+    .menu-card .burger-visual .layer {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      border-radius: 50%;
+      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .menu-card:hover .burger-visual .layer:nth-child(1) { transform: translateX(-50%) translateY(-4px); }
+    .menu-card:hover .burger-visual .layer:nth-child(3) { transform: translateX(-50%) translateY(4px); }
+    .menu-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700; color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .menu-card .desc {
+      font-size: 0.85rem; color: rgba(255,255,255,0.45);
+      line-height: 1.5; margin-bottom: 1.2rem; font-weight: 300;
+    }
+    .menu-card .price-row {
+      display: flex; justify-content: center; align-items: center; gap: 1rem;
+    }
+    .menu-card .price {
+      font-size: 1.8rem; font-weight: 700; color: #e88a34;
+    }
+    .menu-card .price .cents { font-size: 1rem; font-weight: 400; }
+    .menu-card .add-btn {
+      padding: 0.5rem 1.2rem; border-radius: 100px;
+      background: linear-gradient(135deg, #e88a34, #d4712b);
+      color: #fff; font-size: 0.75rem; font-weight: 600;
+      text-decoration: none; transition: all 0.3s; border: none; cursor: pointer;
+    }
+    .menu-card .add-btn:hover { transform: scale(1.06); box-shadow: 0 6px 20px rgba(232,138,52,0.3); }
+
+    /* ─── Experience ─── */
+    .exp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+    .exp-card {
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(232,138,52,0.06);
+      border-radius: 20px; padding: 2.5rem 2rem; text-align: center;
+      transition: all 0.4s;
+    }
+    .exp-card:hover { transform: translateY(-6px); border-color: rgba(232,138,52,0.15); }
+    .exp-card .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .exp-card h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 600; margin-bottom: 0.6rem; color: #fff;
+    }
+    .exp-card p { font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.6; font-weight: 300; }
+
+    /* ─── Stats ─── */
+    .stats-row {
+      display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap;
+      padding: 2rem 0;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem; font-weight: 700; color: #e88a34;
+      text-shadow: 0 0 40px rgba(232,138,52,0.2);
+    }
+    .stat-label {
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.3); margin-top: 0.3rem;
+    }
+
+    /* ─── Contact ─── */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 800px; margin: 0 auto; }
+    @media (max-width: 600px) { .contact-grid { grid-template-columns: 1fr; } }
+    .contact-item {
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(24px);
+      border: 1px solid rgba(232,138,52,0.06); border-radius: 20px;
+      padding: 1.5rem; text-align: center; transition: all 0.3s;
+    }
+    .contact-item:hover { border-color: rgba(232,138,52,0.15); }
+    .contact-item .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .contact-item h4 {
+      font-size: 0.8rem; font-weight: 600; margin-bottom: 0.3rem;
+      text-transform: uppercase; letter-spacing: 0.12em; color: rgba(232,138,52,0.6);
+    }
+    .contact-item p, .contact-item a {
+      font-size: 0.9rem; color: rgba(255,255,255,0.45);
+      text-decoration: none; font-weight: 300;
+    }
+    .contact-item a:hover { color: #e88a34; }
+    .social-links { display: flex; justify-content: center; gap: 1.5rem; margin-top: 2rem; }
+    .social-links a {
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 1px solid rgba(232,138,52,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; text-decoration: none; color: rgba(232,138,52,0.4);
+      transition: all 0.3s;
+    }
+    .social-links a:hover { border-color: #e88a34; color: #e88a34; transform: translateY(-3px); }
+
+    footer {
+      text-align: center; padding: 2.5rem;
+      border-top: 1px solid rgba(232,138,52,0.04);
+      font-size: 0.8rem; color: rgba(255,255,255,0.2); font-weight: 300;
+    }
+    footer .made-by { color: #e88a34; }
+
+    /* ─── Reveal ─── */
+    .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-scale { opacity: 0; transform: scale(0.85); transition: all 0.9s cubic-bezier(0.16,1,0.3,1); }
+    .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0a0806; }
+    ::-webkit-scrollbar-thumb { background: rgba(232,138,52,0.15); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(232,138,52,0.3); }
+
+    .divider {
+      width: 40px; height: 2px; margin: 0 auto;
+      background: linear-gradient(90deg, transparent, rgba(232,138,52,0.2), transparent);
+    }
+
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes scrollAnim {
+      0%,100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+      50% { transform: translateX(-50%) translateY(8px); opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="bg-canvas"></div>
+
+  <nav>
+    <div class="logo">Smashie.</div>
+    <div class="links" id="navLinks">
+      <a href="#menu">Menu</a>
+      <a href="#experience">Experience</a>
+      <a href="#story">Our Story</a>
+      <a href="#contact">Contact</a>
+      <a href="#order" class="order-btn">Order Now</a>
+    </div>
+    <div class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</div>
+  </nav>
+
+  <div class="content">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="tag">Est. 2025 · Athens</div>
+      <h1>
+        Smash<br>
+        <span class="accent">Perfection.</span>
+      </h1>
+      <p class="sub">Angus beef, aged cheddar, caramelized onions.<br>Every bite is a moment. Every burger is art.</p>
+      <div class="buttons">
+        <a href="#menu" class="btn btn-primary">Explore Menu</a>
+        <a href="#story" class="btn btn-outline">Our Story</a>
+      </div>
+      <div class="scroll-indicator"><div class="mouse"></div></div>
+    </section>
+
+    <!-- Stats -->
+    <section style="padding: 1rem 2rem;">
+      <div class="stats-row container">
+        <div class="stat reveal"><div class="stat-num">100%</div><div class="stat-label">Angus Beef</div></div>
+        <div class="stat reveal"><div class="stat-num">12</div><div class="stat-label">Signature Burgers</div></div>
+        <div class="stat reveal"><div class="stat-num">4.9</div><div class="stat-label">★ Rating</div></div>
+        <div class="stat reveal"><div class="stat-num">197°</div><div class="stat-label">Grill Temp</div></div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Menu -->
+    <section id="menu" class="container">
+      <h2 class="section-title reveal-scale">The <span class="accent">Menu</span></h2>
+      <p class="section-sub reveal">Crafted with premium ingredients. Smashed to perfection. Served with soul.</p>
+      <div class="menu-grid">
+        <div class="menu-card reveal">
+          <div class="burger-visual">
+            <div class="layer" style="bottom: 0; width: 100px; height: 14px; border-radius: 4px; background: linear-gradient(180deg, #8B4513, #654321);"></div>
+            <div class="layer" style="bottom: 10px; width: 110px; height: 10px; border-radius: 3px; background: #c83c2a;"></div>
+            <div class="layer" style="bottom: 16px; width: 90px; height: 6px; border-radius: 3px; background: #2d8a2d;"></div>
+            <div class="layer" style="bottom: 20px; width: 80px; height: 5px; border-radius: 2px; background: #d44a2a;"></div>
+            <div class="layer" style="bottom: 30px; width: 120px; height: 22px; border-radius: 50%; background: linear-gradient(180deg, #f0a030, #d48828);"></div>
+          </div>
+          <h3>The Classic Smash</h3>
+          <p class="desc">Double Angus patty, aged cheddar, pickles, secret sauce, brioche bun</p>
+          <div class="price-row">
+            <span class="price">12<span class="cents">.90</span></span>
+            <a href="#" class="add-btn">Add</a>
+          </div>
+        </div>
+        <div class="menu-card reveal">
+          <div class="burger-visual">
+            <div class="layer" style="bottom: 0; width: 100px; height: 14px; border-radius: 4px; background: linear-gradient(180deg, #8B4513, #654321);"></div>
+            <div class="layer" style="bottom: 10px; width: 110px; height: 10px; border-radius: 3px; background: #c83c2a;"></div>
+            <div class="layer" style="bottom: 16px; width: 90px; height: 6px; border-radius: 3px; background: #2d8a2d;"></div>
+            <div class="layer" style="bottom: 20px; width: 70px; height: 4px; border-radius: 2px; background: #ffd700;"></div>
+            <div class="layer" style="bottom: 30px; width: 120px; height: 22px; border-radius: 50%; background: linear-gradient(180deg, #f0a030, #d48828);"></div>
+          </div>
+          <h3>Smoke & Fire</h3>
+          <p class="desc">Smoked brisket patty, jalapeños, pepper jack, chipotle aioli, toasted brioche</p>
+          <div class="price-row">
+            <span class="price">15<span class="cents">.50</span></span>
+            <a href="#" class="add-btn">Add</a>
+          </div>
+        </div>
+        <div class="menu-card reveal">
+          <div class="burger-visual">
+            <div class="layer" style="bottom: 0; width: 100px; height: 14px; border-radius: 4px; background: linear-gradient(180deg, #8B4513, #654321);"></div>
+            <div class="layer" style="bottom: 10px; width: 110px; height: 10px; border-radius: 3px; background: #c83c2a;"></div>
+            <div class="layer" style="bottom: 14px; width: 85px; height: 4px; border-radius: 2px; background: #d44a2a;"></div>
+            <div class="layer" style="bottom: 18px; width: 110px; height: 10px; border-radius: 3px; background: #c83c2a;"></div>
+            <div class="layer" style="bottom: 30px; width: 120px; height: 22px; border-radius: 50%; background: linear-gradient(180deg, #f0a030, #d48828);"></div>
+          </div>
+          <h3>Double Trouble</h3>
+          <p class="desc">Two smashed patties, double cheese, bacon jam, caramelized onions, garlic aioli</p>
+          <div class="price-row">
+            <span class="price">16<span class="cents">.90</span></span>
+            <a href="#" class="add-btn">Add</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Experience -->
+    <section id="experience" class="container">
+      <h2 class="section-title reveal-scale">The <span class="accent">Experience</span></h2>
+      <p class="section-sub reveal">From the first sizzle to the last bite — we obsess over every detail.</p>
+      <div class="exp-grid">
+        <div class="exp-card reveal">
+          <div class="icon">🥩</div><h4>Premium Angus</h4>
+          <p>100% fresh Angus beef, ground daily, smashed at 197° on a cast-iron flat-top.</p>
+        </div>
+        <div class="exp-card reveal">
+          <div class="icon">🧀</div><h4>Aged Artisan Cheese</h4>
+          <p>Affineur-selected cheddar, Gruyère, and smoked Gouda. No processed slices.</p>
+        </div>
+        <div class="exp-card reveal">
+          <div class="icon">🍞</div><h4>Brioche Perfection</h4>
+          <p>Egg-washed, sesame-seeded brioche buns baked fresh every morning in-house.</p>
+        </div>
+        <div class="exp-card reveal">
+          <div class="icon">🔥</div><h4>Cast Iron Smash</h4>
+          <p>Thin, lacy, crispy edges. A Maillard reaction masterpiece on every patty.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Story -->
+    <section id="story" class="container" style="text-align: center;">
+      <h2 class="section-title reveal-scale">Our <span class="accent">Story</span></h2>
+      <p class="section-sub reveal">No shortcuts. No frozen patties. No compromise.</p>
+      <div style="max-width: 700px; margin: 0 auto; padding: 1rem 0;" class="reveal">
+        <p style="font-size: 1rem; color: rgba(255,255,255,0.5); line-height: 1.8; font-weight: 300;">
+          Smashie was born in a tiny Athens kitchen with a cast-iron pan and a dream. 
+          We spent two years perfecting the smash — the right fat ratio, the perfect sear, 
+          the bun that holds without crumbling. Today, we serve the finest smashed burgers in Greece.
+          <br><br>
+          <span style="color: #e88a34; font-weight: 500;">From our griddle to your soul.</span>
+        </p>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Contact -->
+    <section id="contact" class="container">
+      <h2 class="section-title reveal-scale">Find <span class="accent">Us</span></h2>
+      <p class="section-sub reveal">Come taste the difference. Walk-ins welcome.</p>
+      <div class="contact-grid">
+        <div class="contact-item reveal">
+          <div class="icon">📍</div><h4>Address</h4>
+          <p>25 Kolokotroni Street, Athens, Greece</p>
+        </div>
+        <div class="contact-item reveal">
+          <div class="icon">🕒</div><h4>Hours</h4>
+          <p>Mon–Sat: 12:00–23:00<br>Sun: 13:00–22:00</p>
+        </div>
+        <div class="contact-item reveal">
+          <div class="icon">📞</div><h4>Call</h4>
+          <p>+30 210 000 0000</p>
+        </div>
+        <div class="contact-item reveal">
+          <div class="icon">📱</div><h4>Order</h4>
+          <a href="#">order@smashie.gr</a>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="#" target="_blank">📸</a>
+        <a href="#" target="_blank">📘</a>
+        <a href="#" target="_blank">🐦</a>
+        <a href="#" target="_blank">🔗</a>
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2026 Smashie · Burgers with Soul</p>
+      <p class="made-by" style="margin-top: 0.5rem; font-size: 0.7rem;">Made by Mac 🍜</p>
+    </footer>
+
+  </div>
+
+  <!-- ─── Three.js — Photorealistic Burger ─── -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    const canvas = document.getElementById('bg-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    canvas.appendChild(renderer.domElement);
+
+    // ─── Procedural texture generator ───
+    function makeTexture(width, height, drawFn) {
+      const c = document.createElement('canvas');
+      c.width = width; c.height = height;
+      const ctx = c.getContext('2d');
+      drawFn(ctx, width, height);
+      const tex = new THREE.CanvasTexture(c);
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(2, 2);
+      return tex;
+    }
+
+    // Patty noise texture (meat grain)
+    const pattyTex = makeTexture(256, 256, (ctx, w, h) => {
+      for (let i = 0; i < 30000; i++) {
+        const x = Math.random() * w;
+        const y = Math.random() * h;
+        const s = 1 + Math.random() * 3;
+        const bright = 60 + Math.random() * 40;
+        // Meat grain clusters
+        ctx.fillStyle = `rgb(${bright-10}, ${bright-30}, ${bright-35})`;
+        ctx.beginPath();
+        ctx.ellipse(x, y, s, s * (0.5 + Math.random()), Math.random() * Math.PI, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // Add some fat marbling (lighter streaks)
+      for (let i = 0; i < 15; i++) {
+        ctx.strokeStyle = `rgba(180, 160, 140, ${0.1 + Math.random() * 0.2})`;
+        ctx.lineWidth = 1 + Math.random() * 2;
+        ctx.beginPath();
+        const sx = Math.random() * w;
+        const sy = Math.random() * h;
+        ctx.moveTo(sx, sy);
+        for (let j = 0; j < 5; j++) {
+          ctx.quadraticCurveTo(
+            sx + (Math.random()-0.5) * 60, sy + (Math.random()-0.5) * 60,
+            sx + (Math.random()-0.5) * 40, sy + (Math.random()-0.5) * 40
+          );
+        }
+        ctx.stroke();
+      }
+    });
+
+    // Bun texture (golden brown with some spotting)
+    const bunTex = makeTexture(256, 256, (ctx, w, h) => {
+      const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w);
+      grad.addColorStop(0, '#f0a030');
+      grad.addColorStop(0.5, '#d48828');
+      grad.addColorStop(0.8, '#b87020');
+      grad.addColorStop(1, '#a06018');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+      // Spots
+      for (let i = 0; i < 200; i++) {
+        const x = Math.random() * w;
+        const y = Math.random() * h;
+        const r = 1 + Math.random() * 4;
+        ctx.fillStyle = `rgba(80, 50, 20, ${0.05 + Math.random() * 0.1})`;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    const ambient = new THREE.AmbientLight(0x222222, 0.6);
+    scene.add(ambient);
+
+    const mainLight = new THREE.DirectionalLight(0xffeedd, 3.0);
+    mainLight.position.set(5, 8, 4);
+    mainLight.castShadow = true;
+    mainLight.shadow.mapSize.width = 1024;
+    mainLight.shadow.mapSize.height = 1024;
+    scene.add(mainLight);
+
+    const fillLight = new THREE.DirectionalLight(0xaaccff, 0.5);
+    fillLight.position.set(-4, 2, -3);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xe88a34, 1.2);
+    rimLight.position.set(-2, 1, 5);
+    scene.add(rimLight);
+
+    const backLight = new THREE.DirectionalLight(0xe88a34, 0.4);
+    backLight.position.set(0, -2, -5);
+    scene.add(backLight);
+
+    // ─── Ground plane (subtle) ───
+    const groundGeo = new THREE.PlaneGeometry(20, 20);
+    const groundMat = new THREE.ShadowMaterial({ opacity: 0.3 });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -1.8;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // ─── Load photorealistic burger ───
+    let burger = null;
+    const loader = new GLTFLoader();
+    loader.load(
+      'burger.glb',
+      (gltf) => {
+        burger = gltf.scene;
+        // Scale and position
+        burger.scale.set(0.1, 0.1, 0.1);
+        burger.position.y = -1.5;
+        burger.position.z = 0;
+        // Enable shadows on all children
+        burger.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        scene.add(burger);
+      },
+      (xhr) => {
+        // Optional: loading progress
+        // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      },
+      (error) => {
+        console.error('Error loading burger model:', error);
+        // Fallback: create a simple sphere
+        const fallback = new THREE.Mesh(
+          new THREE.SphereGeometry(1, 32, 32),
+          new THREE.MeshStandardMaterial({ color: 0xe88a34, roughness: 0.5 })
+        );
+        burger = new THREE.Group();
+        burger.add(fallback);
+        burger.position.y = -1.3;
+        scene.add(burger);
+      }
+    );
+
+    // ─── Beautiful particle texture (smooth glowing circle) ───
+    const particleTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = 64; c.height = 64;
+      const ctx = c.getContext('2d');
+      const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      g.addColorStop(0, 'rgba(255,255,255,1)');
+      g.addColorStop(0.2, 'rgba(255,255,255,0.85)');
+      g.addColorStop(0.5, 'rgba(255,255,255,0.35)');
+      g.addColorStop(0.75, 'rgba(255,255,255,0.08)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(32, 32, 32, 0, Math.PI * 2);
+      ctx.fill();
+      return new THREE.CanvasTexture(c);
+    })();
+
+    // ─── Steam particles ───
+    const steamCount = 600;
+    const steamGeo = new THREE.BufferGeometry();
+    const steamPos = new Float32Array(steamCount * 3);
+    const steamVel = new Float32Array(steamCount);
+    const steamPh = new Float32Array(steamCount);
+    for (let i = 0; i < steamCount; i++) {
+      steamPos[i*3] = (Math.random()-0.5) * 4;
+      steamPos[i*3+1] = Math.random() * 3 + 1.5;
+      steamPos[i*3+2] = (Math.random()-0.5) * 4;
+      steamVel[i] = 0.15 + Math.random() * 0.3;
+      steamPh[i] = Math.random() * Math.PI * 2;
+    }
+    steamGeo.setAttribute('position', new THREE.BufferAttribute(steamPos, 3));
+    const steamMat = new THREE.PointsMaterial({
+      map: particleTex, color: 0xffffff, transparent: true, opacity: 0.12,
+      size: 0.25, blending: THREE.AdditiveBlending, depthWrite: false,
+      sizeAttenuation: true,
+    });
+    const steam = new THREE.Points(steamGeo, steamMat);
+    scene.add(steam);
+
+    // ─── Fire embers ───
+    const emberCount = 400;
+    const emberGeo = new THREE.BufferGeometry();
+    const emberPos = new Float32Array(emberCount * 3);
+    const emberVel = new Float32Array(emberCount);
+    const emberPh = new Float32Array(emberCount);
+    for (let i = 0; i < emberCount; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 2 + Math.random() * 8;
+      emberPos[i*3] = Math.cos(a) * r;
+      emberPos[i*3+1] = -2 + Math.random() * 5;
+      emberPos[i*3+2] = Math.sin(a) * r;
+      emberVel[i] = 0.08 + Math.random() * 0.25;
+      emberPh[i] = Math.random() * Math.PI * 2;
+    }
+    emberGeo.setAttribute('position', new THREE.BufferAttribute(emberPos, 3));
+    const emberMat = new THREE.PointsMaterial({
+      map: particleTex, color: 0xe88a34, transparent: true, opacity: 0.2,
+      size: 0.12, blending: THREE.AdditiveBlending, depthWrite: false,
+      sizeAttenuation: true,
+    });
+    const embers = new THREE.Points(emberGeo, emberMat);
+    scene.add(embers);
+
+    // ─── Floating particles (cinematic dust) ───
+    const dustCount = 800;
+    const dustGeo = new THREE.BufferGeometry();
+    const dustPos = new Float32Array(dustCount * 3);
+    const dustSpd = new Float32Array(dustCount);
+    const dustPh = new Float32Array(dustCount);
+    for (let i = 0; i < dustCount; i++) {
+      dustPos[i*3] = (Math.random()-0.5) * 24;
+      dustPos[i*3+1] = (Math.random()-0.5) * 14;
+      dustPos[i*3+2] = (Math.random()-0.5) * 20 - 5;
+      dustSpd[i] = 0.02 + Math.random() * 0.06;
+      dustPh[i] = Math.random() * Math.PI * 2;
+    }
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+    const dustMat = new THREE.PointsMaterial({
+      map: particleTex, color: 0xffffff, transparent: true, opacity: 0.04,
+      size: 0.08, blending: THREE.AdditiveBlending, depthWrite: false,
+      sizeAttenuation: true,
+    });
+    const dust = new THREE.Points(dustGeo, dustMat);
+    scene.add(dust);
+
+    // ─── Sparkle particles (golden glitter) ───
+    const sparkCount = 200;
+    const sparkGeo = new THREE.BufferGeometry();
+    const sparkPos = new Float32Array(sparkCount * 3);
+    const sparkSz = new Float32Array(sparkCount);
+    const sparkPh = new Float32Array(sparkCount);
+    for (let i = 0; i < sparkCount; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 1 + Math.random() * 6;
+      sparkPos[i*3] = Math.cos(a) * r;
+      sparkPos[i*3+1] = -1 + Math.random() * 5;
+      sparkPos[i*3+2] = Math.sin(a) * r - 1;
+      sparkSz[i] = 0.02 + Math.random() * 0.06;
+      sparkPh[i] = Math.random() * Math.PI * 2;
+    }
+    sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
+    sparkGeo.setAttribute('size', new THREE.BufferAttribute(sparkSz, 1));
+    const sparkMat = new THREE.PointsMaterial({
+      map: particleTex, color: 0xf5a623, transparent: true, opacity: 0.35,
+      size: 0.04, blending: THREE.AdditiveBlending, depthWrite: false,
+      sizeAttenuation: true,
+    });
+    const sparks = new THREE.Points(sparkGeo, sparkMat);
+    scene.add(sparks);
+
+    camera.position.set(0, 0.3, 7.5);
+    camera.lookAt(0, 0.3, 0);
+
+    // ─── Mouse ───
+    let mx = 0, my = 0, tx = 0, ty = 0;
+    document.addEventListener('mousemove', e => {
+      tx = (e.clientX/window.innerWidth)*2-1;
+      ty = -(e.clientY/window.innerHeight)*2+1;
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ─── Animate ───
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      mx += (tx - mx) * 0.2;
+      my += (ty - my) * 0.2;
+
+      // ─── Burger rotation ───
+      if (burger) {
+        burger.rotation.y = t * 0.1 + mx * 1.5;
+        burger.rotation.x = Math.sin(t * 0.1) * 0.03 + my * 0.8;
+        // Subtle bob
+        burger.position.y = -1.5 + Math.sin(t * 0.7) * 0.08;
+      }
+
+      // ─── Steam ───
+      const sp = steam.geometry.attributes.position.array;
+      for (let i = 0; i < steamCount; i++) {
+        sp[i*3] += Math.sin(t + steamPh[i]) * 0.002;
+        sp[i*3+1] += steamVel[i] * 0.008;
+        sp[i*3+2] += Math.cos(t * 0.5 + steamPh[i]) * 0.002;
+        if (sp[i*3+1] > 5) {
+          sp[i*3] = (Math.random()-0.5) * 3;
+          sp[i*3+1] = 1.5;
+          sp[i*3+2] = (Math.random()-0.5) * 3;
+        }
+      }
+      steam.geometry.attributes.position.needsUpdate = true;
+
+      // ─── Embers ───
+      const ep = embers.geometry.attributes.position.array;
+      for (let i = 0; i < emberCount; i++) {
+        ep[i*3] += Math.sin(t * 0.3 + emberPh[i]) * 0.004;
+        ep[i*3+1] += emberVel[i] * 0.006;
+        ep[i*3+2] += Math.cos(t * 0.4 + emberPh[i]) * 0.004;
+        if (ep[i*3+1] > 4) {
+          const a = Math.random() * Math.PI * 2;
+          const r = 2 + Math.random() * 6;
+          ep[i*3] = Math.cos(a) * r;
+          ep[i*3+1] = -1.5;
+          ep[i*3+2] = Math.sin(a) * r;
+        }
+      }
+      embers.geometry.attributes.position.needsUpdate = true;
+
+      // ─── Dust ───
+      const dp = dust.geometry.attributes.position.array;
+      for (let i = 0; i < dustCount; i++) {
+        dp[i*3] += Math.sin(t * 0.1 + i) * 0.002;
+        dp[i*3+1] += Math.sin(t * 0.08 + i * 0.5) * 0.001;
+        dp[i*3+2] += Math.cos(t * 0.05 + i * 0.3) * 0.001;
+      }
+      dust.geometry.attributes.position.needsUpdate = true;
+
+      // ─── Sparks (twinkle) ───
+      const spk = sparks.geometry.attributes.position.array;
+      for (let i = 0; i < sparkCount; i++) {
+        const i3 = i * 3;
+        spk[i3] += Math.sin(t * 0.5 + sparkPh[i]) * 0.002;
+        spk[i3+1] += Math.sin(t * 0.4 + sparkPh[i] * 1.3) * 0.003;
+        spk[i3+2] += Math.cos(t * 0.3 + sparkPh[i] * 0.7) * 0.002;
+      }
+      sparks.geometry.attributes.position.needsUpdate = true;
+      sparks.material.size = 0.04 + Math.sin(t * 2) * 0.02;
+      sparks.material.opacity = 0.25 + Math.sin(t * 1.5 + 1) * 0.12;
+
+      // ─── Camera ───
+      camera.position.x += (mx * 5 - camera.position.x) * 0.06;
+      camera.position.y += (my * 3 + 0.3 - camera.position.y) * 0.06;
+      camera.lookAt(0, 0.3, 0);
+
+      // ─── Lights subtle pulse ───
+      rimLight.intensity = 1.2 + Math.sin(t * 1.5) * 0.15;
+      mainLight.intensity = 3.0 + Math.sin(t * 0.7) * 0.1;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // ─── Scroll opacity ───
+    window.addEventListener('scroll', () => {
+      const s = window.scrollY;
+      const opacity = Math.max(0, 1 - s / 600);
+      steam.material.opacity = opacity * 0.12;
+      embers.material.opacity = opacity * 0.2;
+      sparks.material.opacity = opacity * 0.35;
+    });
+  </script>
+
+  <!-- ─── Scroll Reveal ─── -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) e.target.classList.add('visible');
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+      document.querySelectorAll('.reveal, .reveal-scale').forEach(el => obs.observe(el));
+
+      document.querySelectorAll('.links a').forEach(a => {
+        a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
+      });
+    });
+  </script>
+
+</body>
+</html>
