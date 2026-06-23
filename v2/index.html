@@ -833,6 +833,7 @@
     import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
     const canvas = document.getElementById('bg-canvas');
     const scene = new THREE.Scene();
@@ -840,6 +841,8 @@
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setClearColor(0x000000, 0);
     canvas.appendChild(renderer.domElement);
 
@@ -869,46 +872,150 @@
     backLight.position.set(0, -1, -6);
     scene.add(backLight);
 
-    // ─── Loader ───
-    // No 3D model to load - hide loader immediately
-    document.getElementById('loader').classList.add('hidden');
+    // ─── Ground ───
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(20, 20),
+      new THREE.ShadowMaterial({ opacity: 0.15 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -1.8;
+    ground.receiveShadow = true;
+    scene.add(ground);
 
-    // ─── 3D Logo (central hero) ───
-    const logoTextureLoader = new THREE.TextureLoader();
-    const logoTexture = logoTextureLoader.load('logo-2.png');
+    // ─── Load Burger ───
+    let burger = null;
+    new GLTFLoader().load(
+      'burger.glb',
+      (gltf) => {
+        burger = gltf.scene;
+        burger.scale.set(0.085, 0.085, 0.085);
+        burger.position.y = -1.6;
+        burger.position.z = 0;
+        burger.traverse((child) => { if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; } });
+        scene.add(burger);
+        document.getElementById('loader').classList.add('hidden');
+      },
+      undefined,
+      () => { document.getElementById('loader').classList.add('hidden'); }
+    );
+
+    // ─── 3D Logo ───
+    const logoTexture = new THREE.TextureLoader().load('logo-2.png');
     logoTexture.colorSpace = THREE.SRGBColorSpace;
-
-    const logoGeo = new THREE.PlaneGeometry(4, 4);
-    const logoMat = new THREE.MeshStandardMaterial({
-      map: logoTexture,
-      transparent: true,
-      side: THREE.DoubleSide,
-      roughness: 0.05,
-      metalness: 0.4,
-      emissive: new THREE.Color(0xd4c9b0),
-      emissiveIntensity: 0.06,
-      depthWrite: false,
-    });
-
-    const logo3D = new THREE.Mesh(logoGeo, logoMat);
-    logo3D.position.set(0, 1, -1.5);
+    const logo3D = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.2, 2.2),
+      new THREE.MeshStandardMaterial({
+        map: logoTexture, transparent: true, side: THREE.DoubleSide,
+        roughness: 0.05, metalness: 0.4,
+        emissive: new THREE.Color(0xd4c9b0), emissiveIntensity: 0.06,
+        depthWrite: false,
+      })
+    );
+    logo3D.position.set(0, 2.2, -7);
     logo3D.scale.set(0, 0, 0);
     scene.add(logo3D);
 
-    // Animate logo in
-    let logoEntryStart = null;
-    const logoEntryDuration = 2000;
-    function animateLogoEntry(time) {
-      if (!logoEntryStart) logoEntryStart = time;
-      const elapsed = time - logoEntryStart;
-      const p = Math.min(elapsed / logoEntryDuration, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      logo3D.scale.setScalar(eased);
-      if (p < 1) requestAnimationFrame(animateLogoEntry);
+    let logoInStart = null;
+    function logoIn(t) {
+      if (!logoInStart) logoInStart = t;
+      const p = Math.min((t - logoInStart) / 2000, 1);
+      logo3D.scale.setScalar(1 - Math.pow(1 - p, 3));
+      if (p < 1) requestAnimationFrame(logoIn);
     }
-    setTimeout(() => requestAnimationFrame(animateLogoEntry), 300);
+    setTimeout(() => requestAnimationFrame(logoIn), 800);
 
+    // ─── Particle glow texture ───
+    function makeGlow(ctx, size) {
+      const c = document.createElement('canvas'); c.width = c.height = size;
+      const cx = c.getContext('2d');
+      const g = cx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+      g.addColorStop(0, 'rgba(255,255,255,1)');
+      g.addColorStop(0.15, 'rgba(255,255,255,0.8)');
+      g.addColorStop(0.4, 'rgba(212,201,176,0.25)');
+      g.addColorStop(0.7, 'rgba(212,201,176,0.04)');
+      g.addColorStop(1, 'rgba(212,201,176,0)');
+      cx.fillStyle = g; cx.fillRect(0, 0, size, size);
+      return new THREE.CanvasTexture(c);
+    }
+    const glowTex = makeGlow(64);
 
+    // ─── Steam ─── (reduced)
+    const sCnt = 250;
+    const sGeo = new THREE.BufferGeometry();
+    const sPos = new Float32Array(sCnt * 3);
+    const sVel = new Float32Array(sCnt);
+    const sPh = new Float32Array(sCnt);
+    for (let i = 0; i < sCnt; i++) {
+      sPos[i*3] = (Math.random()-0.5)*2.5;
+      sPos[i*3+1] = 1.3+Math.random()*2;
+      sPos[i*3+2] = (Math.random()-0.5)*2.5;
+      sVel[i] = 0.1+Math.random()*0.2;
+      sPh[i] = Math.random()*Math.PI*2;
+    }
+    sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+    const steam = new THREE.Points(sGeo, new THREE.PointsMaterial({
+      map: glowTex, color: 0xffffff, transparent: true, opacity: 0.05,
+      size: 0.15, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    }));
+    scene.add(steam);
+
+    // ─── Embers ─── (reduced)
+    const eCnt = 200;
+    const eGeo = new THREE.BufferGeometry();
+    const ePos = new Float32Array(eCnt * 3);
+    const eVel = new Float32Array(eCnt);
+    const ePh = new Float32Array(eCnt);
+    for (let i = 0; i < eCnt; i++) {
+      const a = Math.random()*Math.PI*2;
+      const r = 1.5+Math.random()*4;
+      ePos[i*3] = Math.cos(a)*r;
+      ePos[i*3+1] = -2+Math.random()*3;
+      ePos[i*3+2] = Math.sin(a)*r;
+      eVel[i] = 0.05+Math.random()*0.12;
+      ePh[i] = Math.random()*Math.PI*2;
+    }
+    eGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
+    const embers = new THREE.Points(eGeo, new THREE.PointsMaterial({
+      map: glowTex, color: 0xd4c9b0, transparent: true, opacity: 0.08,
+      size: 0.08, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    }));
+    scene.add(embers);
+
+    // ─── Dust ─── (reduced)
+    const dCnt = 300;
+    const dGeo = new THREE.BufferGeometry();
+    const dPos = new Float32Array(dCnt * 3);
+    for (let i = 0; i < dCnt; i++) {
+      dPos[i*3] = (Math.random()-0.5)*16;
+      dPos[i*3+1] = (Math.random()-0.5)*8;
+      dPos[i*3+2] = (Math.random()-0.5)*12-4;
+    }
+    dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
+    const dust = new THREE.Points(dGeo, new THREE.PointsMaterial({
+      map: glowTex, color: 0xffffff, transparent: true, opacity: 0.015,
+      size: 0.04, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    }));
+    scene.add(dust);
+
+    // ─── Sparks ─── (reduced)
+    const pCnt = 100;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(pCnt * 3);
+    const pPh = new Float32Array(pCnt);
+    for (let i = 0; i < pCnt; i++) {
+      const a = Math.random()*Math.PI*2;
+      const r = 1+Math.random()*4;
+      pPos[i*3] = Math.cos(a)*r;
+      pPos[i*3+1] = -0.5+Math.random()*3;
+      pPos[i*3+2] = Math.sin(a)*r-0.5;
+      pPh[i] = Math.random()*Math.PI*2;
+    }
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const sparks = new THREE.Points(pGeo, new THREE.PointsMaterial({
+      map: glowTex, color: 0xc9a94e, transparent: true, opacity: 0.15,
+      size: 0.025, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    }));
+    scene.add(sparks);
 
     camera.position.set(0, 0.3, 7.8);
     camera.lookAt(0, 0.3, 0);
@@ -942,7 +1049,11 @@
       lastScroll = s;
 
       // 3D fade
-      const opacity = Math.max(0, 1 - s / 300);
+      const opacity = Math.max(0, 1 - s / 400);
+      if (steam) steam.material.opacity = opacity * 0.05;
+      if (embers) embers.material.opacity = opacity * 0.08;
+      if (sparks) sparks.material.opacity = opacity * 0.15;
+      bloomPass.strength = 0.08 * opacity;
 
       // Logo appears on scroll
       if (s > 150 && !logoRevealed) {
@@ -961,60 +1072,71 @@
       mx += (tx - mx) * 0.15;
       my += (ty - my) * 0.15;
 
+      // ─── 3D Burger ───
+      if (burger) {
+        burger.rotation.y = t * 0.08 + mx * 1.0;
+        burger.rotation.x = Math.sin(t * 0.08) * 0.03 + my * 0.5;
+        burger.position.y = -1.6 + Math.sin(t * 0.6) * 0.06;
+      }
+
       // ─── 3D Logo ───
-      // Only animate after entry is done
       if (logo3D.scale.x >= 0.99) {
-        // Gentle rotation
-        logo3D.rotation.y = t * 0.08 + mx * 0.3;
-        logo3D.rotation.x = Math.sin(t * 0.12) * 0.03 + my * 0.15;
-
-        // Float up/down
-        logo3D.position.y = 1 + Math.sin(t * 0.4) * 0.08;
-
-        // Emissive pulse
-        logoMat.emissiveIntensity = 0.06 + Math.sin(t * 1.2) * 0.03;
+        logo3D.rotation.y = t * 0.06 + mx * 0.2;
+        logo3D.rotation.x = Math.sin(t * 0.1) * 0.03 + my * 0.1;
+        logo3D.position.y = 2.2 + Math.sin(t * 0.35) * 0.06;
+        logo3D.material.emissiveIntensity = 0.06 + Math.sin(t * 1.0) * 0.03;
       }
 
       // ─── Steam ───
-      const sp = steam.geometry.attributes.position.array;
-      for (let i = 0; i < steamCount; i++) {
-        const i3 = i*3;
-        sp[i3] += Math.sin(t + sPh[i]) * 0.002;
-        sp[i3+1] += sVel[i] * 0.007;
-        sp[i3+2] += Math.cos(t*0.5 + sPh[i]) * 0.002;
-        if (sp[i3+1] > 4.5) { sp[i3] = (Math.random()-0.5)*3; sp[i3+1] = 1.4; sp[i3+2] = (Math.random()-0.5)*3; }
+      if (steam) {
+        const sp = steam.geometry.attributes.position.array;
+        for (let i = 0; i < sCnt; i++) {
+          const i3 = i*3;
+          sp[i3] += Math.sin(t + sPh[i]) * 0.002;
+          sp[i3+1] += sVel[i] * 0.006;
+          sp[i3+2] += Math.cos(t*0.5 + sPh[i]) * 0.002;
+          if (sp[i3+1] > 4.5) { sp[i3] = (Math.random()-0.5)*2.5; sp[i3+1] = 1.3; sp[i3+2] = (Math.random()-0.5)*2.5; }
+        }
+        steam.geometry.attributes.position.needsUpdate = true;
       }
-      steam.geometry.attributes.position.needsUpdate = true;
 
       // ─── Embers ───
-      const ep = embers.geometry.attributes.position.array;
-      for (let i = 0; i < eCount; i++) {
-        const i3 = i*3;
-        ep[i3] += Math.sin(t*0.3 + ePh[i]) * 0.004;
-        ep[i3+1] += eVel[i] * 0.005;
-        ep[i3+2] += Math.cos(t*0.4 + ePh[i]) * 0.004;
-        if (ep[i3+1] > 3.5) { const a=Math.random()*Math.PI*2; const r=1.5+Math.random()*5; ep[i3]=Math.cos(a)*r; ep[i3+1]=-1.5; ep[i3+2]=Math.sin(a)*r; }
+      if (embers) {
+        const ep = embers.geometry.attributes.position.array;
+        for (let i = 0; i < eCnt; i++) {
+          const i3 = i*3;
+          ep[i3] += Math.sin(t*0.3 + ePh[i]) * 0.004;
+          ep[i3+1] += eVel[i] * 0.004;
+          ep[i3+2] += Math.cos(t*0.4 + ePh[i]) * 0.004;
+          if (ep[i3+1] > 3.5) { const a=Math.random()*Math.PI*2; const r=1.5+Math.random()*4; ep[i3]=Math.cos(a)*r; ep[i3+1]=-1.5; ep[i3+2]=Math.sin(a)*r; }
+        }
+        embers.geometry.attributes.position.needsUpdate = true;
       }
-      embers.geometry.attributes.position.needsUpdate = true;
 
       // ─── Dust ───
-      const dp = dust.geometry.attributes.position.array;
-      for (let i = 0; i < dCount; i++) {
-        dp[i*3] += Math.sin(t*0.1+i) * 0.002;
-        dp[i*3+1] += Math.sin(t*0.08+i*0.5) * 0.001;
-        dp[i*3+2] += Math.cos(t*0.05+i*0.3) * 0.001;
+      if (dust) {
+        const dp = dust.geometry.attributes.position.array;
+        for (let i = 0; i < dCnt; i++) {
+          dp[i*3] += Math.sin(t*0.1+i) * 0.002;
+          dp[i*3+1] += Math.sin(t*0.08+i*0.5) * 0.001;
+          dp[i*3+2] += Math.cos(t*0.05+i*0.3) * 0.001;
+        }
+        dust.geometry.attributes.position.needsUpdate = true;
       }
-      dust.geometry.attributes.position.needsUpdate = true;
 
       // ─── Sparks ───
-      const sk = sparks.geometry.attributes.position.array;
-      for (let i = 0; i < spCount; i++) {
-        const i3 = i*3;
-        sk[i3] += Math.sin(t*0.5+spPh[i]) * 0.002;
-        sk[i3+1] += Math.sin(t*0.4+spPh[i]*1.3) * 0.003;
-        sk[i3+2] += Math.cos(t*0.3+spPh[i]*0.7) * 0.002;
+      if (sparks) {
+        const sk = sparks.geometry.attributes.position.array;
+        for (let i = 0; i < pCnt; i++) {
+          const i3 = i*3;
+          sk[i3] += Math.sin(t*0.5+pPh[i]) * 0.002;
+          sk[i3+1] += Math.sin(t*0.4+pPh[i]*1.3) * 0.003;
+          sk[i3+2] += Math.cos(t*0.3+pPh[i]*0.7) * 0.002;
+        }
+        sparks.geometry.attributes.position.needsUpdate = true;
+        sparks.material.size = 0.025 + Math.sin(t*2) * 0.01;
+        sparks.material.opacity = 0.1 + Math.sin(t*1.5+1) * 0.06;
       }
-      sparks.geometry.attributes.position.needsUpdate = true;
 
       // ─── Camera ───
       camera.position.x += (mx * 4 - camera.position.x) * 0.05;
