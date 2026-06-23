@@ -129,6 +129,20 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 <body>
 
 <div id="bg-scrim"><div class="overlay"></div></div>
+
+<!-- ─── Order Modal ─── -->
+<div id="orderModal" style="display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;padding:1rem;background:rgba(0,0,0,.8);backdrop-filter:blur(20px)">
+  <div style="max-width:500px;width:100%;background:rgba(10,9,8,.95);border:1px solid var(--border);border-radius:20px;padding:2.5rem;position:relative">
+    <button onclick="document.getElementById('orderModal').style.display='none'" style="position:absolute;top:1rem;right:1.2rem;font-size:1.5rem;color:rgba(255,255,255,.15);background:none;border:none;cursor:pointer">✕</button>
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--cream);margin-bottom:.3rem">Your Order</h2>
+    <p style="font-size:.8rem;color:rgba(255,255,255,.35);margin-bottom:1.5rem">Smashie · Pickup &amp; Delivery</p>
+    <div id="cartItems"><p style="color:rgba(255,255,255,.2);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p></div>
+    <div id="cartTotal" style="display:none">
+      <div style="display:flex;justify-content:space-between;padding:1rem 0;font-size:1rem;font-weight:600;border-top:1px solid var(--border);margin-top:.5rem"><span>Total</span><span id="totalAmount" style="color:var(--beige)">€0.00</span></div>
+      <button onclick="alert('Order placed! (demo)')" style="width:100%;padding:1rem;border-radius:100px;background:linear-gradient(135deg,var(--beige),var(--gold));color:var(--dark);font-weight:700;font-size:.9rem;border:none;cursor:pointer;margin-top:.5rem">Place Order</button>
+    </div>
+  </div>
+</div>
 <div id="bg-canvas"></div>
 
 <nav id="nav">
@@ -138,7 +152,7 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     <a href="#reviews">Reviews</a>
     <a href="#experience">Experience</a>
     <a href="#contact">Contact</a>
-    <a href="#" class="order-btn">Order Now</a>
+    <a href="#" class="order-btn" onclick="document.getElementById('orderModal').style.display='flex';document.body.style.overflow='hidden';return false">Order Now</a>
   </div>
   <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
 </nav>
@@ -170,9 +184,9 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
   <h2 class="section-title">The <span class="accent">Menu</span></h2>
   <p class="section-sub">Crafted with premium ingredients. Smashed to perfection.</p>
   <div class="menu-grid">
-    <div class="menu-card"><div class="badge">Best Seller</div><h3>The Classic Smash</h3><p class="desc">Double Angus patty, aged cheddar, pickles, secret sauce, brioche bun</p><div class="price-row"><span class="price">12<span class="cents">.90</span></span><button class="add-btn">Add</button></div></div>
-    <div class="menu-card"><div class="badge">Spicy</div><h3>Smoke &amp; Fire</h3><p class="desc">Smoked brisket patty, jalapeños, pepper jack, chipotle aioli, toasted brioche</p><div class="price-row"><span class="price">15<span class="cents">.50</span></span><button class="add-btn">Add</button></div></div>
-    <div class="menu-card"><div class="badge">For Two</div><h3>Double Trouble</h3><p class="desc">Two smashed patties, double cheese, bacon jam, caramelized onions, garlic aioli</p><div class="price-row"><span class="price">16<span class="cents">.90</span></span><button class="add-btn">Add</button></div></div>
+    <div class="menu-card"><div class="badge">Best Seller</div><h3>The Classic Smash</h3><p class="desc">Double Angus patty, aged cheddar, pickles, secret sauce, brioche bun</p><div class="price-row"><span class="price">12<span class="cents">.90</span></span><button class="add-btn" onclick="addToCart('The Classic Smash',12.9)">Add</button></div></div>
+    <div class="menu-card"><div class="badge">Spicy</div><h3>Smoke &amp; Fire</h3><p class="desc">Smoked brisket patty, jalapeños, pepper jack, chipotle aioli, toasted brioche</p><div class="price-row"><span class="price">15<span class="cents">.50</span></span><button class="add-btn" onclick="addToCart('Smoke & Fire',15.5)">Add</button></div></div>
+    <div class="menu-card"><div class="badge">For Two</div><h3>Double Trouble</h3><p class="desc">Two smashed patties, double cheese, bacon jam, caramelized onions, garlic aioli</p><div class="price-row"><span class="price">16<span class="cents">.90</span></span><button class="add-btn" onclick="addToCart('Double Trouble',16.9)">Add</button></div></div>
   </div>
 </section>
 
@@ -222,22 +236,6 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 </div>
 
 <script>
-// ─── Glow texture for particles ───
-function makeGlowTex() {
-  const c = document.createElement('canvas');
-  c.width = c.height = 64;
-  const ctx = c.getContext('2d');
-  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-  g.addColorStop(0, 'rgba(255,255,255,1)');
-  g.addColorStop(0.1, 'rgba(255,255,255,0.9)');
-  g.addColorStop(0.3, 'rgba(255,255,255,0.5)');
-  g.addColorStop(0.6, 'rgba(212,201,176,0.15)');
-  g.addColorStop(1, 'rgba(212,201,176,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 64, 64);
-  return c;
-}
-
 // ─── Three.js ───
 (function() {
   var s = document.createElement('script');
@@ -268,27 +266,32 @@ function makeGlowTex() {
     logo.position.set(0, 0.3, -3);
     scene.add(logo);
 
-    // Particles with glow texture
-    var glowCanvas = makeGlowTex();
-    var glowTex2 = new THREE.CanvasTexture(glowCanvas);
-    var pCount = 200;
-    var pGeo = new THREE.BufferGeometry();
-    var pPos = new Float32Array(pCount * 3);
-    var pVel = new Float32Array(pCount);
+    // Particles as Sprites (guaranteed circular glow)
+    var glowCanvas = document.createElement('canvas');
+    glowCanvas.width = glowCanvas.height = 64;
+    var ctx = glowCanvas.getContext('2d');
+    var g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.15, 'rgba(255,255,255,0.8)');
+    g.addColorStop(0.4, 'rgba(212,201,176,0.25)');
+    g.addColorStop(0.7, 'rgba(212,201,176,0.04)');
+    g.addColorStop(1, 'rgba(212,201,176,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 64, 64);
+    var tex = new THREE.CanvasTexture(glowCanvas);
+    tex.needsUpdate = true;
+    var pCount = 150;
+    var particles = [];
     for (var i = 0; i < pCount; i++) {
-      pPos[i*3] = (Math.random()-0.5)*3.5;
-      pPos[i*3+1] = Math.random()*2.5 + 1.5;
-      pPos[i*3+2] = (Math.random()-0.5)*3.5;
-      pVel[i] = 0.15 + Math.random()*0.25;
+      var mat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.08 + Math.random()*0.07, blending: THREE.AdditiveBlending, depthWrite: false });
+      var spr = new THREE.Sprite(mat);
+      spr.position.set((Math.random()-0.5)*4, 1+Math.random()*3, (Math.random()-0.5)*4);
+      spr.scale.set(0.15 + Math.random()*0.2, 0.15 + Math.random()*0.2, 1);
+      spr.userData.velY = 0.05 + Math.random()*0.1;
+      spr.userData.phase = Math.random()*Math.PI*2;
+      scene.add(spr);
+      particles.push(spr);
     }
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-    var pMat = new THREE.PointsMaterial({
-      map: glowTex2, transparent: true, opacity: 0.15,
-      size: 0.3, blending: THREE.AdditiveBlending, depthWrite: false,
-      sizeAttenuation: true
-    });
-    var particles = new THREE.Points(pGeo, pMat);
-    scene.add(particles);
 
     camera.position.set(0, 0.3, 5);
     camera.lookAt(0, 0.3, 0);
@@ -324,18 +327,18 @@ function makeGlowTex() {
       logo.rotation.y = t * 0.3 + mx * 0.3;
       logo.position.y = 0.3 + Math.sin(t * 0.8) * 0.1;
 
-      var p = particles.geometry.attributes.position.array;
       for (var i = 0; i < pCount; i++) {
-        p[i*3] += Math.sin(t + i) * 0.003;
-        p[i*3+1] += pVel[i] * 0.01;
-        p[i*3+2] += Math.cos(t*0.5 + i) * 0.003;
-        if (p[i*3+1] > 5) {
-          p[i*3] = (Math.random()-0.5)*3.5;
-          p[i*3+1] = 0.5;
-          p[i*3+2] = (Math.random()-0.5)*3.5;
+        var spr = particles[i];
+        spr.position.x += Math.sin(t + spr.userData.phase) * 0.003;
+        spr.position.y += spr.userData.velY * 0.015;
+        spr.position.z += Math.cos(t*0.5 + spr.userData.phase) * 0.003;
+        spr.material.opacity = 0.08 + Math.sin(t + spr.userData.phase)*0.04;
+        if (spr.position.y > 5) {
+          spr.position.x = (Math.random()-0.5)*4;
+          spr.position.y = 0.5;
+          spr.position.z = (Math.random()-0.5)*4;
         }
       }
-      particles.geometry.attributes.position.needsUpdate = true;
 
       camera.position.x += (mx * 1.5 - camera.position.x) * 0.05;
       camera.position.y += (my * 1.0 + 0.3 - camera.position.y) * 0.05;
@@ -358,6 +361,53 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
   document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+
+  // Cart
+  var cart = [];
+  window.addToCart = function(name, price) {
+    var existing = cart.find(function(i) { return i.name === name; });
+    if (existing) existing.qty++;
+    else cart.push({ name: name, price: price, qty: 1 });
+    renderCart();
+    openModal();
+  };
+  function renderCart() {
+    var el = document.getElementById('cartItems');
+    var totalEl = document.getElementById('cartTotal');
+    if (cart.length === 0) {
+      el.innerHTML = '<p style="color:rgba(255,255,255,.2);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>';
+      totalEl.style.display = 'none';
+      return;
+    }
+    var html = '';
+    var total = 0;
+    cart.forEach(function(item) {
+      var itemTotal = item.price * item.qty;
+      total += itemTotal;
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:.8rem 0;border-bottom:1px solid var(--border)"><div><div style="font-size:.85rem;color:rgba(255,255,255,.55)">'+item.name+'</div><div style="font-size:.65rem;color:rgba(255,255,255,.15);margin-top:.2rem">€'+item.price.toFixed(2)+'</div></div><div style="display:flex;align-items:center;gap:.6rem"><button onclick="removeFromCart(\''+item.name+'\')" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(212,201,176,.1);background:transparent;color:var(--beige);cursor:pointer">−</button><span style="color:#fff;min-width:20px;text-align:center">'+item.qty+'</span><button onclick="addToCart(\''+item.name+'\','+item.price+')" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(212,201,176,.1);background:transparent;color:var(--beige);cursor:pointer">+</button><span style="color:var(--beige);font-weight:600;font-size:.85rem">€'+itemTotal.toFixed(2)+'</span></div></div>';
+    });
+    el.innerHTML = html;
+    totalEl.style.display = 'block';
+    document.getElementById('totalAmount').textContent = '€' + total.toFixed(2);
+  }
+  window.removeFromCart = function(name) {
+    var idx = cart.findIndex(function(i) { return i.name === name; });
+    if (idx > -1) {
+      cart[idx].qty--;
+      if (cart[idx].qty <= 0) cart.splice(idx, 1);
+    }
+    renderCart();
+  };
+  function openModal() {
+    document.getElementById('orderModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  document.getElementById('orderModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  });
 
   // Mobile nav close on link click
   document.querySelectorAll('.links a').forEach(function(a) {
