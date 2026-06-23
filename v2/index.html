@@ -833,7 +833,7 @@
     import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
 
     const canvas = document.getElementById('bg-canvas');
     const scene = new THREE.Scene();
@@ -841,10 +841,9 @@
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setClearColor(0x000000, 0);
     canvas.appendChild(renderer.domElement);
+    document.getElementById('loader').classList.add('hidden');
 
     // ─── Post-Processing ───
     const composer = new EffectComposer(renderer);
@@ -872,15 +871,7 @@
     backLight.position.set(0, -1, -6);
     scene.add(backLight);
 
-    // ─── Ground ───
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(20, 20),
-      new THREE.ShadowMaterial({ opacity: 0.15 })
-    );
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -1.8;
-    ground.receiveShadow = true;
-    scene.add(ground);
+
 
     // ─── Load Burger ───
     let burger = null;
@@ -1071,13 +1062,6 @@
 
       mx += (tx - mx) * 0.15;
       my += (ty - my) * 0.15;
-
-      // ─── 3D Burger ───
-      if (burger) {
-        burger.rotation.y = t * 0.08 + mx * 1.0;
-        burger.rotation.x = Math.sin(t * 0.08) * 0.03 + my * 0.5;
-        burger.position.y = -1.6 + Math.sin(t * 0.6) * 0.06;
-      }
 
       // ─── 3D Logo ───
       if (logo3D.scale.x >= 0.99) {
