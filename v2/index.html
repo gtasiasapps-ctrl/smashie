@@ -12,14 +12,6 @@
     html{scroll-behavior:smooth}
     body{
       font-family:'Inter',sans-serif;
-<<<<<<< HEAD
-      background:#070504;color:#fff;overflow-x:hidden;
-      -webkit-font-smoothing:antialiased;
-    }
-    ::-webkit-scrollbar{width:3px}
-    ::-webkit-scrollbar-track{background:#070504}
-    ::-webkit-scrollbar-thumb{background:rgba(232,138,52,.15);border-radius:4px}
-=======
       background:#0a0908;color:#fff;overflow-x:hidden;
       -webkit-font-smoothing:antialiased;
     }
@@ -55,33 +47,15 @@
       position:absolute;inset:0;
       background:linear-gradient(180deg,rgba(10,9,8,.85) 0%,rgba(10,9,8,.5) 40%,rgba(10,9,8,.7) 70%,rgba(10,9,8,.95) 100%);
     }
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
 
     /* ─── Loading Screen ─── */
     #loader{
       position:fixed;inset:0;z-index:9999;
-<<<<<<< HEAD
-      background:#070504;
-=======
       background:#0a0908;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       display:flex;flex-direction:column;align-items:center;justify-content:center;
       transition:opacity .8s,visibility .8s;
     }
     #loader.hidden{opacity:0;visibility:hidden}
-<<<<<<< HEAD
-    #loader .logo-text{
-      font-family:'Playfair Display',serif;font-size:3rem;font-weight:800;
-      color:#e88a34;letter-spacing:-.03em;
-    }
-    #loader .bar{
-      width:120px;height:2px;background:rgba(232,138,52,.1);border-radius:2px;
-      margin-top:1.5rem;overflow:hidden;position:relative;
-    }
-    #loader .bar::after{
-      content:'';position:absolute;left:-100%;width:100%;height:100%;
-      background:linear-gradient(90deg,transparent,#e88a34,transparent);
-=======
     #loader .loader-logo{
       width:100px;height:100px;opacity:.7;
     }
@@ -96,7 +70,6 @@
     #loader .bar::after{
       content:'';position:absolute;left:-100%;width:100%;height:100%;
       background:linear-gradient(90deg,transparent,var(--beige),transparent);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       animation:loadBar 1.5s ease infinite;
     }
     @keyframes loadBar{to{left:100%}}
@@ -110,20 +83,6 @@
     /* ─── Nav ─── */
     nav{
       position:fixed;top:0;left:0;right:0;z-index:100;
-<<<<<<< HEAD
-      padding:1.2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;
-      background:rgba(7,5,4,.6);backdrop-filter:blur(40px) saturate(1.5);
-      -webkit-backdrop-filter:blur(40px) saturate(1.5);
-      border-bottom:1px solid rgba(232,138,52,.06);
-      transition:transform .4s cubic-bezier(.16,1,.3,1);
-    }
-    nav.hidden{transform:translateY(-100%)}
-    nav .logo{
-      font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;
-      color:#e88a34;letter-spacing:-.02em;
-    }
-    nav .logo span{color:#fff;margin-right:2px}
-=======
       padding:.9rem 2.5rem;display:flex;justify-content:space-between;align-items:center;
       background:rgba(10,9,8,.6);backdrop-filter:blur(40px) saturate(1.5);
       -webkit-backdrop-filter:blur(40px) saturate(1.5);
@@ -133,7 +92,6 @@
     nav.hidden{transform:translateY(-100%)}
     nav .logo-link{display:flex;align-items:center;gap:.6rem;text-decoration:none}
     nav .logo-img{height:36px;width:auto;opacity:.9}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     nav .links{display:flex;gap:2.5rem;align-items:center}
     nav .links a{
       color:rgba(255,255,255,.4);text-decoration:none;font-size:.75rem;
@@ -142,31 +100,12 @@
     }
     nav .links a::after{
       content:'';position:absolute;bottom:-4px;left:0;right:0;
-<<<<<<< HEAD
-      height:1px;background:#e88a34;transform:scaleX(0);transition:transform .3s;
-=======
       height:1px;background:var(--beige);transform:scaleX(0);transition:transform .3s;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     }
     nav .links a:hover{color:rgba(255,255,255,.8)}
     nav .links a:hover::after{transform:scaleX(1)}
     nav .links .order-btn{
       padding:.55rem 1.6rem;
-<<<<<<< HEAD
-      background:linear-gradient(135deg,#e88a34,#d4712b);
-      border-radius:100px;color:#fff!important;font-weight:600;
-      letter-spacing:.05em;border:none;font-size:.75rem;
-    }
-    nav .links .order-btn::after{display:none}
-    nav .links .order-btn:hover{transform:scale(1.04);box-shadow:0 8px 30px rgba(232,138,52,.25)}
-    .mobile-toggle{display:none;font-size:1.5rem;cursor:pointer;color:rgba(255,255,255,.5);background:none;border:none}
-    @media(max-width:768px){
-      nav{padding:.9rem 1.2rem}
-      nav .links{
-        display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;
-        background:rgba(7,5,4,.98);backdrop-filter:blur(40px);
-        padding:1.5rem;gap:1.2rem;border-bottom:1px solid rgba(232,138,52,.08)
-=======
       background:var(--accent-grad);
       border-radius:100px;color:var(--dark-bg)!important;font-weight:700;
       letter-spacing:.05em;border:none;font-size:.75rem;
@@ -181,7 +120,6 @@
         display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;
         background:rgba(10,9,8,.98);backdrop-filter:blur(40px);
         padding:1.5rem;gap:1.2rem;border-bottom:1px solid var(--border-subtle)
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       }
       nav .links.open{display:flex}
       .mobile-toggle{display:block}
@@ -191,16 +129,6 @@
     .hero{
       min-height:100vh;display:flex;flex-direction:column;
       justify-content:center;align-items:center;text-align:center;
-<<<<<<< HEAD
-      padding:8rem 2rem 4rem;
-    }
-    .hero .tag{
-      display:inline-flex;align-items:center;gap:.6rem;
-      padding:.35rem 1rem;background:rgba(232,138,52,.08);
-      backdrop-filter:blur(20px);border:1px solid rgba(232,138,52,.12);
-      border-radius:100px;font-size:.65rem;font-weight:500;
-      text-transform:uppercase;letter-spacing:.2em;color:#e88a34;
-=======
       padding:8rem 2rem 4rem;position:relative;
     }
     .hero .tag{
@@ -209,16 +137,11 @@
       backdrop-filter:blur(20px);border:1px solid rgba(212,201,176,.1);
       border-radius:100px;font-size:.65rem;font-weight:500;
       text-transform:uppercase;letter-spacing:.2em;color:var(--beige);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       margin-bottom:1.8rem;
       opacity:0;transform:translateY(10px);
       animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .3s forwards;
     }
-<<<<<<< HEAD
-    .hero .tag .dot{width:4px;height:4px;border-radius:50%;background:#e88a34;animation:pulse 2s ease infinite}
-=======
     .hero .tag .dot{width:4px;height:4px;border-radius:50%;background:var(--beige);animation:pulse 2s ease infinite}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     .hero h1{
       font-family:'Playfair Display',serif;
       font-size:clamp(3.5rem,14vw,9rem);font-weight:800;
@@ -226,18 +149,12 @@
       opacity:0;transform:translateY(30px);
       animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .5s forwards;
     }
-<<<<<<< HEAD
-    .hero h1 .accent{background:linear-gradient(135deg,#e88a34,#f5a623,#e88a34);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .hero .sub{
-      font-size:clamp(.95rem,1.8vw,1.15rem);color:rgba(255,255,255,.35);
-=======
     .hero h1 .accent{
       background:linear-gradient(135deg,var(--beige),var(--light-cream));
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
     }
     .hero .sub{
       font-size:clamp(.95rem,1.8vw,1.15rem);color:var(--text-muted);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       max-width:460px;line-height:1.7;font-weight:300;
       margin-top:1.5rem;
       opacity:0;transform:translateY(20px);
@@ -254,15 +171,6 @@
       letter-spacing:.03em;cursor:pointer;border:none;
     }
     .hero .btn-primary{
-<<<<<<< HEAD
-      background:linear-gradient(135deg,#e88a34,#d4712b);color:#fff;
-    }
-    .hero .btn-primary:hover{transform:scale(1.05);box-shadow:0 12px 40px rgba(232,138,52,.25)}
-    .hero .btn-outline{
-      border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);background:transparent;
-    }
-    .hero .btn-outline:hover{border-color:#e88a34;color:#fff;background:rgba(232,138,52,.06)}
-=======
       background:var(--accent-grad);color:var(--dark-bg);
     }
     .hero .btn-primary:hover{transform:scale(1.05);box-shadow:0 12px 40px rgba(212,201,176,.2)}
@@ -270,34 +178,17 @@
       border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);background:transparent;
     }
     .hero .btn-outline:hover{border-color:var(--beige);color:#fff;background:rgba(212,201,176,.06)}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     .scroll-mouse{
       position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);
       display:flex;flex-direction:column;align-items:center;gap:.6rem;
       opacity:0;animation:fadeIn 1s 1.5s forwards;
     }
     .scroll-mouse .mouse{
-<<<<<<< HEAD
-      width:20px;height:32px;border:1.5px solid rgba(232,138,52,.15);
-=======
       width:20px;height:32px;border:1.5px solid rgba(212,201,176,.15);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       border-radius:10px;position:relative;
     }
     .scroll-mouse .mouse::after{
       content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);
-<<<<<<< HEAD
-      width:2px;height:6px;background:#e88a34;border-radius:2px;
-      animation:scrollAnim 2s ease infinite;
-    }
-    .scroll-mouse .label{font-size:.55rem;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.15)}
-
-    /* ─── Marquee ─── */
-    .marquee{
-      overflow:hidden;padding:1rem 0;
-      border-top:1px solid rgba(232,138,52,.04);
-      border-bottom:1px solid rgba(232,138,52,.04);
-=======
       width:2px;height:6px;background:var(--beige);border-radius:2px;
       animation:scrollAnim 2s ease infinite;
     }
@@ -308,7 +199,6 @@
       overflow:hidden;padding:.8rem 0;
       border-top:1px solid var(--border-subtle);
       border-bottom:1px solid var(--border-subtle);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       margin:0 2rem;
     }
     .marquee-track{
@@ -317,40 +207,23 @@
     }
     .marquee-item{
       font-family:'Playfair Display',serif;
-<<<<<<< HEAD
-      font-size:.85rem;color:rgba(232,138,52,.15);
-      text-transform:uppercase;letter-spacing:.3em;
-    }
-    .marquee-item strong{color:rgba(232,138,52,.3);font-weight:600}
-=======
       font-size:.8rem;color:rgba(212,201,176,.12);
       text-transform:uppercase;letter-spacing:.3em;
     }
     .marquee-item strong{color:rgba(212,201,176,.25);font-weight:600}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
 
     /* ─── Section ─── */
     section{padding:7rem 2rem;position:relative}
     .container{max-width:1200px;margin:0 auto}
     .section-eyebrow{
       font-size:.65rem;text-transform:uppercase;letter-spacing:.25em;
-<<<<<<< HEAD
-      color:rgba(232,138,52,.5);text-align:center;margin-bottom:.8rem;
-=======
       color:rgba(212,201,176,.4);text-align:center;margin-bottom:.8rem;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       font-weight:500;
     }
     .section-title{
       font-family:'Playfair Display',serif;
       font-size:clamp(2.2rem,5vw,4rem);font-weight:700;
       margin-bottom:.6rem;text-align:center;letter-spacing:-.03em;
-<<<<<<< HEAD
-    }
-    .section-title .accent{background:linear-gradient(135deg,#e88a34,#f5a623);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .section-sub{
-      text-align:center;color:rgba(255,255,255,.35);
-=======
       color:var(--cream);
     }
     .section-title .accent{
@@ -359,7 +232,6 @@
     }
     .section-sub{
       text-align:center;color:var(--text-muted);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       max-width:520px;margin:0 auto 3.5rem;
       font-size:.95rem;line-height:1.7;font-weight:300;
     }
@@ -382,17 +254,10 @@
 
     /* ─── Glass Card ─── */
     .glass{
-<<<<<<< HEAD
-      background:rgba(255,255,255,.02);
-      backdrop-filter:blur(24px) saturate(1.3);
-      -webkit-backdrop-filter:blur(24px) saturate(1.3);
-      border:1px solid rgba(232,138,52,.05);
-=======
       background:var(--glass-bg);
       backdrop-filter:blur(24px) saturate(1.3);
       -webkit-backdrop-filter:blur(24px) saturate(1.3);
       border:1px solid var(--border-subtle);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     }
 
     /* ─── Stats ─── */
@@ -408,20 +273,12 @@
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
     }
     .stat .accent-num{
-<<<<<<< HEAD
-      background:linear-gradient(135deg,#e88a34,#f5a623);
-=======
       background:var(--accent-grad);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
     }
     .stat-label{
       font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;
-<<<<<<< HEAD
-      color:rgba(255,255,255,.25);margin-top:.3rem;font-weight:400;
-=======
       color:rgba(255,255,255,.2);margin-top:.3rem;font-weight:400;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     }
 
     /* ─── Menu ─── */
@@ -429,52 +286,26 @@
     @media(max-width:1024px){.menu-grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:640px){.menu-grid{grid-template-columns:1fr}}
     .menu-card{
-<<<<<<< HEAD
-      background:rgba(0,0,0,.45);backdrop-filter:blur(24px) saturate(1.3);
-      -webkit-backdrop-filter:blur(24px) saturate(1.3);
-      border:1px solid rgba(232,138,52,.05);
-=======
       background:var(--card-bg);backdrop-filter:blur(24px) saturate(1.3);
       -webkit-backdrop-filter:blur(24px) saturate(1.3);
       border:1px solid var(--border-subtle);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       border-radius:20px;padding:2rem 1.8rem;
       transition:all .5s cubic-bezier(.16,1,.3,1);text-align:center;
       position:relative;overflow:hidden;cursor:default;
     }
     .menu-card::before{
       content:'';position:absolute;inset:0;
-<<<<<<< HEAD
-      background:radial-gradient(ellipse at 50% 0%,rgba(232,138,52,.04),transparent 70%);
-=======
       background:radial-gradient(ellipse at 50% 0%,rgba(212,201,176,.04),transparent 70%);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       opacity:0;transition:opacity .6s;
     }
     .menu-card:hover::before{opacity:1}
     .menu-card:hover{
       transform:translateY(-8px) scale(1.01);
-<<<<<<< HEAD
-      border-color:rgba(232,138,52,.12);
-=======
       border-color:rgba(212,201,176,.1);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       box-shadow:0 30px 60px rgba(0,0,0,.5);
     }
     .menu-card .badge{
       display:inline-block;padding:.2rem .6rem;
-<<<<<<< HEAD
-      background:rgba(232,138,52,.08);border-radius:4px;
-      font-size:.55rem;font-weight:600;text-transform:uppercase;
-      letter-spacing:.1em;color:#e88a34;margin-bottom:.8rem;
-    }
-    .menu-card h3{
-      font-family:'Playfair Display',serif;
-      font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:.4rem;
-    }
-    .menu-card .desc{
-      font-size:.8rem;color:rgba(255,255,255,.4);line-height:1.5;
-=======
       background:rgba(212,201,176,.06);border-radius:4px;
       font-size:.55rem;font-weight:600;text-transform:uppercase;
       letter-spacing:.1em;color:var(--beige);margin-bottom:.8rem;
@@ -485,23 +316,11 @@
     }
     .menu-card .desc{
       font-size:.8rem;color:rgba(255,255,255,.35);line-height:1.5;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       margin-bottom:1.2rem;font-weight:300;
     }
     .menu-card .price-row{
       display:flex;justify-content:center;align-items:center;gap:1.2rem;
     }
-<<<<<<< HEAD
-    .menu-card .price{font-size:1.6rem;font-weight:700;color:#e88a34}
-    .menu-card .price .cents{font-size:.9rem;font-weight:400;opacity:.7}
-    .menu-card .add-btn{
-      padding:.45rem 1.1rem;border-radius:100px;
-      background:linear-gradient(135deg,#e88a34,#d4712b);color:#fff;
-      font-size:.7rem;font-weight:600;text-decoration:none;
-      transition:all .3s;border:none;cursor:pointer;
-    }
-    .menu-card .add-btn:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(232,138,52,.25)}
-=======
     .menu-card .price{font-size:1.6rem;font-weight:700;color:var(--beige)}
     .menu-card .price .cents{font-size:.9rem;font-weight:400;opacity:.7}
     .menu-card .add-btn{
@@ -511,38 +330,23 @@
       transition:all .3s;border:none;cursor:pointer;
     }
     .menu-card .add-btn:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(212,201,176,.2)}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
 
     /* ─── Reviews ─── */
     .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1000px;margin:0 auto}
     @media(max-width:768px){.reviews-grid{grid-template-columns:1fr}}
     .review-card{
-<<<<<<< HEAD
-      background:rgba(0,0,0,.35);backdrop-filter:blur(20px);
-      border:1px solid rgba(232,138,52,.04);
-=======
       background:var(--card-bg);backdrop-filter:blur(20px);
       border:1px solid var(--border-subtle);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       border-radius:16px;padding:1.8rem;
       transition:all .4s cubic-bezier(.16,1,.3,1);
     }
     .review-card:hover{
-<<<<<<< HEAD
-      border-color:rgba(232,138,52,.1);
-      transform:translateY(-4px);
-    }
-    .review-card .stars{color:#e88a34;font-size:1rem;margin-bottom:.8rem;letter-spacing:2px}
-    .review-card .text{
-      font-size:.85rem;color:rgba(255,255,255,.5);line-height:1.6;
-=======
       border-color:rgba(212,201,176,.08);
       transform:translateY(-4px);
     }
     .review-card .stars{color:var(--warm-gold);font-size:1rem;margin-bottom:.8rem;letter-spacing:2px}
     .review-card .text{
       font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.6;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       font-weight:300;font-style:italic;
       margin-bottom:1.2rem;
     }
@@ -551,18 +355,6 @@
     }
     .review-card .author .avatar{
       width:32px;height:32px;border-radius:50%;
-<<<<<<< HEAD
-      background:linear-gradient(135deg,rgba(232,138,52,.3),rgba(232,138,52,.1));
-      display:flex;align-items:center;justify-content:center;
-      font-size:.7rem;color:#e88a34;font-weight:600;
-    }
-    .review-card .author .name{font-size:.75rem;font-weight:500;color:rgba(255,255,255,.6)}
-    .review-card .author .handle{font-size:.65rem;color:rgba(255,255,255,.2)}
-    .review-card .source{
-      display:inline-flex;align-items:center;gap:.3rem;
-      font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;
-      color:rgba(232,138,52,.3);margin-top:.8rem;
-=======
       background:linear-gradient(135deg,rgba(212,201,176,.2),rgba(212,201,176,.05));
       display:flex;align-items:center;justify-content:center;
       font-size:.7rem;color:var(--beige);font-weight:600;
@@ -573,7 +365,6 @@
       display:inline-flex;align-items:center;gap:.3rem;
       font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;
       color:rgba(212,201,176,.25);margin-top:.8rem;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     }
 
     /* ─── Gallery ─── */
@@ -584,37 +375,21 @@
     }
     .gallery-grid .g-item{
       border-radius:12px;overflow:hidden;position:relative;
-<<<<<<< HEAD
-      background:rgba(0,0,0,.3);border:1px solid rgba(232,138,52,.04);
-      transition:all .4s;
-    }
-    .gallery-grid .g-item:hover{transform:scale(1.02);border-color:rgba(232,138,52,.12)}
-=======
       background:var(--card-bg);border:1px solid var(--border-subtle);
       transition:all .4s;
     }
     .gallery-grid .g-item:hover{transform:scale(1.02);border-color:rgba(212,201,176,.1)}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     .gallery-grid .g-item:first-child{grid-column:span 2;grid-row:span 2}
     .gallery-grid .g-item .img-placeholder{
       width:100%;height:100%;object-fit:cover;
       display:flex;align-items:center;justify-content:center;
-<<<<<<< HEAD
-      font-size:2.5rem;color:rgba(232,138,52,.15);
-      background:linear-gradient(135deg,rgba(232,138,52,.02),rgba(0,0,0,.4));
-=======
       font-size:2.5rem;color:rgba(212,201,176,.12);
       background:linear-gradient(135deg,rgba(212,201,176,.02),rgba(0,0,0,.4));
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     }
     .gallery-grid .g-item .label{
       position:absolute;bottom:.8rem;left:.8rem;
       font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;
-<<<<<<< HEAD
-      color:rgba(255,255,255,.25);font-weight:500;
-=======
       color:rgba(255,255,255,.2);font-weight:500;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     }
     @media(max-width:768px){
       .gallery-grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,160px)}
@@ -626,16 +401,6 @@
     @media(max-width:768px){.exp-grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:480px){.exp-grid{grid-template-columns:1fr}}
     .exp-card{
-<<<<<<< HEAD
-      background:rgba(0,0,0,.35);backdrop-filter:blur(24px);
-      border:1px solid rgba(232,138,52,.04);border-radius:16px;
-      padding:2rem 1.5rem;text-align:center;transition:all .4s;
-    }
-    .exp-card:hover{transform:translateY(-5px);border-color:rgba(232,138,52,.1)}
-    .exp-card .icon{font-size:2rem;margin-bottom:.8rem}
-    .exp-card h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;margin-bottom:.4rem;color:#fff}
-    .exp-card p{font-size:.8rem;color:rgba(255,255,255,.4);line-height:1.5;font-weight:300}
-=======
       background:var(--card-bg);backdrop-filter:blur(24px);
       border:1px solid var(--border-subtle);border-radius:16px;
       padding:2rem 1.5rem;text-align:center;transition:all .4s;
@@ -644,7 +409,6 @@
     .exp-card .icon{font-size:2rem;margin-bottom:.8rem}
     .exp-card h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;margin-bottom:.4rem;color:var(--cream)}
     .exp-card p{font-size:.8rem;color:rgba(255,255,255,.35);line-height:1.5;font-weight:300}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
 
     /* ─── Parallax Quote ─── */
     .parallax-section{
@@ -653,29 +417,17 @@
     }
     .parallax-section::before{
       content:'';position:absolute;inset:0;
-<<<<<<< HEAD
-      background:radial-gradient(ellipse at center,rgba(232,138,52,.03),transparent 60%);
-=======
       background:radial-gradient(ellipse at center,rgba(212,201,176,.03),transparent 60%);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     }
     .parallax-section blockquote{
       font-family:'Playfair Display',serif;
       font-size:clamp(1.5rem,4vw,2.8rem);font-weight:600;
       max-width:700px;margin:0 auto;line-height:1.3;
-<<<<<<< HEAD
-      color:rgba(255,255,255,.7);font-style:italic;
-    }
-    .parallax-section blockquote .accent{color:#e88a34}
-    .parallax-section .attribution{
-      margin-top:1.5rem;font-size:.75rem;color:rgba(255,255,255,.2);font-weight:300;
-=======
       color:rgba(255,255,255,.6);font-style:italic;
     }
     .parallax-section blockquote .accent{color:var(--beige)}
     .parallax-section .attribution{
       margin-top:1.5rem;font-size:.75rem;color:rgba(255,255,255,.18);font-weight:300;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     }
 
     /* ─── Contact ─── */
@@ -686,21 +438,6 @@
     @media(max-width:640px){.contact-wrap{grid-template-columns:1fr}}
     .contact-info{display:flex;flex-direction:column;gap:1rem}
     .contact-item{
-<<<<<<< HEAD
-      background:rgba(0,0,0,.35);backdrop-filter:blur(20px);
-      border:1px solid rgba(232,138,52,.04);border-radius:14px;
-      padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.2rem;
-      transition:all .3s;
-    }
-    .contact-item:hover{border-color:rgba(232,138,52,.1)}
-    .contact-item .icon{font-size:1.3rem;width:40px;height:40px;border-radius:50%;background:rgba(232,138,52,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .contact-item .info h4{font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:rgba(232,138,52,.5);margin-bottom:.2rem}
-    .contact-item .info p,.contact-item .info a{font-size:.85rem;color:rgba(255,255,255,.45);text-decoration:none;font-weight:300}
-    .contact-item .info a:hover{color:#e88a34}
-    .hours-card{
-      background:rgba(0,0,0,.35);backdrop-filter:blur(20px);
-      border:1px solid rgba(232,138,52,.04);border-radius:14px;
-=======
       background:var(--card-bg);backdrop-filter:blur(20px);
       border:1px solid var(--border-subtle);border-radius:14px;
       padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.2rem;
@@ -714,41 +451,18 @@
     .hours-card{
       background:var(--card-bg);backdrop-filter:blur(20px);
       border:1px solid var(--border-subtle);border-radius:14px;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       padding:1.5rem;
     }
     .hours-card h4{
       font-family:'Playfair Display',serif;
-<<<<<<< HEAD
-      font-size:1rem;font-weight:600;color:#fff;margin-bottom:1rem;
-    }
-    .hours-card .row{display:flex;justify-content:space-between;padding:.4rem 0;font-size:.8rem;color:rgba(255,255,255,.4);font-weight:300}
-    .hours-card .row .day{color:rgba(255,255,255,.25)}
-=======
       font-size:1rem;font-weight:600;color:var(--cream);margin-bottom:1rem;
     }
     .hours-card .row{display:flex;justify-content:space-between;padding:.4rem 0;font-size:.8rem;color:rgba(255,255,255,.35);font-weight:300}
     .hours-card .row .day{color:rgba(255,255,255,.2)}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     .hours-card .row .time{font-weight:400}
     .social-links{display:flex;justify-content:center;gap:1rem;margin-top:2rem}
     .social-links a{
       width:44px;height:44px;border-radius:50%;
-<<<<<<< HEAD
-      border:1px solid rgba(232,138,52,.08);
-      display:flex;align-items:center;justify-content:center;
-      font-size:1.2rem;text-decoration:none;color:rgba(232,138,52,.3);
-      transition:all .3s;
-    }
-    .social-links a:hover{border-color:#e88a34;color:#e88a34;transform:translateY(-3px)}
-
-    footer{
-      text-align:center;padding:2.5rem;
-      border-top:1px solid rgba(232,138,52,.03);
-      font-size:.75rem;color:rgba(255,255,255,.15);font-weight:300;
-    }
-    footer .made-by{color:rgba(232,138,52,.5)}
-=======
       border:1px solid var(--border-subtle);
       display:flex;align-items:center;justify-content:center;
       font-size:1.2rem;text-decoration:none;color:rgba(212,201,176,.25);
@@ -762,7 +476,6 @@
       font-size:.75rem;color:rgba(255,255,255,.12);font-weight:300;
     }
     footer .made-by{color:rgba(212,201,176,.4)}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
 
     /* ─── Order Modal ─── */
     #orderModal{
@@ -777,35 +490,14 @@
     }
     #orderModal .modal{
       position:relative;max-width:500px;width:100%;
-<<<<<<< HEAD
-      background:rgba(10,8,6,.95);backdrop-filter:blur(40px);
-      border:1px solid rgba(232,138,52,.1);
-=======
       background:rgba(10,9,8,.95);backdrop-filter:blur(40px);
       border:1px solid var(--border-subtle);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       border-radius:20px;padding:2.5rem;z-index:1;
       transform:scale(.9);opacity:0;transition:all .4s cubic-bezier(.16,1,.3,1);
     }
     #orderModal.active .modal{transform:scale(1);opacity:1}
     #orderModal .modal .close{
       position:absolute;top:1rem;right:1.2rem;font-size:1.5rem;
-<<<<<<< HEAD
-      color:rgba(255,255,255,.2);cursor:pointer;background:none;border:none;
-      transition:color .3s;
-    }
-    #orderModal .modal .close:hover{color:#e88a34}
-    #orderModal .modal h2{
-      font-family:'Playfair Display',serif;
-      font-size:1.6rem;font-weight:700;margin-bottom:.3rem;
-    }
-    #orderModal .modal .sub{font-size:.8rem;color:rgba(255,255,255,.35);margin-bottom:1.5rem}
-    #orderModal .modal .item{
-      display:flex;justify-content:space-between;align-items:center;
-      padding:.8rem 0;border-bottom:1px solid rgba(232,138,52,.04);
-    }
-    #orderModal .modal .item .name{font-size:.85rem;color:rgba(255,255,255,.6)}
-=======
       color:rgba(255,255,255,.15);cursor:pointer;background:none;border:none;
       transition:color .3s;
     }
@@ -820,35 +512,11 @@
       padding:.8rem 0;border-bottom:1px solid var(--border-subtle);
     }
     #orderModal .modal .item .name{font-size:.85rem;color:rgba(255,255,255,.55)}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     #orderModal .modal .item .qty{
       display:flex;align-items:center;gap:.6rem;
     }
     #orderModal .modal .item .qty button{
       width:26px;height:26px;border-radius:50%;
-<<<<<<< HEAD
-      border:1px solid rgba(232,138,52,.1);background:transparent;
-      color:#e88a34;cursor:pointer;font-size:.85rem;
-      transition:all .3s;display:flex;align-items:center;justify-content:center;
-    }
-    #orderModal .modal .item .qty button:hover{background:rgba(232,138,52,.1)}
-    #orderModal .modal .item .qty span{font-size:.85rem;color:#fff;min-width:20px;text-align:center}
-    #orderModal .modal .item .price-opt{font-size:.85rem;color:#e88a34;font-weight:600}
-    #orderModal .modal .total{
-      display:flex;justify-content:space-between;
-      padding:1rem 0;font-size:1rem;font-weight:600;
-      border-top:1px solid rgba(232,138,52,.1);margin-top:.5rem;
-    }
-    #orderModal .modal .total .amount{color:#e88a34}
-    #orderModal .modal .checkout-btn{
-      width:100%;padding:1rem;border-radius:100px;
-      background:linear-gradient(135deg,#e88a34,#d4712b);
-      color:#fff;font-weight:600;font-size:.9rem;
-      border:none;cursor:pointer;transition:all .3s;
-      margin-top:.5rem;
-    }
-    #orderModal .modal .checkout-btn:hover{transform:scale(1.02);box-shadow:0 8px 30px rgba(232,138,52,.25)}
-=======
       border:1px solid rgba(212,201,176,.1);background:transparent;
       color:var(--beige);cursor:pointer;font-size:.85rem;
       transition:all .3s;display:flex;align-items:center;justify-content:center;
@@ -869,7 +537,6 @@
       transition:all .3s;margin-top:.5rem;
     }
     #orderModal .modal .checkout-btn:hover{transform:scale(1.02);box-shadow:0 8px 30px rgba(212,201,176,.2)}
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
 
     /* ─── Animations ─── */
     @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
@@ -878,18 +545,10 @@
     @keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
     @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-<<<<<<< HEAD
-    @keyframes glitch{0%{clip-path:inset(40% 0 61% 0);transform:translate(-2px,2px)}20%{clip-path:inset(92% 0 1% 0);transform:translate(1px,-1px)}40%{clip-path:inset(43% 0 1% 0);transform:translate(-1px,2px)}60%{clip-path:inset(25% 0 58% 0);transform:translate(2px,1px)}80%{clip-path:inset(54% 0 7% 0);transform:translate(-2px,-1px)}to{clip-path:inset(58% 0 43% 0);transform:translate(0)}}
-=======
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
   </style>
 </head>
 <body>
 
-<<<<<<< HEAD
-  <!-- ─── Loader ─── -->
-  <div id="loader">
-=======
   <!-- ─── Background Image ─── -->
   <div id="bg-image">
     <img src="smashie_background.jpg" alt="" />
@@ -899,7 +558,6 @@
   <!-- ─── Loader ─── -->
   <div id="loader">
     <img src="logo-2.png" alt="" class="loader-logo" />
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     <div class="logo-text">Smashie.</div>
     <div class="bar"></div>
   </div>
@@ -909,11 +567,7 @@
 
   <!-- ─── Nav ─── -->
   <nav id="nav">
-<<<<<<< HEAD
-    <div class="logo"><span>S</span>mashie.</div>
-=======
     <a href="#" class="logo-link"><img src="logo-2.png" alt="Smashie" class="logo-img" /></a>
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     <div class="links" id="navLinks">
       <a href="#menu">Menu</a>
       <a href="#reviews">Reviews</a>
@@ -972,11 +626,8 @@
       </div>
     </section>
 
-<<<<<<< HEAD
-=======
     <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
 
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     <!-- ─── Menu ─── -->
     <section id="menu" class="container">
       <p class="section-eyebrow reveal">Signature Selection</p>
@@ -1013,11 +664,7 @@
       </div>
     </section>
 
-<<<<<<< HEAD
-    <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(232,138,52,.12),transparent)"></div>
-=======
     <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
 
     <!-- ─── Gallery ─── -->
     <section class="container">
@@ -1048,11 +695,7 @@
       </div>
     </section>
 
-<<<<<<< HEAD
-    <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(232,138,52,.12),transparent)"></div>
-=======
     <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
 
     <!-- ─── Reviews ─── -->
     <section id="reviews" class="container">
@@ -1090,11 +733,7 @@
       </div>
     </section>
 
-<<<<<<< HEAD
-    <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(232,138,52,.12),transparent)"></div>
-=======
     <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
 
     <!-- ─── Experience ─── -->
     <section id="experience" class="container">
@@ -1142,13 +781,8 @@
           <div class="row"><span class="day">Mon — Fri</span><span class="time">11:00 — 23:00</span></div>
           <div class="row"><span class="day">Saturday</span><span class="time">12:00 — 00:00</span></div>
           <div class="row"><span class="day">Sunday</span><span class="time">13:00 — 22:00</span></div>
-<<<<<<< HEAD
-          <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(232,138,52,.04);display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:rgba(232,138,52,.4)">
-            <span style="width:6px;height:6px;border-radius:50%;background:#2d8a2d;display:inline-block"></span>
-=======
           <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border-subtle);display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:rgba(212,201,176,.3)">
             <span style="width:6px;height:6px;border-radius:50%;background:#5a8a4a;display:inline-block"></span>
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
             Open now
           </div>
         </div>
@@ -1176,11 +810,7 @@
       <h2>Your Order</h2>
       <p class="sub">Smashie · Pickup &amp; Delivery</p>
       <div id="cartItems">
-<<<<<<< HEAD
-        <p style="color:rgba(255,255,255,.25);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>
-=======
         <p style="color:rgba(255,255,255,.2);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       </div>
       <div id="cartTotal" style="display:none">
         <div class="total"><span>Total</span><span class="amount" id="totalAmount">€0.00</span></div>
@@ -1215,11 +845,7 @@
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-<<<<<<< HEAD
-    renderer.toneMappingExposure = 1.0;
-=======
     renderer.toneMappingExposure = 0.9;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     canvas.appendChild(renderer.domElement);
 
     // ─── Post-Processing ───
@@ -1228,43 +854,21 @@
     composer.addPass(renderPass);
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(window.innerWidth, window.innerHeight),
-<<<<<<< HEAD
-      0.15, 0.05, 0.1
-=======
       0.1, 0.04, 0.08
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     );
     composer.addPass(bloomPass);
 
     // ─── Lights ───
-<<<<<<< HEAD
-    const ambient = new THREE.AmbientLight(0x222222, 0.7);
-    scene.add(ambient);
-
-    const mainLight = new THREE.DirectionalLight(0xffeedd, 2.8);
-=======
     const ambient = new THREE.AmbientLight(0x222222, 0.8);
     scene.add(ambient);
 
     const mainLight = new THREE.DirectionalLight(0xffeedd, 2.5);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     mainLight.position.set(5, 8, 4);
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 1024;
     mainLight.shadow.mapSize.height = 1024;
     scene.add(mainLight);
 
-<<<<<<< HEAD
-    const fillLight = new THREE.DirectionalLight(0xaaccff, 0.4);
-    fillLight.position.set(-4, 2, -3);
-    scene.add(fillLight);
-
-    const rimLight = new THREE.DirectionalLight(0xe88a34, 1.5);
-    rimLight.position.set(-2, 1, 5);
-    scene.add(rimLight);
-
-    const backLight = new THREE.DirectionalLight(0xe88a34, 0.5);
-=======
     const fillLight = new THREE.DirectionalLight(0xaaccff, 0.35);
     fillLight.position.set(-4, 2, -3);
     scene.add(fillLight);
@@ -1274,17 +878,12 @@
     scene.add(rimLight);
 
     const backLight = new THREE.DirectionalLight(0xd4c9b0, 0.4);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     backLight.position.set(0, -2, -5);
     scene.add(backLight);
 
     // ─── Ground ───
     const groundGeo = new THREE.PlaneGeometry(20, 20);
-<<<<<<< HEAD
-    const groundMat = new THREE.ShadowMaterial({ opacity: 0.25 });
-=======
     const groundMat = new THREE.ShadowMaterial({ opacity: 0.2 });
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -1.8;
@@ -1308,10 +907,6 @@
           }
         });
         scene.add(burger);
-<<<<<<< HEAD
-        // Hide loader
-=======
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
         document.getElementById('loader').classList.add('hidden');
       },
       undefined,
@@ -1320,10 +915,6 @@
       }
     );
 
-<<<<<<< HEAD
-    // ─── Particle textures ───
-    function makeGlowTex(color, size) {
-=======
     // ─── 3D Logo ───
     const logoTextureLoader = new THREE.TextureLoader();
     const logoTexture = logoTextureLoader.load('logo-2.png');
@@ -1348,33 +939,19 @@
 
     // ─── Particle textures ───
     function makeGlowTex(size) {
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       const c = document.createElement('canvas');
       c.width = c.height = size;
       const ctx = c.getContext('2d');
       const g = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
       g.addColorStop(0, 'rgba(255,255,255,1)');
       g.addColorStop(0.15, 'rgba(255,255,255,0.8)');
-<<<<<<< HEAD
-      g.addColorStop(0.4, `rgba(232,138,52,0.3)`);
-      g.addColorStop(0.7, 'rgba(232,138,52,0.05)');
-      g.addColorStop(1, 'rgba(232,138,52,0)');
-=======
       g.addColorStop(0.4, 'rgba(212,201,176,0.25)');
       g.addColorStop(0.7, 'rgba(212,201,176,0.04)');
       g.addColorStop(1, 'rgba(212,201,176,0)');
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, size, size);
       return new THREE.CanvasTexture(c);
     }
-<<<<<<< HEAD
-    const glowTex = makeGlowTex('#e88a34', 64);
-    const whiteGlow = makeGlowTex('#fff', 64);
-
-    // ─── Steam ───
-    const steamCount = 500;
-=======
     const glowTex = makeGlowTex(64);
     const whiteGlow = (() => {
       const c = document.createElement('canvas');
@@ -1392,7 +969,6 @@
 
     // ─── Steam ───
     const steamCount = 400;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     const sGeo = new THREE.BufferGeometry();
     const sPos = new Float32Array(steamCount * 3);
     const sVel = new Float32Array(steamCount);
@@ -1406,23 +982,14 @@
     }
     sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
     const sMat = new THREE.PointsMaterial({
-<<<<<<< HEAD
-      map: whiteGlow, color: 0xffffff, transparent: true, opacity: 0.08,
-      size: 0.22, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-=======
       map: whiteGlow, color: 0xffffff, transparent: true, opacity: 0.06,
       size: 0.2, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     });
     const steam = new THREE.Points(sGeo, sMat);
     scene.add(steam);
 
     // ─── Embers ───
-<<<<<<< HEAD
-    const eCount = 350;
-=======
     const eCount = 300;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     const eGeo = new THREE.BufferGeometry();
     const ePos = new Float32Array(eCount * 3);
     const eVel = new Float32Array(eCount);
@@ -1438,55 +1005,31 @@
     }
     eGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
     const eMat = new THREE.PointsMaterial({
-<<<<<<< HEAD
-      map: glowTex, color: 0xe88a34, transparent: true, opacity: 0.15,
-=======
       map: glowTex, color: 0xd4c9b0, transparent: true, opacity: 0.12,
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       size: 0.1, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
     });
     const embers = new THREE.Points(eGeo, eMat);
     scene.add(embers);
 
     // ─── Floating Dust ───
-<<<<<<< HEAD
-    const dCount = 600;
-    const dGeo = new THREE.BufferGeometry();
-    const dPos = new Float32Array(dCount * 3);
-    const dSpd = new Float32Array(dCount);
-=======
     const dCount = 500;
     const dGeo = new THREE.BufferGeometry();
     const dPos = new Float32Array(dCount * 3);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     for (let i = 0; i < dCount; i++) {
       dPos[i*3] = (Math.random()-0.5) * 22;
       dPos[i*3+1] = (Math.random()-0.5) * 12;
       dPos[i*3+2] = (Math.random()-0.5) * 18 - 4;
-<<<<<<< HEAD
-      dSpd[i] = 0.015 + Math.random() * 0.04;
-    }
-    dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
-    const dMat = new THREE.PointsMaterial({
-      map: whiteGlow, color: 0xffffff, transparent: true, opacity: 0.03,
-      size: 0.06, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-=======
     }
     dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
     const dMat = new THREE.PointsMaterial({
       map: whiteGlow, color: 0xffffff, transparent: true, opacity: 0.025,
       size: 0.05, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     });
     const dust = new THREE.Points(dGeo, dMat);
     scene.add(dust);
 
     // ─── Golden Sparks ───
-<<<<<<< HEAD
-    const spCount = 180;
-=======
     const spCount = 150;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     const spGeo = new THREE.BufferGeometry();
     const spPos = new Float32Array(spCount * 3);
     const spPh = new Float32Array(spCount);
@@ -1500,13 +1043,8 @@
     }
     spGeo.setAttribute('position', new THREE.BufferAttribute(spPos, 3));
     const spMat = new THREE.PointsMaterial({
-<<<<<<< HEAD
-      map: glowTex, color: 0xf5a623, transparent: true, opacity: 0.3,
-      size: 0.035, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-=======
       map: glowTex, color: 0xc9a94e, transparent: true, opacity: 0.25,
       size: 0.03, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     });
     const sparks = new THREE.Points(spGeo, spMat);
     scene.add(sparks);
@@ -1532,14 +1070,9 @@
       composer.setSize(window.innerWidth, window.innerHeight);
     });
 
-<<<<<<< HEAD
-    // ─── Scroll-Based Navigation Hide ───
-    let lastScroll = 0;
-=======
     // ─── Scroll-Based Navigation ───
     let lastScroll = 0;
     let logoRevealed = false;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     window.addEventListener('scroll', () => {
       const s = window.scrollY;
       const nav = document.getElementById('nav');
@@ -1547,14 +1080,6 @@
       else nav.classList.remove('hidden');
       lastScroll = s;
 
-<<<<<<< HEAD
-      // 3D fade on scroll
-      const opacity = Math.max(0, 1 - s / 400);
-      steam.material.opacity = opacity * 0.08;
-      embers.material.opacity = opacity * 0.15;
-      sparks.material.opacity = opacity * 0.3;
-      bloomPass.strength = 0.15 * opacity;
-=======
       // 3D fade
       const opacity = Math.max(0, 1 - s / 300);
       steam.material.opacity = opacity * 0.06;
@@ -1568,7 +1093,6 @@
       } else if (s < 50) {
         logoRevealed = false;
       }
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
     });
 
     // ─── Animate ───
@@ -1580,19 +1104,13 @@
       mx += (tx - mx) * 0.15;
       my += (ty - my) * 0.15;
 
-<<<<<<< HEAD
-=======
       // ─── 3D Burger ───
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       if (burger) {
         burger.rotation.y = t * 0.08 + mx * 1.2;
         burger.rotation.x = Math.sin(t * 0.08) * 0.03 + my * 0.6;
         burger.position.y = -1.6 + Math.sin(t * 0.6) * 0.07;
       }
 
-<<<<<<< HEAD
-      // Steam
-=======
       // ─── 3D Logo ───
       // Scale in with a spring
       const targetScale = logoRevealed ? 1 : 0;
@@ -1610,7 +1128,6 @@
       logoMat.emissiveIntensity = 0.05 + Math.sin(t * 1.5) * 0.03;
 
       // ─── Steam ───
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       const sp = steam.geometry.attributes.position.array;
       for (let i = 0; i < steamCount; i++) {
         const i3 = i*3;
@@ -1621,11 +1138,7 @@
       }
       steam.geometry.attributes.position.needsUpdate = true;
 
-<<<<<<< HEAD
-      // Embers
-=======
       // ─── Embers ───
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       const ep = embers.geometry.attributes.position.array;
       for (let i = 0; i < eCount; i++) {
         const i3 = i*3;
@@ -1636,11 +1149,7 @@
       }
       embers.geometry.attributes.position.needsUpdate = true;
 
-<<<<<<< HEAD
-      // Dust
-=======
       // ─── Dust ───
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       const dp = dust.geometry.attributes.position.array;
       for (let i = 0; i < dCount; i++) {
         dp[i*3] += Math.sin(t*0.1+i) * 0.002;
@@ -1649,11 +1158,7 @@
       }
       dust.geometry.attributes.position.needsUpdate = true;
 
-<<<<<<< HEAD
-      // Sparks twinkle
-=======
       // ─── Sparks ───
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       const sk = sparks.geometry.attributes.position.array;
       for (let i = 0; i < spCount; i++) {
         const i3 = i*3;
@@ -1662,30 +1167,17 @@
         sk[i3+2] += Math.cos(t*0.3+spPh[i]*0.7) * 0.002;
       }
       sparks.geometry.attributes.position.needsUpdate = true;
-<<<<<<< HEAD
-      sparks.material.size = 0.035 + Math.sin(t*2) * 0.015;
-      sparks.material.opacity = 0.22 + Math.sin(t*1.5+1) * 0.1;
-
-      // Camera
-=======
       sparks.material.size = 0.03 + Math.sin(t*2) * 0.012;
       sparks.material.opacity = 0.18 + Math.sin(t*1.5+1) * 0.08;
 
       // ─── Camera ───
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       camera.position.x += (mx * 4 - camera.position.x) * 0.05;
       camera.position.y += (my * 2.5 + 0.3 - camera.position.y) * 0.05;
       camera.lookAt(0, 0.3, 0);
 
-<<<<<<< HEAD
-      // Lights
-      rimLight.intensity = 1.5 + Math.sin(t*1.3) * 0.12;
-      mainLight.intensity = 2.8 + Math.sin(t*0.6) * 0.08;
-=======
       // ─── Lights ───
       rimLight.intensity = 1.2 + Math.sin(t*1.3) * 0.1;
       mainLight.intensity = 2.5 + Math.sin(t*0.6) * 0.06;
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
 
       composer.render();
     }
@@ -1703,23 +1195,12 @@
         entries.forEach(e => {
           if (e.isIntersecting) {
             e.target.classList.add('visible');
-<<<<<<< HEAD
-            // Count-up animation
-            if (e.target.classList.contains('stat-num') || e.target.dataset.count) {
-              animateCount(e.target);
-            }
-=======
             if (e.target.dataset.count) animateCount(e.target);
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
           }
         });
       }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
       document.querySelectorAll('.reveal, .reveal-s, .reveal-l, .reveal-r').forEach(el => obs.observe(el));
 
-<<<<<<< HEAD
-      // Close mobile nav on link click
-=======
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
       document.querySelectorAll('.links a').forEach(a => {
         a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
       });
@@ -1767,11 +1248,7 @@
       const el = document.getElementById('cartItems');
       const totalEl = document.getElementById('cartTotal');
       if (cart.length === 0) {
-<<<<<<< HEAD
-        el.innerHTML = '<p style="color:rgba(255,255,255,.25);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>';
-=======
         el.innerHTML = '<p style="color:rgba(255,255,255,.2);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>';
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
         totalEl.style.display = 'none';
         return;
       }
@@ -1784,11 +1261,7 @@
           <div class="item">
             <div>
               <div class="name">${item.name}</div>
-<<<<<<< HEAD
-              <div style="font-size:.65rem;color:rgba(255,255,255,.2);margin-top:.2rem">€${item.price.toFixed(2)}</div>
-=======
               <div style="font-size:.65rem;color:rgba(255,255,255,.15);margin-top:.2rem">€${item.price.toFixed(2)}</div>
->>>>>>> c6af59d (Smashie V2: new logo, background image, logo-inspired beige/cream palette, 3D logo in scene)
             </div>
             <div class="qty">
               <button onclick="removeFromCart('${item.name}')">−</button>
