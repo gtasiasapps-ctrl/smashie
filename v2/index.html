@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smashie V2 — Burgers with Soul</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@200;300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─── */
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Inter',sans-serif;
+      background:#070504;color:#fff;overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+    ::-webkit-scrollbar{width:3px}
+    ::-webkit-scrollbar-track{background:#070504}
+    ::-webkit-scrollbar-thumb{background:rgba(232,138,52,.15);border-radius:4px}
+
+    /* ─── Loading Screen ─── */
+    #loader{
+      position:fixed;inset:0;z-index:9999;
+      background:#070504;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      transition:opacity .8s,visibility .8s;
+    }
+    #loader.hidden{opacity:0;visibility:hidden}
+    #loader .logo-text{
+      font-family:'Playfair Display',serif;font-size:3rem;font-weight:800;
+      color:#e88a34;letter-spacing:-.03em;
+    }
+    #loader .bar{
+      width:120px;height:2px;background:rgba(232,138,52,.1);border-radius:2px;
+      margin-top:1.5rem;overflow:hidden;position:relative;
+    }
+    #loader .bar::after{
+      content:'';position:absolute;left:-100%;width:100%;height:100%;
+      background:linear-gradient(90deg,transparent,#e88a34,transparent);
+      animation:loadBar 1.5s ease infinite;
+    }
+    @keyframes loadBar{to{left:100%}}
+
+    /* ─── 3D Canvas ─── */
+    #bg-canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
+
+    /* ─── Content ─── */
+    .content{position:relative;z-index:1}
+
+    /* ─── Nav ─── */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      padding:1.2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;
+      background:rgba(7,5,4,.6);backdrop-filter:blur(40px) saturate(1.5);
+      -webkit-backdrop-filter:blur(40px) saturate(1.5);
+      border-bottom:1px solid rgba(232,138,52,.06);
+      transition:transform .4s cubic-bezier(.16,1,.3,1);
+    }
+    nav.hidden{transform:translateY(-100%)}
+    nav .logo{
+      font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;
+      color:#e88a34;letter-spacing:-.02em;
+    }
+    nav .logo span{color:#fff;margin-right:2px}
+    nav .links{display:flex;gap:2.5rem;align-items:center}
+    nav .links a{
+      color:rgba(255,255,255,.4);text-decoration:none;font-size:.75rem;
+      font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+      transition:color .3s;position:relative;
+    }
+    nav .links a::after{
+      content:'';position:absolute;bottom:-4px;left:0;right:0;
+      height:1px;background:#e88a34;transform:scaleX(0);transition:transform .3s;
+    }
+    nav .links a:hover{color:rgba(255,255,255,.8)}
+    nav .links a:hover::after{transform:scaleX(1)}
+    nav .links .order-btn{
+      padding:.55rem 1.6rem;
+      background:linear-gradient(135deg,#e88a34,#d4712b);
+      border-radius:100px;color:#fff!important;font-weight:600;
+      letter-spacing:.05em;border:none;font-size:.75rem;
+    }
+    nav .links .order-btn::after{display:none}
+    nav .links .order-btn:hover{transform:scale(1.04);box-shadow:0 8px 30px rgba(232,138,52,.25)}
+    .mobile-toggle{display:none;font-size:1.5rem;cursor:pointer;color:rgba(255,255,255,.5);background:none;border:none}
+    @media(max-width:768px){
+      nav{padding:.9rem 1.2rem}
+      nav .links{
+        display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;
+        background:rgba(7,5,4,.98);backdrop-filter:blur(40px);
+        padding:1.5rem;gap:1.2rem;border-bottom:1px solid rgba(232,138,52,.08)
+      }
+      nav .links.open{display:flex}
+      .mobile-toggle{display:block}
+    }
+
+    /* ─── Hero ─── */
+    .hero{
+      min-height:100vh;display:flex;flex-direction:column;
+      justify-content:center;align-items:center;text-align:center;
+      padding:8rem 2rem 4rem;
+    }
+    .hero .tag{
+      display:inline-flex;align-items:center;gap:.6rem;
+      padding:.35rem 1rem;background:rgba(232,138,52,.08);
+      backdrop-filter:blur(20px);border:1px solid rgba(232,138,52,.12);
+      border-radius:100px;font-size:.65rem;font-weight:500;
+      text-transform:uppercase;letter-spacing:.2em;color:#e88a34;
+      margin-bottom:1.8rem;
+      opacity:0;transform:translateY(10px);
+      animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .3s forwards;
+    }
+    .hero .tag .dot{width:4px;height:4px;border-radius:50%;background:#e88a34;animation:pulse 2s ease infinite}
+    .hero h1{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(3.5rem,14vw,9rem);font-weight:800;
+      line-height:.92;letter-spacing:-.04em;
+      opacity:0;transform:translateY(30px);
+      animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .5s forwards;
+    }
+    .hero h1 .accent{background:linear-gradient(135deg,#e88a34,#f5a623,#e88a34);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero .sub{
+      font-size:clamp(.95rem,1.8vw,1.15rem);color:rgba(255,255,255,.35);
+      max-width:460px;line-height:1.7;font-weight:300;
+      margin-top:1.5rem;
+      opacity:0;transform:translateY(20px);
+      animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .7s forwards;
+    }
+    .hero .buttons{
+      margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;
+      opacity:0;transform:translateY(20px);
+      animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .9s forwards;
+    }
+    .hero .btn{
+      padding:1rem 2.5rem;border-radius:100px;font-weight:600;
+      font-size:.85rem;text-decoration:none;transition:all .35s cubic-bezier(.16,1,.3,1);
+      letter-spacing:.03em;cursor:pointer;border:none;
+    }
+    .hero .btn-primary{
+      background:linear-gradient(135deg,#e88a34,#d4712b);color:#fff;
+    }
+    .hero .btn-primary:hover{transform:scale(1.05);box-shadow:0 12px 40px rgba(232,138,52,.25)}
+    .hero .btn-outline{
+      border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);background:transparent;
+    }
+    .hero .btn-outline:hover{border-color:#e88a34;color:#fff;background:rgba(232,138,52,.06)}
+    .scroll-mouse{
+      position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);
+      display:flex;flex-direction:column;align-items:center;gap:.6rem;
+      opacity:0;animation:fadeIn 1s 1.5s forwards;
+    }
+    .scroll-mouse .mouse{
+      width:20px;height:32px;border:1.5px solid rgba(232,138,52,.15);
+      border-radius:10px;position:relative;
+    }
+    .scroll-mouse .mouse::after{
+      content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);
+      width:2px;height:6px;background:#e88a34;border-radius:2px;
+      animation:scrollAnim 2s ease infinite;
+    }
+    .scroll-mouse .label{font-size:.55rem;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.15)}
+
+    /* ─── Marquee ─── */
+    .marquee{
+      overflow:hidden;padding:1rem 0;
+      border-top:1px solid rgba(232,138,52,.04);
+      border-bottom:1px solid rgba(232,138,52,.04);
+      margin:0 2rem;
+    }
+    .marquee-track{
+      display:flex;gap:4rem;white-space:nowrap;
+      animation:marqueeScroll 30s linear infinite;
+    }
+    .marquee-item{
+      font-family:'Playfair Display',serif;
+      font-size:.85rem;color:rgba(232,138,52,.15);
+      text-transform:uppercase;letter-spacing:.3em;
+    }
+    .marquee-item strong{color:rgba(232,138,52,.3);font-weight:600}
+
+    /* ─── Section ─── */
+    section{padding:7rem 2rem;position:relative}
+    .container{max-width:1200px;margin:0 auto}
+    .section-eyebrow{
+      font-size:.65rem;text-transform:uppercase;letter-spacing:.25em;
+      color:rgba(232,138,52,.5);text-align:center;margin-bottom:.8rem;
+      font-weight:500;
+    }
+    .section-title{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2.2rem,5vw,4rem);font-weight:700;
+      margin-bottom:.6rem;text-align:center;letter-spacing:-.03em;
+    }
+    .section-title .accent{background:linear-gradient(135deg,#e88a34,#f5a623);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .section-sub{
+      text-align:center;color:rgba(255,255,255,.35);
+      max-width:520px;margin:0 auto 3.5rem;
+      font-size:.95rem;line-height:1.7;font-weight:300;
+    }
+
+    /* ─── Reveal ─── */
+    .reveal{opacity:0;transform:translateY(50px);transition:all .9s cubic-bezier(.16,1,.3,1)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .reveal-s{opacity:0;transform:scale(.88);transition:all .9s cubic-bezier(.16,1,.3,1)}
+    .reveal-s.visible{opacity:1;transform:scale(1)}
+    .reveal-l{
+      opacity:0;transform:translateX(-40px);
+      transition:all .7s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal-l.visible{opacity:1;transform:translateX(0)}
+    .reveal-r{
+      opacity:0;transform:translateX(40px);
+      transition:all .7s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal-r.visible{opacity:1;transform:translateX(0)}
+
+    /* ─── Glass Card ─── */
+    .glass{
+      background:rgba(255,255,255,.02);
+      backdrop-filter:blur(24px) saturate(1.3);
+      -webkit-backdrop-filter:blur(24px) saturate(1.3);
+      border:1px solid rgba(232,138,52,.05);
+    }
+
+    /* ─── Stats ─── */
+    .stats-row{
+      display:flex;justify-content:center;gap:5rem;flex-wrap:wrap;
+      padding:2.5rem 0;
+    }
+    .stat{text-align:center}
+    .stat-num{
+      font-family:'Playfair Display',serif;
+      font-size:3.5rem;font-weight:700;
+      background:linear-gradient(180deg,#fff,rgba(255,255,255,.4));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .stat .accent-num{
+      background:linear-gradient(135deg,#e88a34,#f5a623);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .stat-label{
+      font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;
+      color:rgba(255,255,255,.25);margin-top:.3rem;font-weight:400;
+    }
+
+    /* ─── Menu ─── */
+    .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto}
+    @media(max-width:1024px){.menu-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:640px){.menu-grid{grid-template-columns:1fr}}
+    .menu-card{
+      background:rgba(0,0,0,.45);backdrop-filter:blur(24px) saturate(1.3);
+      -webkit-backdrop-filter:blur(24px) saturate(1.3);
+      border:1px solid rgba(232,138,52,.05);
+      border-radius:20px;padding:2rem 1.8rem;
+      transition:all .5s cubic-bezier(.16,1,.3,1);text-align:center;
+      position:relative;overflow:hidden;cursor:default;
+    }
+    .menu-card::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 50% 0%,rgba(232,138,52,.04),transparent 70%);
+      opacity:0;transition:opacity .6s;
+    }
+    .menu-card:hover::before{opacity:1}
+    .menu-card:hover{
+      transform:translateY(-8px) scale(1.01);
+      border-color:rgba(232,138,52,.12);
+      box-shadow:0 30px 60px rgba(0,0,0,.5);
+    }
+    .menu-card .badge{
+      display:inline-block;padding:.2rem .6rem;
+      background:rgba(232,138,52,.08);border-radius:4px;
+      font-size:.55rem;font-weight:600;text-transform:uppercase;
+      letter-spacing:.1em;color:#e88a34;margin-bottom:.8rem;
+    }
+    .menu-card h3{
+      font-family:'Playfair Display',serif;
+      font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:.4rem;
+    }
+    .menu-card .desc{
+      font-size:.8rem;color:rgba(255,255,255,.4);line-height:1.5;
+      margin-bottom:1.2rem;font-weight:300;
+    }
+    .menu-card .price-row{
+      display:flex;justify-content:center;align-items:center;gap:1.2rem;
+    }
+    .menu-card .price{font-size:1.6rem;font-weight:700;color:#e88a34}
+    .menu-card .price .cents{font-size:.9rem;font-weight:400;opacity:.7}
+    .menu-card .add-btn{
+      padding:.45rem 1.1rem;border-radius:100px;
+      background:linear-gradient(135deg,#e88a34,#d4712b);color:#fff;
+      font-size:.7rem;font-weight:600;text-decoration:none;
+      transition:all .3s;border:none;cursor:pointer;
+    }
+    .menu-card .add-btn:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(232,138,52,.25)}
+
+    /* ─── Reviews ─── */
+    .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1000px;margin:0 auto}
+    @media(max-width:768px){.reviews-grid{grid-template-columns:1fr}}
+    .review-card{
+      background:rgba(0,0,0,.35);backdrop-filter:blur(20px);
+      border:1px solid rgba(232,138,52,.04);
+      border-radius:16px;padding:1.8rem;
+      transition:all .4s cubic-bezier(.16,1,.3,1);
+    }
+    .review-card:hover{
+      border-color:rgba(232,138,52,.1);
+      transform:translateY(-4px);
+    }
+    .review-card .stars{color:#e88a34;font-size:1rem;margin-bottom:.8rem;letter-spacing:2px}
+    .review-card .text{
+      font-size:.85rem;color:rgba(255,255,255,.5);line-height:1.6;
+      font-weight:300;font-style:italic;
+      margin-bottom:1.2rem;
+    }
+    .review-card .author{
+      display:flex;align-items:center;gap:.7rem;
+    }
+    .review-card .author .avatar{
+      width:32px;height:32px;border-radius:50%;
+      background:linear-gradient(135deg,rgba(232,138,52,.3),rgba(232,138,52,.1));
+      display:flex;align-items:center;justify-content:center;
+      font-size:.7rem;color:#e88a34;font-weight:600;
+    }
+    .review-card .author .name{font-size:.75rem;font-weight:500;color:rgba(255,255,255,.6)}
+    .review-card .author .handle{font-size:.65rem;color:rgba(255,255,255,.2)}
+    .review-card .source{
+      display:inline-flex;align-items:center;gap:.3rem;
+      font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;
+      color:rgba(232,138,52,.3);margin-top:.8rem;
+    }
+
+    /* ─── Gallery ─── */
+    .gallery-grid{
+      display:grid;grid-template-columns:repeat(4,1fr);
+      grid-template-rows:repeat(2,200px);gap:.8rem;
+      max-width:1000px;margin:0 auto;
+    }
+    .gallery-grid .g-item{
+      border-radius:12px;overflow:hidden;position:relative;
+      background:rgba(0,0,0,.3);border:1px solid rgba(232,138,52,.04);
+      transition:all .4s;
+    }
+    .gallery-grid .g-item:hover{transform:scale(1.02);border-color:rgba(232,138,52,.12)}
+    .gallery-grid .g-item:first-child{grid-column:span 2;grid-row:span 2}
+    .gallery-grid .g-item .img-placeholder{
+      width:100%;height:100%;object-fit:cover;
+      display:flex;align-items:center;justify-content:center;
+      font-size:2.5rem;color:rgba(232,138,52,.15);
+      background:linear-gradient(135deg,rgba(232,138,52,.02),rgba(0,0,0,.4));
+    }
+    .gallery-grid .g-item .label{
+      position:absolute;bottom:.8rem;left:.8rem;
+      font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;
+      color:rgba(255,255,255,.25);font-weight:500;
+    }
+    @media(max-width:768px){
+      .gallery-grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,160px)}
+      .gallery-grid .g-item:first-child{grid-column:span 2;grid-row:span 2}
+    }
+
+    /* ─── Experience ─── */
+    .exp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1000px;margin:0 auto}
+    @media(max-width:768px){.exp-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:480px){.exp-grid{grid-template-columns:1fr}}
+    .exp-card{
+      background:rgba(0,0,0,.35);backdrop-filter:blur(24px);
+      border:1px solid rgba(232,138,52,.04);border-radius:16px;
+      padding:2rem 1.5rem;text-align:center;transition:all .4s;
+    }
+    .exp-card:hover{transform:translateY(-5px);border-color:rgba(232,138,52,.1)}
+    .exp-card .icon{font-size:2rem;margin-bottom:.8rem}
+    .exp-card h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;margin-bottom:.4rem;color:#fff}
+    .exp-card p{font-size:.8rem;color:rgba(255,255,255,.4);line-height:1.5;font-weight:300}
+
+    /* ─── Parallax Quote ─── */
+    .parallax-section{
+      padding:8rem 2rem;text-align:center;position:relative;
+      overflow:hidden;
+    }
+    .parallax-section::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at center,rgba(232,138,52,.03),transparent 60%);
+    }
+    .parallax-section blockquote{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(1.5rem,4vw,2.8rem);font-weight:600;
+      max-width:700px;margin:0 auto;line-height:1.3;
+      color:rgba(255,255,255,.7);font-style:italic;
+    }
+    .parallax-section blockquote .accent{color:#e88a34}
+    .parallax-section .attribution{
+      margin-top:1.5rem;font-size:.75rem;color:rgba(255,255,255,.2);font-weight:300;
+    }
+
+    /* ─── Contact ─── */
+    .contact-wrap{
+      display:grid;grid-template-columns:1fr 1fr;gap:2rem;
+      max-width:900px;margin:0 auto;
+    }
+    @media(max-width:640px){.contact-wrap{grid-template-columns:1fr}}
+    .contact-info{display:flex;flex-direction:column;gap:1rem}
+    .contact-item{
+      background:rgba(0,0,0,.35);backdrop-filter:blur(20px);
+      border:1px solid rgba(232,138,52,.04);border-radius:14px;
+      padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.2rem;
+      transition:all .3s;
+    }
+    .contact-item:hover{border-color:rgba(232,138,52,.1)}
+    .contact-item .icon{font-size:1.3rem;width:40px;height:40px;border-radius:50%;background:rgba(232,138,52,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .contact-item .info h4{font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:rgba(232,138,52,.5);margin-bottom:.2rem}
+    .contact-item .info p,.contact-item .info a{font-size:.85rem;color:rgba(255,255,255,.45);text-decoration:none;font-weight:300}
+    .contact-item .info a:hover{color:#e88a34}
+    .hours-card{
+      background:rgba(0,0,0,.35);backdrop-filter:blur(20px);
+      border:1px solid rgba(232,138,52,.04);border-radius:14px;
+      padding:1.5rem;
+    }
+    .hours-card h4{
+      font-family:'Playfair Display',serif;
+      font-size:1rem;font-weight:600;color:#fff;margin-bottom:1rem;
+    }
+    .hours-card .row{display:flex;justify-content:space-between;padding:.4rem 0;font-size:.8rem;color:rgba(255,255,255,.4);font-weight:300}
+    .hours-card .row .day{color:rgba(255,255,255,.25)}
+    .hours-card .row .time{font-weight:400}
+    .social-links{display:flex;justify-content:center;gap:1rem;margin-top:2rem}
+    .social-links a{
+      width:44px;height:44px;border-radius:50%;
+      border:1px solid rgba(232,138,52,.08);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.2rem;text-decoration:none;color:rgba(232,138,52,.3);
+      transition:all .3s;
+    }
+    .social-links a:hover{border-color:#e88a34;color:#e88a34;transform:translateY(-3px)}
+
+    footer{
+      text-align:center;padding:2.5rem;
+      border-top:1px solid rgba(232,138,52,.03);
+      font-size:.75rem;color:rgba(255,255,255,.15);font-weight:300;
+    }
+    footer .made-by{color:rgba(232,138,52,.5)}
+
+    /* ─── Order Modal ─── */
+    #orderModal{
+      position:fixed;inset:0;z-index:200;
+      display:none;align-items:center;justify-content:center;
+      padding:1rem;
+    }
+    #orderModal.active{display:flex}
+    #orderModal .overlay{
+      position:absolute;inset:0;background:rgba(0,0,0,.8);
+      backdrop-filter:blur(20px);
+    }
+    #orderModal .modal{
+      position:relative;max-width:500px;width:100%;
+      background:rgba(10,8,6,.95);backdrop-filter:blur(40px);
+      border:1px solid rgba(232,138,52,.1);
+      border-radius:20px;padding:2.5rem;z-index:1;
+      transform:scale(.9);opacity:0;transition:all .4s cubic-bezier(.16,1,.3,1);
+    }
+    #orderModal.active .modal{transform:scale(1);opacity:1}
+    #orderModal .modal .close{
+      position:absolute;top:1rem;right:1.2rem;font-size:1.5rem;
+      color:rgba(255,255,255,.2);cursor:pointer;background:none;border:none;
+      transition:color .3s;
+    }
+    #orderModal .modal .close:hover{color:#e88a34}
+    #orderModal .modal h2{
+      font-family:'Playfair Display',serif;
+      font-size:1.6rem;font-weight:700;margin-bottom:.3rem;
+    }
+    #orderModal .modal .sub{font-size:.8rem;color:rgba(255,255,255,.35);margin-bottom:1.5rem}
+    #orderModal .modal .item{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:.8rem 0;border-bottom:1px solid rgba(232,138,52,.04);
+    }
+    #orderModal .modal .item .name{font-size:.85rem;color:rgba(255,255,255,.6)}
+    #orderModal .modal .item .qty{
+      display:flex;align-items:center;gap:.6rem;
+    }
+    #orderModal .modal .item .qty button{
+      width:26px;height:26px;border-radius:50%;
+      border:1px solid rgba(232,138,52,.1);background:transparent;
+      color:#e88a34;cursor:pointer;font-size:.85rem;
+      transition:all .3s;display:flex;align-items:center;justify-content:center;
+    }
+    #orderModal .modal .item .qty button:hover{background:rgba(232,138,52,.1)}
+    #orderModal .modal .item .qty span{font-size:.85rem;color:#fff;min-width:20px;text-align:center}
+    #orderModal .modal .item .price-opt{font-size:.85rem;color:#e88a34;font-weight:600}
+    #orderModal .modal .total{
+      display:flex;justify-content:space-between;
+      padding:1rem 0;font-size:1rem;font-weight:600;
+      border-top:1px solid rgba(232,138,52,.1);margin-top:.5rem;
+    }
+    #orderModal .modal .total .amount{color:#e88a34}
+    #orderModal .modal .checkout-btn{
+      width:100%;padding:1rem;border-radius:100px;
+      background:linear-gradient(135deg,#e88a34,#d4712b);
+      color:#fff;font-weight:600;font-size:.9rem;
+      border:none;cursor:pointer;transition:all .3s;
+      margin-top:.5rem;
+    }
+    #orderModal .modal .checkout-btn:hover{transform:scale(1.02);box-shadow:0 8px 30px rgba(232,138,52,.25)}
+
+    /* ─── Animations ─── */
+    @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{to{opacity:1}}
+    @keyframes scrollAnim{0%,100%{transform:translateX(-50%) translateY(0);opacity:1}50%{transform:translateX(-50%) translateY(6px);opacity:.3}}
+    @keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    @keyframes glitch{0%{clip-path:inset(40% 0 61% 0);transform:translate(-2px,2px)}20%{clip-path:inset(92% 0 1% 0);transform:translate(1px,-1px)}40%{clip-path:inset(43% 0 1% 0);transform:translate(-1px,2px)}60%{clip-path:inset(25% 0 58% 0);transform:translate(2px,1px)}80%{clip-path:inset(54% 0 7% 0);transform:translate(-2px,-1px)}to{clip-path:inset(58% 0 43% 0);transform:translate(0)}}
+  </style>
+</head>
+<body>
+
+  <!-- ─── Loader ─── -->
+  <div id="loader">
+    <div class="logo-text">Smashie.</div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- ─── 3D Canvas ─── -->
+  <div id="bg-canvas"></div>
+
+  <!-- ─── Nav ─── -->
+  <nav id="nav">
+    <div class="logo"><span>S</span>mashie.</div>
+    <div class="links" id="navLinks">
+      <a href="#menu">Menu</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact">Contact</a>
+      <a href="#" class="order-btn" onclick="openOrderModal();return false">Order Now</a>
+    </div>
+    <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+  </nav>
+
+  <div class="content">
+
+    <!-- ─── Hero ─── -->
+    <section class="hero">
+      <div class="tag"><span class="dot"></span> Est. 2025 · Athens</div>
+      <h1>
+        Smash<br>
+        <span class="accent">Perfection.</span>
+      </h1>
+      <p class="sub">Angus beef, aged cheddar, caramelized onions. Every bite is a moment.</p>
+      <div class="buttons">
+        <a href="#menu" class="btn btn-primary">Explore Menu</a>
+        <a href="#reviews" class="btn btn-outline">See Reviews</a>
+      </div>
+      <div class="scroll-mouse">
+        <div class="mouse"></div>
+        <span class="label">Scroll</span>
+      </div>
+    </section>
+
+    <!-- ─── Marquee ─── -->
+    <div class="marquee">
+      <div class="marquee-track">
+        <span class="marquee-item">✦ <strong>100%</strong> Angus Beef</span>
+        <span class="marquee-item">✦ <strong>Smashed</strong> at 197°</span>
+        <span class="marquee-item">✦ <strong>Aged</strong> Artisan Cheese</span>
+        <span class="marquee-item">✦ <strong>Fresh</strong> Brioche Daily</span>
+        <span class="marquee-item">✦ <strong>Cast Iron</strong> Griddle</span>
+        <span class="marquee-item">✦ <strong>4.9</strong> ★ Rating</span>
+        <span class="marquee-item">✦ <strong>100%</strong> Angus Beef</span>
+        <span class="marquee-item">✦ <strong>Smashed</strong> at 197°</span>
+        <span class="marquee-item">✦ <strong>Aged</strong> Artisan Cheese</span>
+        <span class="marquee-item">✦ <strong>Fresh</strong> Brioche Daily</span>
+        <span class="marquee-item">✦ <strong>Cast Iron</strong> Griddle</span>
+        <span class="marquee-item">✦ <strong>4.9</strong> ★ Rating</span>
+      </div>
+    </div>
+
+    <!-- ─── Stats ─── -->
+    <section style="padding:2.5rem 2rem">
+      <div class="stats-row container">
+        <div class="stat reveal"><div class="stat-num accent-num" data-count="100">0<span>%</span></div><div class="stat-label">Angus Beef</div></div>
+        <div class="stat reveal"><div class="stat-num accent-num" data-count="12">0</div><div class="stat-label">Signature Burgers</div></div>
+        <div class="stat reveal"><div class="stat-num" data-count="4.9">0</div><div class="stat-label">★ Rating</div></div>
+        <div class="stat reveal"><div class="stat-num" data-count="197">0<span>°</span></div><div class="stat-label">Grill Temp</div></div>
+      </div>
+    </section>
+
+    <!-- ─── Menu ─── -->
+    <section id="menu" class="container">
+      <p class="section-eyebrow reveal">Signature Selection</p>
+      <h2 class="section-title reveal-s">The <span class="accent">Menu</span></h2>
+      <p class="section-sub reveal">Crafted with premium ingredients. Smashed to perfection. Served with soul.</p>
+      <div class="menu-grid">
+        <div class="menu-card reveal">
+          <div class="badge">Best Seller</div>
+          <h3>The Classic Smash</h3>
+          <p class="desc">Double Angus patty, aged cheddar, pickles, secret sauce, brioche bun</p>
+          <div class="price-row">
+            <span class="price">12<span class="cents">.90</span></span>
+            <button class="add-btn" onclick="addToCart('The Classic Smash',12.9)">Add</button>
+          </div>
+        </div>
+        <div class="menu-card reveal">
+          <div class="badge">Spicy</div>
+          <h3>Smoke &amp; Fire</h3>
+          <p class="desc">Smoked brisket patty, jalapeños, pepper jack, chipotle aioli, toasted brioche</p>
+          <div class="price-row">
+            <span class="price">15<span class="cents">.50</span></span>
+            <button class="add-btn" onclick="addToCart('Smoke & Fire',15.5)">Add</button>
+          </div>
+        </div>
+        <div class="menu-card reveal">
+          <div class="badge">For Two</div>
+          <h3>Double Trouble</h3>
+          <p class="desc">Two smashed patties, double cheese, bacon jam, caramelized onions, garlic aioli</p>
+          <div class="price-row">
+            <span class="price">16<span class="cents">.90</span></span>
+            <button class="add-btn" onclick="addToCart('Double Trouble',16.9)">Add</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(232,138,52,.12),transparent)"></div>
+
+    <!-- ─── Gallery ─── -->
+    <section class="container">
+      <p class="section-eyebrow reveal">The Visuals</p>
+      <h2 class="section-title reveal-s">Our <span class="accent">Kitchen</span></h2>
+      <p class="section-sub reveal">Where the magic happens — from griddle to plate.</p>
+      <div class="gallery-grid">
+        <div class="g-item reveal-s">
+          <div class="img-placeholder">🍔</div>
+          <span class="label">Signature Smash</span>
+        </div>
+        <div class="g-item reveal">
+          <div class="img-placeholder">🥩</div>
+          <span class="label">Angus Patties</span>
+        </div>
+        <div class="g-item reveal">
+          <div class="img-placeholder">🧀</div>
+          <span class="label">Aged Cheese</span>
+        </div>
+        <div class="g-item reveal">
+          <div class="img-placeholder">🍞</div>
+          <span class="label">Fresh Brioche</span>
+        </div>
+        <div class="g-item reveal">
+          <div class="img-placeholder">🔥</div>
+          <span class="label">Cast Iron</span>
+        </div>
+      </div>
+    </section>
+
+    <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(232,138,52,.12),transparent)"></div>
+
+    <!-- ─── Reviews ─── -->
+    <section id="reviews" class="container">
+      <p class="section-eyebrow reveal">What They Say</p>
+      <h2 class="section-title reveal-s">Customer <span class="accent">Love</span></h2>
+      <p class="section-sub reveal">Real reviews from real people who love a great smash.</p>
+      <div class="reviews-grid">
+        <div class="review-card reveal">
+          <div class="stars">★★★★★</div>
+          <p class="text">"Best burger in Athens. The Double Trouble is absolutely insane — the bacon jam alone is worth the visit."</p>
+          <div class="author">
+            <div class="avatar">AK</div>
+            <div><div class="name">Alex K.</div><div class="handle">@alex_eats</div></div>
+          </div>
+          <div class="source">Google Reviews</div>
+        </div>
+        <div class="review-card reveal">
+          <div class="stars">★★★★★</div>
+          <p class="text">"Finally, a smash burger that actually has crispy edges. The brioche is pillowy perfection. 10/10."</p>
+          <div class="author">
+            <div class="avatar">MC</div>
+            <div><div class="name">Maria C.</div><div class="handle">@maria_foodie</div></div>
+          </div>
+          <div class="source">TripAdvisor</div>
+        </div>
+        <div class="review-card reveal">
+          <div class="stars">★★★★★</div>
+          <p class="text">"The Smoke & Fire changed my life. Perfect amount of heat, the chipotle aioli is next level."</p>
+          <div class="author">
+            <div class="avatar">DP</div>
+            <div><div class="name">Dimitris P.</div><div class="handle">@dimibites</div></div>
+          </div>
+          <div class="source">Google Reviews</div>
+        </div>
+      </div>
+    </section>
+
+    <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(232,138,52,.12),transparent)"></div>
+
+    <!-- ─── Experience ─── -->
+    <section id="experience" class="container">
+      <p class="section-eyebrow reveal">Craft &amp; Care</p>
+      <h2 class="section-title reveal-s">The <span class="accent">Experience</span></h2>
+      <p class="section-sub reveal">Every detail matters. From sourcing to griddle to your plate.</p>
+      <div class="exp-grid">
+        <div class="exp-card reveal"><div class="icon">🥩</div><h4>Premium Angus</h4><p>100% fresh Angus beef, ground daily, smashed at 197° on a cast-iron flat-top.</p></div>
+        <div class="exp-card reveal"><div class="icon">🧀</div><h4>Aged Cheese</h4><p>Affineur-selected cheddar, Gruyère, and smoked Gouda. No processed slices.</p></div>
+        <div class="exp-card reveal"><div class="icon">🍞</div><h4>Brioche Perfection</h4><p>Egg-washed, sesame-seeded brioche buns baked fresh every morning.</p></div>
+        <div class="exp-card reveal"><div class="icon">🔥</div><h4>Cast Iron Smash</h4><p>Thin, lacy, crispy edges. A Maillard reaction masterpiece on every patty.</p></div>
+      </div>
+    </section>
+
+    <!-- ─── Parallax Quote ─── -->
+    <section class="parallax-section">
+      <blockquote class="reveal-s">
+        "A <span class="accent">smash burger</span> isn't just food.<br>It's a <span class="accent">moment</span>."
+      </blockquote>
+      <p class="attribution reveal">— Smashie Kitchen, Athens</p>
+    </section>
+
+    <!-- ─── Contact ─── -->
+    <section id="contact" class="container">
+      <p class="section-eyebrow reveal">Get in Touch</p>
+      <h2 class="section-title reveal-s">Find <span class="accent">Us</span></h2>
+      <p class="section-sub reveal">Come taste the difference. Walk-ins welcome.</p>
+      <div class="contact-wrap">
+        <div class="contact-info">
+          <div class="contact-item reveal-l">
+            <div class="icon">📍</div>
+            <div class="info"><h4>Address</h4><p>25 Kolokotroni Street, Athens, Greece</p></div>
+          </div>
+          <div class="contact-item reveal-l">
+            <div class="icon">📞</div>
+            <div class="info"><h4>Call</h4><p>+30 210 000 0000</p></div>
+          </div>
+          <div class="contact-item reveal-l">
+            <div class="icon">📱</div>
+            <div class="info"><h4>Order Online</h4><a href="#" onclick="openOrderModal();return false">order@smashie.gr</a></div>
+          </div>
+        </div>
+        <div class="hours-card reveal-r">
+          <h4>Opening Hours</h4>
+          <div class="row"><span class="day">Mon — Fri</span><span class="time">11:00 — 23:00</span></div>
+          <div class="row"><span class="day">Saturday</span><span class="time">12:00 — 00:00</span></div>
+          <div class="row"><span class="day">Sunday</span><span class="time">13:00 — 22:00</span></div>
+          <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(232,138,52,.04);display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:rgba(232,138,52,.4)">
+            <span style="width:6px;height:6px;border-radius:50%;background:#2d8a2d;display:inline-block"></span>
+            Open now
+          </div>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="#" target="_blank">📸</a>
+        <a href="#" target="_blank">📘</a>
+        <a href="#" target="_blank">🐦</a>
+        <a href="#" target="_blank">🔗</a>
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2026 Smashie · Burgers with Soul</p>
+      <p class="made-by" style="margin-top:.4rem">Made by Mac 🍜</p>
+    </footer>
+
+  </div>
+
+  <!-- ─── Order Modal ─── -->
+  <div id="orderModal">
+    <div class="overlay" onclick="closeOrderModal()"></div>
+    <div class="modal">
+      <button class="close" onclick="closeOrderModal()">✕</button>
+      <h2>Your Order</h2>
+      <p class="sub">Smashie · Pickup &amp; Delivery</p>
+      <div id="cartItems">
+        <p style="color:rgba(255,255,255,.25);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>
+      </div>
+      <div id="cartTotal" style="display:none">
+        <div class="total"><span>Total</span><span class="amount" id="totalAmount">€0.00</span></div>
+        <button class="checkout-btn">Place Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Three.js ─── -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+    const canvas = document.getElementById('bg-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(38, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    canvas.appendChild(renderer.domElement);
+
+    // ─── Post-Processing ───
+    const composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      0.15, 0.05, 0.1
+    );
+    composer.addPass(bloomPass);
+
+    // ─── Lights ───
+    const ambient = new THREE.AmbientLight(0x222222, 0.7);
+    scene.add(ambient);
+
+    const mainLight = new THREE.DirectionalLight(0xffeedd, 2.8);
+    mainLight.position.set(5, 8, 4);
+    mainLight.castShadow = true;
+    mainLight.shadow.mapSize.width = 1024;
+    mainLight.shadow.mapSize.height = 1024;
+    scene.add(mainLight);
+
+    const fillLight = new THREE.DirectionalLight(0xaaccff, 0.4);
+    fillLight.position.set(-4, 2, -3);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xe88a34, 1.5);
+    rimLight.position.set(-2, 1, 5);
+    scene.add(rimLight);
+
+    const backLight = new THREE.DirectionalLight(0xe88a34, 0.5);
+    backLight.position.set(0, -2, -5);
+    scene.add(backLight);
+
+    // ─── Ground ───
+    const groundGeo = new THREE.PlaneGeometry(20, 20);
+    const groundMat = new THREE.ShadowMaterial({ opacity: 0.25 });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -1.8;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // ─── Load Burger ───
+    let burger = null;
+    const loader = new GLTFLoader();
+    loader.load(
+      'burger.glb',
+      (gltf) => {
+        burger = gltf.scene;
+        burger.scale.set(0.085, 0.085, 0.085);
+        burger.position.y = -1.6;
+        burger.position.z = 0;
+        burger.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        scene.add(burger);
+        // Hide loader
+        document.getElementById('loader').classList.add('hidden');
+      },
+      undefined,
+      () => {
+        document.getElementById('loader').classList.add('hidden');
+      }
+    );
+
+    // ─── Particle textures ───
+    function makeGlowTex(color, size) {
+      const c = document.createElement('canvas');
+      c.width = c.height = size;
+      const ctx = c.getContext('2d');
+      const g = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+      g.addColorStop(0, 'rgba(255,255,255,1)');
+      g.addColorStop(0.15, 'rgba(255,255,255,0.8)');
+      g.addColorStop(0.4, `rgba(232,138,52,0.3)`);
+      g.addColorStop(0.7, 'rgba(232,138,52,0.05)');
+      g.addColorStop(1, 'rgba(232,138,52,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, size, size);
+      return new THREE.CanvasTexture(c);
+    }
+    const glowTex = makeGlowTex('#e88a34', 64);
+    const whiteGlow = makeGlowTex('#fff', 64);
+
+    // ─── Steam ───
+    const steamCount = 500;
+    const sGeo = new THREE.BufferGeometry();
+    const sPos = new Float32Array(steamCount * 3);
+    const sVel = new Float32Array(steamCount);
+    const sPh = new Float32Array(steamCount);
+    for (let i = 0; i < steamCount; i++) {
+      sPos[i*3] = (Math.random()-0.5) * 3.5;
+      sPos[i*3+1] = 1.4 + Math.random() * 3;
+      sPos[i*3+2] = (Math.random()-0.5) * 3.5;
+      sVel[i] = 0.12 + Math.random() * 0.28;
+      sPh[i] = Math.random() * Math.PI * 2;
+    }
+    sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+    const sMat = new THREE.PointsMaterial({
+      map: whiteGlow, color: 0xffffff, transparent: true, opacity: 0.08,
+      size: 0.22, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    });
+    const steam = new THREE.Points(sGeo, sMat);
+    scene.add(steam);
+
+    // ─── Embers ───
+    const eCount = 350;
+    const eGeo = new THREE.BufferGeometry();
+    const ePos = new Float32Array(eCount * 3);
+    const eVel = new Float32Array(eCount);
+    const ePh = new Float32Array(eCount);
+    for (let i = 0; i < eCount; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 1.5 + Math.random() * 7;
+      ePos[i*3] = Math.cos(a) * r;
+      ePos[i*3+1] = -2 + Math.random() * 4.5;
+      ePos[i*3+2] = Math.sin(a) * r;
+      eVel[i] = 0.06 + Math.random() * 0.2;
+      ePh[i] = Math.random() * Math.PI * 2;
+    }
+    eGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
+    const eMat = new THREE.PointsMaterial({
+      map: glowTex, color: 0xe88a34, transparent: true, opacity: 0.15,
+      size: 0.1, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    });
+    const embers = new THREE.Points(eGeo, eMat);
+    scene.add(embers);
+
+    // ─── Floating Dust ───
+    const dCount = 600;
+    const dGeo = new THREE.BufferGeometry();
+    const dPos = new Float32Array(dCount * 3);
+    const dSpd = new Float32Array(dCount);
+    for (let i = 0; i < dCount; i++) {
+      dPos[i*3] = (Math.random()-0.5) * 22;
+      dPos[i*3+1] = (Math.random()-0.5) * 12;
+      dPos[i*3+2] = (Math.random()-0.5) * 18 - 4;
+      dSpd[i] = 0.015 + Math.random() * 0.04;
+    }
+    dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
+    const dMat = new THREE.PointsMaterial({
+      map: whiteGlow, color: 0xffffff, transparent: true, opacity: 0.03,
+      size: 0.06, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    });
+    const dust = new THREE.Points(dGeo, dMat);
+    scene.add(dust);
+
+    // ─── Golden Sparks ───
+    const spCount = 180;
+    const spGeo = new THREE.BufferGeometry();
+    const spPos = new Float32Array(spCount * 3);
+    const spPh = new Float32Array(spCount);
+    for (let i = 0; i < spCount; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 1 + Math.random() * 5;
+      spPos[i*3] = Math.cos(a) * r;
+      spPos[i*3+1] = -0.8 + Math.random() * 4.5;
+      spPos[i*3+2] = Math.sin(a) * r - 0.5;
+      spPh[i] = Math.random() * Math.PI * 2;
+    }
+    spGeo.setAttribute('position', new THREE.BufferAttribute(spPos, 3));
+    const spMat = new THREE.PointsMaterial({
+      map: glowTex, color: 0xf5a623, transparent: true, opacity: 0.3,
+      size: 0.035, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+    });
+    const sparks = new THREE.Points(spGeo, spMat);
+    scene.add(sparks);
+
+    camera.position.set(0, 0.3, 7.8);
+    camera.lookAt(0, 0.3, 0);
+
+    // ─── Mouse ───
+    let mx = 0, my = 0, tx = 0, ty = 0;
+    document.addEventListener('mousemove', e => {
+      tx = (e.clientX / window.innerWidth) * 2 - 1;
+      ty = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+    document.addEventListener('touchmove', e => {
+      const t = e.touches[0];
+      if (t) { tx = (t.clientX/window.innerWidth)*2-1; ty = -(t.clientY/window.innerHeight)*2+1; }
+    }, { passive: true });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      composer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ─── Scroll-Based Navigation Hide ───
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+      const s = window.scrollY;
+      const nav = document.getElementById('nav');
+      if (s > lastScroll && s > 80) nav.classList.add('hidden');
+      else nav.classList.remove('hidden');
+      lastScroll = s;
+
+      // 3D fade on scroll
+      const opacity = Math.max(0, 1 - s / 400);
+      steam.material.opacity = opacity * 0.08;
+      embers.material.opacity = opacity * 0.15;
+      sparks.material.opacity = opacity * 0.3;
+      bloomPass.strength = 0.15 * opacity;
+    });
+
+    // ─── Animate ───
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      mx += (tx - mx) * 0.15;
+      my += (ty - my) * 0.15;
+
+      if (burger) {
+        burger.rotation.y = t * 0.08 + mx * 1.2;
+        burger.rotation.x = Math.sin(t * 0.08) * 0.03 + my * 0.6;
+        burger.position.y = -1.6 + Math.sin(t * 0.6) * 0.07;
+      }
+
+      // Steam
+      const sp = steam.geometry.attributes.position.array;
+      for (let i = 0; i < steamCount; i++) {
+        const i3 = i*3;
+        sp[i3] += Math.sin(t + sPh[i]) * 0.002;
+        sp[i3+1] += sVel[i] * 0.007;
+        sp[i3+2] += Math.cos(t*0.5 + sPh[i]) * 0.002;
+        if (sp[i3+1] > 4.5) { sp[i3] = (Math.random()-0.5)*3; sp[i3+1] = 1.4; sp[i3+2] = (Math.random()-0.5)*3; }
+      }
+      steam.geometry.attributes.position.needsUpdate = true;
+
+      // Embers
+      const ep = embers.geometry.attributes.position.array;
+      for (let i = 0; i < eCount; i++) {
+        const i3 = i*3;
+        ep[i3] += Math.sin(t*0.3 + ePh[i]) * 0.004;
+        ep[i3+1] += eVel[i] * 0.005;
+        ep[i3+2] += Math.cos(t*0.4 + ePh[i]) * 0.004;
+        if (ep[i3+1] > 3.5) { const a=Math.random()*Math.PI*2; const r=1.5+Math.random()*5; ep[i3]=Math.cos(a)*r; ep[i3+1]=-1.5; ep[i3+2]=Math.sin(a)*r; }
+      }
+      embers.geometry.attributes.position.needsUpdate = true;
+
+      // Dust
+      const dp = dust.geometry.attributes.position.array;
+      for (let i = 0; i < dCount; i++) {
+        dp[i*3] += Math.sin(t*0.1+i) * 0.002;
+        dp[i*3+1] += Math.sin(t*0.08+i*0.5) * 0.001;
+        dp[i*3+2] += Math.cos(t*0.05+i*0.3) * 0.001;
+      }
+      dust.geometry.attributes.position.needsUpdate = true;
+
+      // Sparks twinkle
+      const sk = sparks.geometry.attributes.position.array;
+      for (let i = 0; i < spCount; i++) {
+        const i3 = i*3;
+        sk[i3] += Math.sin(t*0.5+spPh[i]) * 0.002;
+        sk[i3+1] += Math.sin(t*0.4+spPh[i]*1.3) * 0.003;
+        sk[i3+2] += Math.cos(t*0.3+spPh[i]*0.7) * 0.002;
+      }
+      sparks.geometry.attributes.position.needsUpdate = true;
+      sparks.material.size = 0.035 + Math.sin(t*2) * 0.015;
+      sparks.material.opacity = 0.22 + Math.sin(t*1.5+1) * 0.1;
+
+      // Camera
+      camera.position.x += (mx * 4 - camera.position.x) * 0.05;
+      camera.position.y += (my * 2.5 + 0.3 - camera.position.y) * 0.05;
+      camera.lookAt(0, 0.3, 0);
+
+      // Lights
+      rimLight.intensity = 1.5 + Math.sin(t*1.3) * 0.12;
+      mainLight.intensity = 2.8 + Math.sin(t*0.6) * 0.08;
+
+      composer.render();
+    }
+    animate();
+  </script>
+
+  <!-- ─── Vanilla JS ─── -->
+  <script>
+    // ─── Loader timeout fallback ───
+    setTimeout(() => document.getElementById('loader').classList.add('hidden'), 5000);
+
+    // ─── Scroll Reveal ───
+    document.addEventListener('DOMContentLoaded', () => {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            // Count-up animation
+            if (e.target.classList.contains('stat-num') || e.target.dataset.count) {
+              animateCount(e.target);
+            }
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+      document.querySelectorAll('.reveal, .reveal-s, .reveal-l, .reveal-r').forEach(el => obs.observe(el));
+
+      // Close mobile nav on link click
+      document.querySelectorAll('.links a').forEach(a => {
+        a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
+      });
+    });
+
+    // ─── Count-Up ───
+    function animateCount(el) {
+      if (el.dataset.animated) return;
+      el.dataset.animated = 'true';
+      const target = parseFloat(el.dataset.count);
+      const suffix = el.querySelector('span')?.outerHTML || '';
+      const isDecimal = target % 1 !== 0;
+      const duration = 2000;
+      const start = performance.now();
+      function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = target * eased;
+        if (isDecimal) el.textContent = val.toFixed(1) + suffix;
+        else el.textContent = Math.round(val) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = target + suffix;
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ─── Cart ───
+    let cart = [];
+    function addToCart(name, price) {
+      const existing = cart.find(i => i.name === name);
+      if (existing) existing.qty++;
+      else cart.push({ name, price, qty: 1 });
+      renderCart();
+      openOrderModal();
+    }
+    function removeFromCart(name) {
+      const idx = cart.findIndex(i => i.name === name);
+      if (idx > -1) {
+        cart[idx].qty--;
+        if (cart[idx].qty <= 0) cart.splice(idx, 1);
+      }
+      renderCart();
+    }
+    function renderCart() {
+      const el = document.getElementById('cartItems');
+      const totalEl = document.getElementById('cartTotal');
+      if (cart.length === 0) {
+        el.innerHTML = '<p style="color:rgba(255,255,255,.25);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>';
+        totalEl.style.display = 'none';
+        return;
+      }
+      let html = '';
+      let total = 0;
+      cart.forEach(item => {
+        const itemTotal = item.price * item.qty;
+        total += itemTotal;
+        html += `
+          <div class="item">
+            <div>
+              <div class="name">${item.name}</div>
+              <div style="font-size:.65rem;color:rgba(255,255,255,.2);margin-top:.2rem">€${item.price.toFixed(2)}</div>
+            </div>
+            <div class="qty">
+              <button onclick="removeFromCart('${item.name}')">−</button>
+              <span>${item.qty}</span>
+              <button onclick="addToCart('${item.name}',${item.price})">+</button>
+              <span class="price-opt">€${itemTotal.toFixed(2)}</span>
+            </div>
+          </div>`;
+      });
+      el.innerHTML = html;
+      totalEl.style.display = 'block';
+      document.getElementById('totalAmount').textContent = '€' + total.toFixed(2);
+    }
+
+    function openOrderModal() {
+      document.getElementById('orderModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeOrderModal() {
+      document.getElementById('orderModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeOrderModal();
+    });
+  </script>
+
+</body>
+</html>
