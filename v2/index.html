@@ -873,22 +873,7 @@
 
 
 
-    // ─── Load Burger ───
-    let burger = null;
-    new GLTFLoader().load(
-      'burger.glb',
-      (gltf) => {
-        burger = gltf.scene;
-        burger.scale.set(0.085, 0.085, 0.085);
-        burger.position.y = -1.6;
-        burger.position.z = 0;
-        burger.traverse((child) => { if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; } });
-        scene.add(burger);
-        document.getElementById('loader').classList.add('hidden');
-      },
-      undefined,
-      () => { document.getElementById('loader').classList.add('hidden'); }
-    );
+
 
     // ─── 3D Logo ───
     const logoTexture = new THREE.TextureLoader().load('logo-2.png');
