@@ -34,14 +34,14 @@
     }
 
     /* ─── Background Image ─── */
-    #bg-backdrop{
+    #bg-scrim{
       position:fixed;inset:0;z-index:0;pointer-events:none;
       background:url('smashie_background.jpg') center/cover no-repeat fixed;
-      filter:brightness(0.45) saturate(0.4);
+      filter:brightness(0.5) saturate(0.5);
     }
-    #bg-backdrop::after{
-      content:'';position:absolute;inset:0;pointer-events:none;
-      background:linear-gradient(180deg,rgba(10,9,8,.6) 0%,rgba(10,9,8,.2) 40%,rgba(10,9,8,.4) 70%,rgba(10,9,8,.7) 100%);
+    #bg-scrim .overlay{
+      position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(180deg,rgba(10,9,8,.5) 0%,rgba(10,9,8,.15) 40%,rgba(10,9,8,.3) 70%,rgba(10,9,8,.6) 100%);
     }
     #bg-canvas{
       position:fixed;top:0;left:0;width:100vw;height:100vh;
@@ -75,7 +75,7 @@
     @keyframes loadBar{to{left:100%}}
 
     /* ─── 3D Canvas ─── */
-    #bg-canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1;pointer-events:none}
+
 
     /* ─── Content ─── */
     .content{position:relative;z-index:1}
@@ -550,7 +550,9 @@
 <body>
 
   <!-- ─── Background Backdrop ─── -->
-  <div id="bg-backdrop"></div>
+  <div id="bg-scrim">
+    <div class="overlay"></div>
+  </div>
 
   <!-- ─── Loader ─── -->
   <div id="loader">
