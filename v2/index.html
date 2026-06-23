@@ -3,94 +3,127 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Smashie V2</title>
+<title>Smashie V2 — Burgers with Soul</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{
-  font-family:'Inter',sans-serif;
-  background:#0a0908;color:#fff;overflow-x:hidden;
-}
+body{font-family:'Inter',sans-serif;background:#0a0908;color:#fff;overflow-x:hidden}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:#0a0908}
 ::-webkit-scrollbar-thumb{background:rgba(212,201,176,.15);border-radius:4px}
-:root{
-  --cream:#f0ebe0;
-  --beige:#d4c9b0;
-  --gold:#c9a94e;
-  --light-cream:#f5f0e5;
-  --dark:#0a0908;
-  --border:rgba(212,201,176,.08);
-}
-#bg-scrim{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:url('smashie_background.jpg') center/cover no-repeat fixed;
-  filter:brightness(0.5) saturate(0.5);
-}
-#bg-scrim .overlay{
-  position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(180deg,rgba(10,9,8,.5),rgba(10,9,8,.15) 40%,rgba(10,9,8,.3) 70%,rgba(10,9,8,.6));
-}
-#bg-canvas{
-  position:fixed;top:0;left:0;width:100vw;height:100vh;
-  z-index:0;pointer-events:none;
-}
+:root{--cream:#f0ebe0;--beige:#d4c9b0;--gold:#c9a94e;--light-cream:#f5f0e5;--dark:#0a0908;--border:rgba(212,201,176,.08)}
+
+/* Background */
+#bg-scrim{position:fixed;inset:0;z-index:0;pointer-events:none;background:url('smashie_background.jpg') center/cover no-repeat fixed;filter:brightness(0.5) saturate(0.5)}
+#bg-scrim .overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(10,9,8,.5),rgba(10,9,8,.15) 40%,rgba(10,9,8,.3) 70%,rgba(10,9,8,.6))}
+#bg-canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
 .content{position:relative;z-index:1}
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  padding:.9rem 2.5rem;display:flex;justify-content:space-between;align-items:center;
-  background:rgba(10,9,8,.6);backdrop-filter:blur(40px);
-  border-bottom:1px solid var(--border);
-  transition:transform .4s;
-}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:.9rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(10,9,8,.6);backdrop-filter:blur(40px);border-bottom:1px solid var(--border);transition:transform .4s}
 nav.hidden{transform:translateY(-100%)}
 nav .logo-img{height:36px;width:auto;opacity:.9}
 nav .links{display:flex;gap:2.5rem;align-items:center}
-nav .links a{
-  color:rgba(255,255,255,.4);text-decoration:none;font-size:.75rem;
-  font-weight:500;letter-spacing:.1em;text-transform:uppercase;transition:color .3s;
-}
+nav .links a{color:rgba(255,255,255,.4);text-decoration:none;font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;transition:color .3s;position:relative}
+nav .links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--beige);transform:scaleX(0);transition:transform .3s}
 nav .links a:hover{color:rgba(255,255,255,.8)}
-nav .links .order-btn{
-  padding:.55rem 1.6rem;
-  background:linear-gradient(135deg,var(--beige),var(--gold));
-  border-radius:100px;color:var(--dark)!important;font-weight:700;border:none;font-size:.75rem;
-}
+nav .links a:hover::after{transform:scaleX(1)}
+nav .links .order-btn{padding:.55rem 1.6rem;background:linear-gradient(135deg,var(--beige),var(--gold));border-radius:100px;color:var(--dark)!important;font-weight:700;border:none;font-size:.75rem;text-transform:none!important;letter-spacing:.05em!important}
+nav .links .order-btn::after{display:none}
 .mobile-toggle{display:none;font-size:1.5rem;cursor:pointer;color:rgba(255,255,255,.5);background:none;border:none}
 @media(max-width:768px){
   nav{padding:.7rem 1.2rem}
   nav .logo-img{height:28px}
-  nav .links{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;
-    background:rgba(10,9,8,.98);backdrop-filter:blur(40px);padding:1.5rem;gap:1.2rem;
-    border-bottom:1px solid var(--border)}
+  nav .links{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(10,9,8,.98);backdrop-filter:blur(40px);padding:1.5rem;gap:1.2rem;border-bottom:1px solid var(--border)}
   nav .links.open{display:flex}
   .mobile-toggle{display:block}
 }
-.hero{
-  min-height:100vh;display:flex;flex-direction:column;
-  justify-content:center;align-items:center;text-align:center;
-  padding:8rem 2rem 4rem;
-}
-.hero .tag{
-  display:inline-flex;align-items:center;gap:.6rem;
-  padding:.35rem 1rem;background:rgba(212,201,176,.06);
-  border:1px solid rgba(212,201,176,.1);border-radius:100px;
-  font-size:.65rem;letter-spacing:.2em;color:var(--beige);margin-bottom:1.8rem;
-}
-.hero h1{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(3.5rem,14vw,9rem);font-weight:800;
-  line-height:.92;letter-spacing:-.04em;
-}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:8rem 2rem 4rem;position:relative}
+.hero .tag{display:inline-flex;align-items:center;gap:.6rem;padding:.35rem 1rem;background:rgba(212,201,176,.06);border:1px solid rgba(212,201,176,.1);border-radius:100px;font-size:.65rem;font-weight:500;letter-spacing:.2em;color:var(--beige);margin-bottom:1.8rem;text-transform:uppercase}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,14vw,9rem);font-weight:800;line-height:.92;letter-spacing:-.04em}
 .hero h1 .accent{background:linear-gradient(135deg,var(--beige),var(--light-cream));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hero .sub{font-size:clamp(.95rem,1.8vw,1.15rem);color:rgba(255,255,255,.35);max-width:460px;line-height:1.7;margin-top:1.5rem}
-.hero .buttons{margin-top:2.5rem;display:flex;gap:1rem}
-.hero .btn{padding:1rem 2.5rem;border-radius:100px;font-weight:600;font-size:.85rem;text-decoration:none;cursor:pointer;border:none}
+.hero .buttons{margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.hero .btn{padding:1rem 2.5rem;border-radius:100px;font-weight:600;font-size:.85rem;text-decoration:none;transition:all .3s;cursor:pointer;border:none}
 .hero .btn-primary{background:linear-gradient(135deg,var(--beige),var(--gold));color:var(--dark)}
+.hero .btn-primary:hover{transform:scale(1.05);box-shadow:0 12px 40px rgba(212,201,176,.2)}
 .hero .btn-outline{border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);background:transparent}
-.hero .btn-outline:hover{border-color:var(--beige);color:#fff}
+.hero .btn-outline:hover{border-color:var(--beige);color:#fff;background:rgba(212,201,176,.06)}
+
+/* Sections */
+section{padding:7rem 2rem;position:relative}
+.container{max-width:1200px;margin:0 auto}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,4rem);font-weight:700;margin-bottom:.6rem;text-align:center;letter-spacing:-.03em;color:var(--cream)}
+.section-title .accent{background:linear-gradient(135deg,var(--beige),var(--light-cream));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.section-sub{text-align:center;color:rgba(255,255,255,.35);max-width:520px;margin:0 auto 3.5rem;font-size:.95rem;line-height:1.7}
+
+/* Stats */
+.stats-row{display:flex;justify-content:center;gap:5rem;flex-wrap:wrap;padding:2.5rem 0}
+.stat{text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:3.5rem;font-weight:700;background:linear-gradient(180deg,#fff,rgba(255,255,255,.4));-webkit-background-clip:text}
+.stat .accent-num{background:linear-gradient(135deg,var(--beige),var(--gold));-webkit-background-clip:text}
+.stat-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.2);margin-top:.3rem}
+
+/* Menu */
+.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto}
+@media(max-width:1024px){.menu-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.menu-grid{grid-template-columns:1fr}}
+.menu-card{background:rgba(0,0,0,.45);backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:20px;padding:2rem 1.8rem;transition:all .5s cubic-bezier(.16,1,.3,1);text-align:center;position:relative;overflow:hidden}
+.menu-card:hover{transform:translateY(-8px);border-color:rgba(212,201,176,.1);box-shadow:0 30px 60px rgba(0,0,0,.5)}
+.menu-card .badge{display:inline-block;padding:.2rem .6rem;background:rgba(212,201,176,.06);border-radius:4px;font-size:.55rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--beige);margin-bottom:.8rem}
+.menu-card h3{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--cream);margin-bottom:.4rem}
+.menu-card .desc{font-size:.8rem;color:rgba(255,255,255,.35);line-height:1.5;margin-bottom:1.2rem}
+.menu-card .price-row{display:flex;justify-content:center;align-items:center;gap:1.2rem}
+.menu-card .price{font-size:1.6rem;font-weight:700;color:var(--beige)}
+.menu-card .price .cents{font-size:.9rem;opacity:.7}
+.menu-card .add-btn{padding:.45rem 1.1rem;border-radius:100px;background:linear-gradient(135deg,var(--beige),var(--gold));color:var(--dark);font-size:.7rem;font-weight:700;border:none;cursor:pointer;transition:all .3s}
+.menu-card .add-btn:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(212,201,176,.2)}
+
+/* Reviews */
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1000px;margin:0 auto}
+@media(max-width:768px){.reviews-grid{grid-template-columns:1fr}}
+.review-card{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:16px;padding:1.8rem;transition:all .4s}
+.review-card:hover{border-color:rgba(212,201,176,.08);transform:translateY(-4px)}
+.review-card .stars{color:var(--gold);font-size:1rem;margin-bottom:.8rem;letter-spacing:2px}
+.review-card .text{font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.6;font-style:italic;margin-bottom:1.2rem;font-weight:300}
+.review-card .author{display:flex;align-items:center;gap:.7rem}
+.review-card .author .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,rgba(212,201,176,.2),rgba(212,201,176,.05));display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--beige);font-weight:600}
+.review-card .author .name{font-size:.75rem;font-weight:500;color:rgba(255,255,255,.55)}
+.review-card .author .handle{font-size:.65rem;color:rgba(255,255,255,.18)}
+
+/* Experience */
+.exp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1000px;margin:0 auto}
+@media(max-width:768px){.exp-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.exp-grid{grid-template-columns:1fr}}
+.exp-card{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:16px;padding:2rem 1.5rem;text-align:center;transition:all .4s}
+.exp-card:hover{transform:translateY(-5px);border-color:rgba(212,201,176,.08)}
+.exp-card .icon{font-size:2rem;margin-bottom:.8rem}
+.exp-card h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;margin-bottom:.4rem;color:var(--cream)}
+.exp-card p{font-size:.8rem;color:rgba(255,255,255,.35);line-height:1.5}
+
+/* Contact */
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:900px;margin:0 auto}
+@media(max-width:640px){.contact-wrap{grid-template-columns:1fr}}
+.contact-info{display:flex;flex-direction:column;gap:1rem}
+.contact-item{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.2rem;transition:all .3s}
+.contact-item:hover{border-color:rgba(212,201,176,.08)}
+.contact-item .icon{font-size:1.3rem;width:40px;height:40px;border-radius:50%;background:rgba(212,201,176,.05);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-item .info h4{font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:rgba(212,201,176,.4);margin-bottom:.2rem}
+.contact-item .info p,.contact-item .info a{font-size:.85rem;color:rgba(255,255,255,.4);text-decoration:none}
+.contact-item .info a:hover{color:var(--beige)}
+.hours-card{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+.hours-card h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;color:var(--cream);margin-bottom:1rem}
+.hours-card .row{display:flex;justify-content:space-between;padding:.4rem 0;font-size:.8rem;color:rgba(255,255,255,.35)}
+.hours-card .row .day{color:rgba(255,255,255,.2)}
+footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-size:.75rem;color:rgba(255,255,255,.12)}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(50px);transition:all .9s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
 </style>
 </head>
 <body>
@@ -111,6 +144,7 @@ nav .links .order-btn{
 </nav>
 
 <div class="content">
+
 <section class="hero">
   <div class="tag">✦ Est. 2025 · Athens</div>
   <h1>Smash<br><span class="accent">Perfection.</span></h1>
@@ -120,96 +154,218 @@ nav .links .order-btn{
     <a href="#reviews" class="btn btn-outline">See Reviews</a>
   </div>
 </section>
+
+<section style="padding:2rem 2rem">
+  <div class="stats-row container">
+    <div class="stat"><div class="stat-num accent-num">100%</div><div class="stat-label">Angus Beef</div></div>
+    <div class="stat"><div class="stat-num accent-num">12</div><div class="stat-label">Signature Burgers</div></div>
+    <div class="stat"><div class="stat-num">4.9</div><div class="stat-label">★ Rating</div></div>
+    <div class="stat"><div class="stat-num">197°</div><div class="stat-label">Grill Temp</div></div>
+  </div>
+</section>
+
+<div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
+
+<section id="menu" class="container">
+  <h2 class="section-title">The <span class="accent">Menu</span></h2>
+  <p class="section-sub">Crafted with premium ingredients. Smashed to perfection.</p>
+  <div class="menu-grid">
+    <div class="menu-card"><div class="badge">Best Seller</div><h3>The Classic Smash</h3><p class="desc">Double Angus patty, aged cheddar, pickles, secret sauce, brioche bun</p><div class="price-row"><span class="price">12<span class="cents">.90</span></span><button class="add-btn">Add</button></div></div>
+    <div class="menu-card"><div class="badge">Spicy</div><h3>Smoke &amp; Fire</h3><p class="desc">Smoked brisket patty, jalapeños, pepper jack, chipotle aioli, toasted brioche</p><div class="price-row"><span class="price">15<span class="cents">.50</span></span><button class="add-btn">Add</button></div></div>
+    <div class="menu-card"><div class="badge">For Two</div><h3>Double Trouble</h3><p class="desc">Two smashed patties, double cheese, bacon jam, caramelized onions, garlic aioli</p><div class="price-row"><span class="price">16<span class="cents">.90</span></span><button class="add-btn">Add</button></div></div>
+  </div>
+</section>
+
+<div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
+
+<section id="reviews" class="container">
+  <h2 class="section-title">Customer <span class="accent">Love</span></h2>
+  <p class="section-sub">Real reviews from real people.</p>
+  <div class="reviews-grid">
+    <div class="review-card"><div class="stars">★★★★★</div><p class="text">"Best burger in Athens. The Double Trouble is absolutely insane."</p><div class="author"><div class="avatar">AK</div><div><div class="name">Alex K.</div><div class="handle">@alex_eats</div></div></div></div>
+    <div class="review-card"><div class="stars">★★★★★</div><p class="text">"Finally, a smash burger that actually has crispy edges. 10/10."</p><div class="author"><div class="avatar">MC</div><div><div class="name">Maria C.</div><div class="handle">@maria_foodie</div></div></div></div>
+    <div class="review-card"><div class="stars">★★★★★</div><p class="text">"The Smoke &amp; Fire changed my life. Perfect amount of heat."</p><div class="author"><div class="avatar">DP</div><div><div class="name">Dimitris P.</div><div class="handle">@dimibites</div></div></div></div>
+  </div>
+</section>
+
+<div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
+
+<section id="experience" class="container">
+  <h2 class="section-title">The <span class="accent">Experience</span></h2>
+  <p class="section-sub">Every detail matters.</p>
+  <div class="exp-grid">
+    <div class="exp-card"><div class="icon">🥩</div><h4>Premium Angus</h4><p>100% fresh Angus beef, ground daily, smashed at 197° on a cast-iron flat-top.</p></div>
+    <div class="exp-card"><div class="icon">🧀</div><h4>Aged Cheese</h4><p>Affineur-selected cheddar, Gruyère, and smoked Gouda. No processed slices.</p></div>
+    <div class="exp-card"><div class="icon">🍞</div><h4>Brioche Perfection</h4><p>Egg-washed, sesame-seeded brioche buns baked fresh every morning.</p></div>
+    <div class="exp-card"><div class="icon">🔥</div><h4>Cast Iron Smash</h4><p>Thin, lacy, crispy edges. A Maillard reaction masterpiece.</p></div>
+  </div>
+</section>
+
+<section id="contact" class="container">
+  <h2 class="section-title">Find <span class="accent">Us</span></h2>
+  <p class="section-sub">Come taste the difference.</p>
+  <div class="contact-wrap">
+    <div class="contact-info">
+      <div class="contact-item"><div class="icon">📍</div><div class="info"><h4>Address</h4><p>25 Kolokotroni Street, Athens, Greece</p></div></div>
+      <div class="contact-item"><div class="icon">📞</div><div class="info"><h4>Call</h4><p>+30 210 000 0000</p></div></div>
+    </div>
+    <div class="hours-card">
+      <h4>Opening Hours</h4>
+      <div class="row"><span class="day">Mon — Fri</span><span class="time">11:00 — 23:00</span></div>
+      <div class="row"><span class="day">Saturday</span><span class="time">12:00 — 00:00</span></div>
+      <div class="row"><span class="day">Sunday</span><span class="time">13:00 — 22:00</span></div>
+    </div>
+  </div>
+</section>
+
+<footer><p>© 2026 Smashie · Burgers with Soul</p></footer>
 </div>
 
 <script>
-// ─── Minimal Three.js scene ───
-const script = document.createElement('script');
-script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-script.onload = function() {
+// ─── Glow texture for particles ───
+function makeGlowTex() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(0.1, 'rgba(255,255,255,0.9)');
+  g.addColorStop(0.3, 'rgba(255,255,255,0.5)');
+  g.addColorStop(0.6, 'rgba(212,201,176,0.15)');
+  g.addColorStop(1, 'rgba(212,201,176,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 64, 64);
+  return c;
+}
 
-  const canvas = document.getElementById('bg-canvas');
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
-  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, premultipliedAlpha: false });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x000000, 0);
-  renderer.domElement.style.background = 'transparent';
-  canvas.appendChild(renderer.domElement);
+// ─── Three.js ───
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  s.onload = function() {
+    var canvas = document.getElementById('bg-canvas');
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+    var renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, premultipliedAlpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    renderer.domElement.style.background = 'transparent';
+    canvas.appendChild(renderer.domElement);
 
-  // Lights
-  scene.add(new THREE.AmbientLight(0xffffff, 1.0));
-  const dl = new THREE.DirectionalLight(0xffffff, 2.0);
-  dl.position.set(2, 5, 3);
-  scene.add(dl);
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+    var dl = new THREE.DirectionalLight(0xffffff, 2.0);
+    dl.position.set(2, 5, 3);
+    scene.add(dl);
 
-  // Logo
-  const tex = new THREE.TextureLoader().load('logo-2.png');
-  const logo = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.5, 2.5),
-    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, side: THREE.DoubleSide })
-  );
-  logo.position.set(0, 0.3, -3);
-  scene.add(logo);
+    // Logo
+    var tex = new THREE.TextureLoader().load('logo-2.png');
+    var logo = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.5, 2.5),
+      new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, side: THREE.DoubleSide })
+    );
+    logo.position.set(0, 0.3, -3);
+    scene.add(logo);
 
-  // Particles (steam effect)
-  const geo = new THREE.BufferGeometry();
-  const particleCount = 300;
-  const pos = new Float32Array(particleCount * 3);
-  const vel = new Float32Array(particleCount);
-  for (let i = 0; i < particleCount; i++) {
-    pos[i*3] = (Math.random()-0.5)*4;
-    pos[i*3+1] = (Math.random()-0.5)*3 + 2;
-    pos[i*3+2] = (Math.random()-0.5)*4;
-    vel[i] = 0.02 + Math.random() * 0.05;
-  }
-  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  const pMat = new THREE.PointsMaterial({
-    color: 0xd4c9b0, transparent: true, opacity: 0.15,
-    size: 0.12, blending: THREE.AdditiveBlending, depthWrite: false
-  });
-  const particles = new THREE.Points(geo, pMat);
-  scene.add(particles);
-
-  camera.position.set(0, 0.3, 5);
-  camera.lookAt(0, 0.3, 0);
-
-  let mx = 0, my = 0;
-  document.addEventListener('mousemove', e => {
-    mx = (e.clientX / window.innerWidth) * 2 - 1;
-    my = -(e.clientY / window.innerHeight) * 2 + 1;
-  });
-
-  function animate() {
-    requestAnimationFrame(animate);
-    const t = performance.now() / 1000;
-    
-    logo.rotation.y = t * 0.3 + mx * 0.3;
-    logo.position.y = 0.3 + Math.sin(t * 0.8) * 0.1;
-
-    const p = particles.geometry.attributes.position.array;
-    for (let i = 0; i < particleCount; i++) {
-      p[i*3] += Math.sin(t + i) * 0.003;
-      p[i*3+1] += vel[i] * 0.02;
-      p[i*3+2] += Math.cos(t * 0.5 + i) * 0.003;
-      if (p[i*3+1] > 5) {
-        p[i*3] = (Math.random()-0.5)*4;
-        p[i*3+1] = 0;
-        p[i*3+2] = (Math.random()-0.5)*4;
-      }
+    // Particles with glow texture
+    var glowCanvas = makeGlowTex();
+    var glowTex2 = new THREE.CanvasTexture(glowCanvas);
+    var pCount = 200;
+    var pGeo = new THREE.BufferGeometry();
+    var pPos = new Float32Array(pCount * 3);
+    var pVel = new Float32Array(pCount);
+    for (var i = 0; i < pCount; i++) {
+      pPos[i*3] = (Math.random()-0.5)*3.5;
+      pPos[i*3+1] = Math.random()*2.5 + 1.5;
+      pPos[i*3+2] = (Math.random()-0.5)*3.5;
+      pVel[i] = 0.15 + Math.random()*0.25;
     }
-    particles.geometry.attributes.position.needsUpdate = true;
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    var pMat = new THREE.PointsMaterial({
+      map: glowTex2, transparent: true, opacity: 0.15,
+      size: 0.3, blending: THREE.AdditiveBlending, depthWrite: false,
+      sizeAttenuation: true
+    });
+    var particles = new THREE.Points(pGeo, pMat);
+    scene.add(particles);
 
-    camera.position.x += (mx * 1.5 - camera.position.x) * 0.05;
-    camera.position.y += (my * 1.0 + 0.3 - camera.position.y) * 0.05;
-    camera.lookAt(0, 0.3, -1);
+    camera.position.set(0, 0.3, 5);
+    camera.lookAt(0, 0.3, 0);
 
-    renderer.render(scene, camera);
-  }
-  animate();
-};
-document.head.appendChild(script);
+    // Mouse
+    var mx = 0, my = 0;
+    document.addEventListener('mousemove', function(e) {
+      mx = (e.clientX / window.innerWidth) * 2 - 1;
+      my = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+
+    // Scroll
+    var lastScroll = 0;
+    window.addEventListener('scroll', function() {
+      var s = window.pageYOffset;
+      var nav = document.getElementById('nav');
+      if (s > lastScroll && s > 80) nav.classList.add('hidden');
+      else nav.classList.remove('hidden');
+      lastScroll = s;
+    });
+
+    // Resize
+    window.addEventListener('resize', function() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      var t = performance.now() / 1000;
+
+      logo.rotation.y = t * 0.3 + mx * 0.3;
+      logo.position.y = 0.3 + Math.sin(t * 0.8) * 0.1;
+
+      var p = particles.geometry.attributes.position.array;
+      for (var i = 0; i < pCount; i++) {
+        p[i*3] += Math.sin(t + i) * 0.003;
+        p[i*3+1] += pVel[i] * 0.01;
+        p[i*3+2] += Math.cos(t*0.5 + i) * 0.003;
+        if (p[i*3+1] > 5) {
+          p[i*3] = (Math.random()-0.5)*3.5;
+          p[i*3+1] = 0.5;
+          p[i*3+2] = (Math.random()-0.5)*3.5;
+        }
+      }
+      particles.geometry.attributes.position.needsUpdate = true;
+
+      camera.position.x += (mx * 1.5 - camera.position.x) * 0.05;
+      camera.position.y += (my * 1.0 + 0.3 - camera.position.y) * 0.05;
+      camera.lookAt(0, 0.3, -1);
+
+      renderer.render(scene, camera);
+    }
+    animate();
+  };
+  document.head.appendChild(s);
+})();
+</script>
+
+<script>
+// ─── Reveal on scroll ───
+document.addEventListener('DOMContentLoaded', function() {
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+
+  // Mobile nav close on link click
+  document.querySelectorAll('.links a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      document.getElementById('navLinks').classList.remove('open');
+    });
+  });
+});
 </script>
 
 </body>
