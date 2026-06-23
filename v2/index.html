@@ -36,11 +36,11 @@
     /* ─── Background Image ─── */
     #bg-image{
       position:fixed;top:0;left:0;width:100vw;height:100vh;
-      z-index:-1;pointer-events:none;overflow:hidden;
+      z-index:0;pointer-events:none;overflow:hidden;
     }
     #bg-image img{
       width:100%;height:100%;object-fit:cover;
-      filter:brightness(0.25) saturate(0.3);
+      filter:brightness(0.35) saturate(0.4);
       transform:scale(1.05);
     }
     #bg-image .overlay{
@@ -75,10 +75,10 @@
     @keyframes loadBar{to{left:100%}}
 
     /* ─── 3D Canvas ─── */
-    #bg-canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
+    #bg-canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1;pointer-events:none}
 
     /* ─── Content ─── */
-    .content{position:relative;z-index:1}
+    .content{position:relative;z-index:2}
 
     /* ─── Nav ─── */
     nav{
