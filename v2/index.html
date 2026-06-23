@@ -267,9 +267,6 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     renderer.domElement.style.background = 'transparent';
     canvas.appendChild(renderer.domElement);
 
-    // Hide loader
-    document.getElementById('loader').classList.add('hidden');
-
     // Lights
     scene.add(new THREE.AmbientLight(0xffffff, 1.0));
     var dl = new THREE.DirectionalLight(0xffffff, 2.0);
@@ -284,12 +281,6 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     );
     logo.position.set(0, 0.3, -3);
     scene.add(logo);
-
-    // Fallback: hide loader after 3.5s even if something fails
-    setTimeout(function() {
-      var l = document.getElementById('loader');
-      if (l) l.classList.add('hidden');
-    }, 3500);
 
     // Particles as Sprites (guaranteed circular glow)
     var glowCanvas = document.createElement('canvas');
@@ -344,6 +335,16 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
+
+    var hideLoaderTimer = null;
+    function hideLoader() {
+      if (hideLoaderTimer) return;
+      hideLoaderTimer = true;
+      setTimeout(function() {
+        document.getElementById('loader').classList.add('hidden');
+      }, 2800);
+    }
+    setTimeout(hideLoader, 500);
 
     function animate() {
       requestAnimationFrame(animate);
