@@ -34,17 +34,20 @@
     }
 
     /* ─── Background Image ─── */
+    body::before{
+      content:'';position:fixed;inset:0;
+      background:url('smashie_background.jpg') center/cover no-repeat;
+      filter:brightness(0.4) saturate(0.4);
+      z-index:-1;pointer-events:none;
+    }
+    body::after{
+      content:'';position:fixed;inset:0;
+      background:linear-gradient(180deg,rgba(10,9,8,.85) 0%,rgba(10,9,8,.4) 40%,rgba(10,9,8,.6) 70%,rgba(10,9,8,.95) 100%);
+      z-index:-1;pointer-events:none;
+    }
     #bg-canvas{
       position:fixed;top:0;left:0;width:100vw;height:100vh;
       z-index:0;pointer-events:none;
-      background-image:url('smashie_background.jpg');
-      background-size:cover;background-position:center;
-      filter:brightness(0.4) saturate(0.4);
-    }
-    #bg-canvas::after{
-      content:'';position:absolute;inset:0;
-      background:linear-gradient(180deg,rgba(10,9,8,.8) 0%,rgba(10,9,8,.4) 40%,rgba(10,9,8,.6) 70%,rgba(10,9,8,.9) 100%);
-      pointer-events:none;
     }
 
     /* ─── Loading Screen ─── */
