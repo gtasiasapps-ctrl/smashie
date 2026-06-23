@@ -277,7 +277,7 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     var tex = new THREE.TextureLoader().load('logo-2.png');
     var logo = new THREE.Mesh(
       new THREE.PlaneGeometry(2.5, 2.5),
-      new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, side: THREE.DoubleSide })
+      new THREE.MeshBasicMaterial({ map: tex, color: 0x888888, transparent: true, depthWrite: false, side: THREE.DoubleSide })
     );
     logo.position.set(0, 0.3, -3);
     scene.add(logo);
