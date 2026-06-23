@@ -832,9 +832,6 @@
 
   <script type="module">
     import * as THREE from 'three';
-    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
 
     const canvas = document.getElementById('bg-canvas');
@@ -849,31 +846,19 @@
     canvas.appendChild(renderer.domElement);
     document.getElementById('loader').classList.add('hidden');
 
-    // ─── Post-Processing ───
-    const composer = new EffectComposer(renderer);
-    const renderPass = new RenderPass(scene, camera);
-    composer.addPass(renderPass);
-    const bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.08, 0.03, 0.06
-    );
-    composer.addPass(bloomPass);
+
 
     // ─── Lights ───
-    const ambient = new THREE.AmbientLight(0x222222, 0.5);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambient);
 
-    const mainLight = new THREE.DirectionalLight(0xffeedd, 1.5);
+    const mainLight = new THREE.DirectionalLight(0xffffff, 2.0);
     mainLight.position.set(3, 5, 4);
     scene.add(mainLight);
 
-    const rimLight = new THREE.DirectionalLight(0xd4c9b0, 1.0);
-    rimLight.position.set(-3, 2, 5);
-    scene.add(rimLight);
-
-    const backLight = new THREE.DirectionalLight(0xd4c9b0, 0.3);
-    backLight.position.set(0, -1, -6);
-    scene.add(backLight);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    fillLight.position.set(-3, 0, 3);
+    scene.add(fillLight);
 
 
 
@@ -883,15 +868,15 @@
     const logoTexture = new THREE.TextureLoader().load('logo-2.png');
     logoTexture.colorSpace = THREE.SRGBColorSpace;
     const logo3D = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.2, 2.2),
+      new THREE.PlaneGeometry(3, 3),
       new THREE.MeshStandardMaterial({
         map: logoTexture, transparent: true, side: THREE.DoubleSide,
-        roughness: 0.05, metalness: 0.4,
-        emissive: new THREE.Color(0xd4c9b0), emissiveIntensity: 0.06,
-        depthWrite: false,
+        roughness: 0.3, metalness: 0.2,
+        emissive: new THREE.Color(0xd4c9b0), emissiveIntensity: 0.15,
+        depthWrite: true,
       })
     );
-    logo3D.position.set(0, 2.2, -7);
+    logo3D.position.set(0, 0.5, -3);
     logo3D.scale.set(0, 0, 0);
     scene.add(logo3D);
 
@@ -934,8 +919,8 @@
     }
     sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
     const steam = new THREE.Points(sGeo, new THREE.PointsMaterial({
-      map: glowTex, color: 0xffffff, transparent: true, opacity: 0.05,
-      size: 0.15, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+      map: glowTex, color: 0xffffff, transparent: true, opacity: 0.12,
+      size: 0.25, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
     }));
     scene.add(steam);
 
@@ -956,8 +941,8 @@
     }
     eGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
     const embers = new THREE.Points(eGeo, new THREE.PointsMaterial({
-      map: glowTex, color: 0xd4c9b0, transparent: true, opacity: 0.08,
-      size: 0.08, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+      map: glowTex, color: 0xd4c9b0, transparent: true, opacity: 0.2,
+      size: 0.15, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
     }));
     scene.add(embers);
 
@@ -972,8 +957,8 @@
     }
     dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
     const dust = new THREE.Points(dGeo, new THREE.PointsMaterial({
-      map: glowTex, color: 0xffffff, transparent: true, opacity: 0.015,
-      size: 0.04, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+      map: glowTex, color: 0xffffff, transparent: true, opacity: 0.04,
+      size: 0.08, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
     }));
     scene.add(dust);
 
@@ -992,13 +977,13 @@
     }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
     const sparks = new THREE.Points(pGeo, new THREE.PointsMaterial({
-      map: glowTex, color: 0xc9a94e, transparent: true, opacity: 0.15,
-      size: 0.025, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
+      map: glowTex, color: 0xc9a94e, transparent: true, opacity: 0.3,
+      size: 0.04, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
     }));
     scene.add(sparks);
 
-    camera.position.set(0, 0.3, 7.8);
-    camera.lookAt(0, 0.3, 0);
+    camera.position.set(0, 0.8, 6);
+    camera.lookAt(0, 0.5, -1);
 
     // ─── Mouse ───
     let mx = 0, my = 0, tx = 0, ty = 0;
@@ -1015,7 +1000,6 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      composer.setSize(window.innerWidth, window.innerHeight);
     });
 
     // ─── Scroll-Based Navigation ───
@@ -1033,7 +1017,7 @@
       if (steam) steam.material.opacity = opacity * 0.05;
       if (embers) embers.material.opacity = opacity * 0.08;
       if (sparks) sparks.material.opacity = opacity * 0.15;
-      bloomPass.strength = 0.08 * opacity;
+
 
       // Logo appears on scroll
       if (s > 150 && !logoRevealed) {
@@ -1054,10 +1038,10 @@
 
       // ─── 3D Logo ───
       if (logo3D.scale.x >= 0.99) {
-        logo3D.rotation.y = t * 0.06 + mx * 0.2;
-        logo3D.rotation.x = Math.sin(t * 0.1) * 0.03 + my * 0.1;
-        logo3D.position.y = 2.2 + Math.sin(t * 0.35) * 0.06;
-        logo3D.material.emissiveIntensity = 0.06 + Math.sin(t * 1.0) * 0.03;
+        logo3D.rotation.y = t * 0.5 + mx * 0.5;
+        logo3D.rotation.x += my * 0.02;
+        logo3D.position.y = 0.5 + Math.sin(t * 0.6) * 0.15;
+        logo3D.material.emissiveIntensity = 0.15 + Math.sin(t * 1.2) * 0.05;
       }
 
       // ─── Steam ───
@@ -1107,20 +1091,19 @@
           sk[i3+2] += Math.cos(t*0.3+pPh[i]*0.7) * 0.002;
         }
         sparks.geometry.attributes.position.needsUpdate = true;
-        sparks.material.size = 0.025 + Math.sin(t*2) * 0.01;
-        sparks.material.opacity = 0.1 + Math.sin(t*1.5+1) * 0.06;
+        sparks.material.size = 0.04 + Math.sin(t*2) * 0.015;
+        sparks.material.opacity = 0.2 + Math.sin(t*1.5+1) * 0.1;
       }
 
       // ─── Camera ───
-      camera.position.x += (mx * 4 - camera.position.x) * 0.05;
-      camera.position.y += (my * 2.5 + 0.3 - camera.position.y) * 0.05;
-      camera.lookAt(0, 0.3, 0);
+      camera.position.x += (mx * 2 - camera.position.x) * 0.04;
+      camera.position.y += (my * 1.5 + 0.8 - camera.position.y) * 0.04;
+      camera.lookAt(0, 0.5, -1);
 
       // ─── Lights ───
-      rimLight.intensity = 1.2 + Math.sin(t*1.3) * 0.1;
-      mainLight.intensity = 2.5 + Math.sin(t*0.6) * 0.06;
+      mainLight.intensity = 2.0 + Math.sin(t*0.6) * 0.1;
 
-      composer.render();
+      renderer.render(scene, camera);
     }
     animate();
   </script>
