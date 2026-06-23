@@ -46,6 +46,8 @@
     #bg-canvas{
       position:fixed;top:0;left:0;width:100vw;height:100vh;
       z-index:0;pointer-events:none;
+      /* Fallback: canvas bg see-through if WebGL alpha fails */
+      background:transparent;
     }
 
     /* ─── Loading Screen ─── */
@@ -838,10 +840,12 @@
     const canvas = document.getElementById('bg-canvas');
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(38, window.innerWidth/window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, premultipliedAlpha: false });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
+    // CRITICAL: make the canvas background truly transparent
+    renderer.domElement.style.background = 'transparent';
     canvas.appendChild(renderer.domElement);
     document.getElementById('loader').classList.add('hidden');
 
