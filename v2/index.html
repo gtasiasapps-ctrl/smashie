@@ -908,117 +908,7 @@
     }
     setTimeout(() => requestAnimationFrame(animateLogoEntry), 300);
 
-    // ─── Particle textures ───
-    function makeGlowTex(size) {
-      const c = document.createElement('canvas');
-      c.width = c.height = size;
-      const ctx = c.getContext('2d');
-      const g = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
-      g.addColorStop(0, 'rgba(255,255,255,1)');
-      g.addColorStop(0.15, 'rgba(255,255,255,0.8)');
-      g.addColorStop(0.4, 'rgba(212,201,176,0.25)');
-      g.addColorStop(0.7, 'rgba(212,201,176,0.04)');
-      g.addColorStop(1, 'rgba(212,201,176,0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, size, size);
-      return new THREE.CanvasTexture(c);
-    }
-    const glowTex = makeGlowTex(64);
-    const whiteGlow = (() => {
-      const c = document.createElement('canvas');
-      c.width = c.height = 64;
-      const ctx = c.getContext('2d');
-      const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-      g.addColorStop(0, 'rgba(255,255,255,1)');
-      g.addColorStop(0.2, 'rgba(255,255,255,0.8)');
-      g.addColorStop(0.5, 'rgba(255,255,255,0.3)');
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, 64, 64);
-      return new THREE.CanvasTexture(c);
-    })();
 
-    // ─── Steam ───
-    const steamCount = 400;
-    const sGeo = new THREE.BufferGeometry();
-    const sPos = new Float32Array(steamCount * 3);
-    const sVel = new Float32Array(steamCount);
-    const sPh = new Float32Array(steamCount);
-    for (let i = 0; i < steamCount; i++) {
-      sPos[i*3] = (Math.random()-0.5) * 3.5;
-      sPos[i*3+1] = 1.4 + Math.random() * 3;
-      sPos[i*3+2] = (Math.random()-0.5) * 3.5;
-      sVel[i] = 0.12 + Math.random() * 0.28;
-      sPh[i] = Math.random() * Math.PI * 2;
-    }
-    sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
-    const sMat = new THREE.PointsMaterial({
-      map: whiteGlow, color: 0xffffff, transparent: true, opacity: 0.06,
-      size: 0.2, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-    });
-    const steam = new THREE.Points(sGeo, sMat);
-    scene.add(steam);
-
-    // ─── Embers ───
-    const eCount = 300;
-    const eGeo = new THREE.BufferGeometry();
-    const ePos = new Float32Array(eCount * 3);
-    const eVel = new Float32Array(eCount);
-    const ePh = new Float32Array(eCount);
-    for (let i = 0; i < eCount; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const r = 1.5 + Math.random() * 7;
-      ePos[i*3] = Math.cos(a) * r;
-      ePos[i*3+1] = -2 + Math.random() * 4.5;
-      ePos[i*3+2] = Math.sin(a) * r;
-      eVel[i] = 0.06 + Math.random() * 0.2;
-      ePh[i] = Math.random() * Math.PI * 2;
-    }
-    eGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
-    const eMat = new THREE.PointsMaterial({
-      map: glowTex, color: 0xd4c9b0, transparent: true, opacity: 0.12,
-      size: 0.1, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-    });
-    const embers = new THREE.Points(eGeo, eMat);
-    scene.add(embers);
-
-    // ─── Floating Dust ───
-    const dCount = 500;
-    const dGeo = new THREE.BufferGeometry();
-    const dPos = new Float32Array(dCount * 3);
-    for (let i = 0; i < dCount; i++) {
-      dPos[i*3] = (Math.random()-0.5) * 22;
-      dPos[i*3+1] = (Math.random()-0.5) * 12;
-      dPos[i*3+2] = (Math.random()-0.5) * 18 - 4;
-    }
-    dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
-    const dMat = new THREE.PointsMaterial({
-      map: whiteGlow, color: 0xffffff, transparent: true, opacity: 0.025,
-      size: 0.05, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-    });
-    const dust = new THREE.Points(dGeo, dMat);
-    scene.add(dust);
-
-    // ─── Golden Sparks ───
-    const spCount = 150;
-    const spGeo = new THREE.BufferGeometry();
-    const spPos = new Float32Array(spCount * 3);
-    const spPh = new Float32Array(spCount);
-    for (let i = 0; i < spCount; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const r = 1 + Math.random() * 5;
-      spPos[i*3] = Math.cos(a) * r;
-      spPos[i*3+1] = -0.8 + Math.random() * 4.5;
-      spPos[i*3+2] = Math.sin(a) * r - 0.5;
-      spPh[i] = Math.random() * Math.PI * 2;
-    }
-    spGeo.setAttribute('position', new THREE.BufferAttribute(spPos, 3));
-    const spMat = new THREE.PointsMaterial({
-      map: glowTex, color: 0xd4c9b0, transparent: true, opacity: 0.25,
-      size: 0.03, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-    });
-    const sparks = new THREE.Points(spGeo, spMat);
-    scene.add(sparks);
 
     camera.position.set(0, 0.3, 7.8);
     camera.lookAt(0, 0.3, 0);
@@ -1053,10 +943,6 @@
 
       // 3D fade
       const opacity = Math.max(0, 1 - s / 300);
-      steam.material.opacity = opacity * 0.06;
-      embers.material.opacity = opacity * 0.12;
-      sparks.material.opacity = opacity * 0.25;
-      bloomPass.strength = 0.1 * opacity;
 
       // Logo appears on scroll
       if (s > 150 && !logoRevealed) {
@@ -1129,8 +1015,6 @@
         sk[i3+2] += Math.cos(t*0.3+spPh[i]*0.7) * 0.002;
       }
       sparks.geometry.attributes.position.needsUpdate = true;
-      sparks.material.size = 0.03 + Math.sin(t*2) * 0.012;
-      sparks.material.opacity = 0.18 + Math.sin(t*1.5+1) * 0.08;
 
       // ─── Camera ───
       camera.position.x += (mx * 4 - camera.position.x) * 0.05;
