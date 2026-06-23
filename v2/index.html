@@ -26,6 +26,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#0a0908;color:#fff;ov
 
 /* Background */
 #bg-scrim{position:fixed;inset:0;z-index:0;pointer-events:none;background:url('smashie_background.jpg') center/cover no-repeat fixed;filter:brightness(0.5) saturate(0.5)}
+@media(max-width:768px){#bg-scrim{background:url('smashie_background.jpg') center/cover no-repeat;filter:brightness(0.6) saturate(0.6)}}
 #bg-scrim .overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(10,9,8,.5),rgba(10,9,8,.15) 40%,rgba(10,9,8,.3) 70%,rgba(10,9,8,.6))}
 #bg-canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
 .content{position:relative;z-index:1}
