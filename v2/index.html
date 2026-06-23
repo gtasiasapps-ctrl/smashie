@@ -1,1217 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smashie V2 — Burgers with Soul</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@200;300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    /* ─── Reset & Base ─── */
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      font-family:'Inter',sans-serif;
-      background:#0a0908;color:#fff;overflow-x:hidden;
-      -webkit-font-smoothing:antialiased;
-    }
-    ::-webkit-scrollbar{width:3px}
-    ::-webkit-scrollbar-track{background:#0a0908}
-    ::-webkit-scrollbar-thumb{background:rgba(212,201,176,.15);border-radius:4px}
-
-    /* ─── CSS Variables (Logo-inspired colors) ─── */
-    :root{
-      --cream:#f0ebe0;
-      --beige:#d4c9b0;
-      --warm-gold:#c9a94e;
-      --light-cream:#f5f0e5;
-      --dark-bg:#0a0908;
-      --card-bg:rgba(0,0,0,.45);
-      --border-subtle:rgba(212,201,176,.08);
-      --text-muted:rgba(255,255,255,.35);
-      --glass-bg:rgba(255,255,255,.02);
-      --accent-grad:linear-gradient(135deg,#d4c9b0,#c9a94e);
-    }
-
-    /* ─── Background Image ─── */
-    #bg-scrim{
-      position:fixed;inset:0;z-index:0;pointer-events:none;
-      background:url('smashie_background.jpg') center/cover no-repeat fixed;
-      filter:brightness(0.5) saturate(0.5);
-    }
-    #bg-scrim .overlay{
-      position:absolute;inset:0;pointer-events:none;
-      background:linear-gradient(180deg,rgba(10,9,8,.5) 0%,rgba(10,9,8,.15) 40%,rgba(10,9,8,.3) 70%,rgba(10,9,8,.6) 100%);
-    }
-    #bg-canvas{
-      position:fixed;top:0;left:0;width:100vw;height:100vh;
-      z-index:0;pointer-events:none;
-      /* Fallback: canvas bg see-through if WebGL alpha fails */
-      background:transparent;
-    }
-
-    /* ─── Loading Screen ─── */
-    #loader{
-      position:fixed;inset:0;z-index:9999;
-      background:#0a0908;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      transition:opacity .8s,visibility .8s;
-    }
-    #loader.hidden{opacity:0;visibility:hidden}
-    #loader .loader-logo{
-      width:100px;height:100px;opacity:.7;
-    }
-    #loader .logo-text{
-      font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:800;
-      color:var(--cyan);letter-spacing:-.03em;margin-top:.5rem;
-    }
-    #loader .bar{
-      width:140px;height:2px;background:rgba(212,201,176,.1);border-radius:2px;
-      margin-top:1.2rem;overflow:hidden;position:relative;
-    }
-    #loader .bar::after{
-      content:'';position:absolute;left:-100%;width:100%;height:100%;
-      background:linear-gradient(90deg,transparent,var(--beige),transparent);
-      animation:loadBar 1.5s ease infinite;
-    }
-    @keyframes loadBar{to{left:100%}}
-
-    /* ─── 3D Canvas ─── */
-
-
-    /* ─── Content ─── */
-    .content{position:relative;z-index:1}
-
-    /* ─── Nav ─── */
-    nav{
-      position:fixed;top:0;left:0;right:0;z-index:100;
-      padding:.9rem 2.5rem;display:flex;justify-content:space-between;align-items:center;
-      background:rgba(10,9,8,.6);backdrop-filter:blur(40px) saturate(1.5);
-      -webkit-backdrop-filter:blur(40px) saturate(1.5);
-      border-bottom:1px solid var(--border-subtle);
-      transition:transform .4s cubic-bezier(.16,1,.3,1);
-    }
-    nav.hidden{transform:translateY(-100%)}
-    nav .logo-link{display:flex;align-items:center;gap:.6rem;text-decoration:none}
-    nav .logo-img{height:36px;width:auto;opacity:.9}
-    nav .links{display:flex;gap:2.5rem;align-items:center}
-    nav .links a{
-      color:rgba(255,255,255,.4);text-decoration:none;font-size:.75rem;
-      font-weight:500;letter-spacing:.1em;text-transform:uppercase;
-      transition:color .3s;position:relative;
-    }
-    nav .links a::after{
-      content:'';position:absolute;bottom:-4px;left:0;right:0;
-      height:1px;background:var(--beige);transform:scaleX(0);transition:transform .3s;
-    }
-    nav .links a:hover{color:rgba(255,255,255,.8)}
-    nav .links a:hover::after{transform:scaleX(1)}
-    nav .links .order-btn{
-      padding:.55rem 1.6rem;
-      background:var(--accent-grad);
-      border-radius:100px;color:var(--dark-bg)!important;font-weight:700;
-      letter-spacing:.05em;border:none;font-size:.75rem;
-    }
-    nav .links .order-btn::after{display:none}
-    nav .links .order-btn:hover{transform:scale(1.04);box-shadow:0 8px 30px rgba(212,201,176,.2);color:var(--dark-bg)!important}
-    .mobile-toggle{display:none;font-size:1.5rem;cursor:pointer;color:rgba(255,255,255,.5);background:none;border:none}
-    @media(max-width:768px){
-      nav{padding:.7rem 1.2rem}
-      nav .logo-img{height:28px}
-      nav .links{
-        display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;
-        background:rgba(10,9,8,.98);backdrop-filter:blur(40px);
-        padding:1.5rem;gap:1.2rem;border-bottom:1px solid var(--border-subtle)
-      }
-      nav .links.open{display:flex}
-      .mobile-toggle{display:block}
-    }
-
-    /* ─── Hero ─── */
-    .hero{
-      min-height:100vh;display:flex;flex-direction:column;
-      justify-content:center;align-items:center;text-align:center;
-      padding:8rem 2rem 4rem;position:relative;
-    }
-    .hero .tag{
-      display:inline-flex;align-items:center;gap:.6rem;
-      padding:.35rem 1rem;background:rgba(212,201,176,.06);
-      backdrop-filter:blur(20px);border:1px solid rgba(212,201,176,.1);
-      border-radius:100px;font-size:.65rem;font-weight:500;
-      text-transform:uppercase;letter-spacing:.2em;color:var(--cyan);
-      margin-bottom:1.8rem;
-      opacity:0;transform:translateY(10px);
-      animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .3s forwards;
-    }
-    .hero .tag .dot{width:4px;height:4px;border-radius:50%;background:var(--beige);animation:pulse 2s ease infinite}
-    .hero h1{
-      font-family:'Playfair Display',serif;
-      font-size:clamp(3.5rem,14vw,9rem);font-weight:800;
-      line-height:.92;letter-spacing:-.04em;
-      opacity:0;transform:translateY(30px);
-      animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .5s forwards;
-    }
-    .hero h1 .accent{
-      background:linear-gradient(135deg,var(--beige),var(--light-cream));
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    }
-    .hero .sub{
-      font-size:clamp(.95rem,1.8vw,1.15rem);color:var(--text-muted);
-      max-width:460px;line-height:1.7;font-weight:300;
-      margin-top:1.5rem;
-      opacity:0;transform:translateY(20px);
-      animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .7s forwards;
-    }
-    .hero .buttons{
-      margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;
-      opacity:0;transform:translateY(20px);
-      animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .9s forwards;
-    }
-    .hero .btn{
-      padding:1rem 2.5rem;border-radius:100px;font-weight:600;
-      font-size:.85rem;text-decoration:none;transition:all .35s cubic-bezier(.16,1,.3,1);
-      letter-spacing:.03em;cursor:pointer;border:none;
-    }
-    .hero .btn-primary{
-      background:var(--accent-grad);color:var(--dark-bg);
-    }
-    .hero .btn-primary:hover{transform:scale(1.05);box-shadow:0 12px 40px rgba(212,201,176,.2)}
-    .hero .btn-outline{
-      border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);background:transparent;
-    }
-    .hero .btn-outline:hover{border-color:var(--cyan);color:#fff;background:rgba(212,201,176,.06)}
-    .scroll-mouse{
-      position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);
-      display:flex;flex-direction:column;align-items:center;gap:.6rem;
-      opacity:0;animation:fadeIn 1s 1.5s forwards;
-    }
-    .scroll-mouse .mouse{
-      width:20px;height:32px;border:1.5px solid rgba(212,201,176,.15);
-      border-radius:10px;position:relative;
-    }
-    .scroll-mouse .mouse::after{
-      content:'';position:absolute;top:5px;left:50%;transform:translateX(-50%);
-      width:2px;height:6px;background:var(--cyan);border-radius:2px;
-      animation:scrollAnim 2s ease infinite;
-    }
-    .scroll-mouse .label{font-size:.55rem;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.12)}
-
-    /* ─── Marquee ─── */
-    .marquee{
-      overflow:hidden;padding:.8rem 0;
-      border-top:1px solid var(--border-subtle);
-      border-bottom:1px solid var(--border-subtle);
-      margin:0 2rem;
-    }
-    .marquee-track{
-      display:flex;gap:4rem;white-space:nowrap;
-      animation:marqueeScroll 30s linear infinite;
-    }
-    .marquee-item{
-      font-family:'Playfair Display',serif;
-      font-size:.8rem;color:rgba(212,201,176,.12);
-      text-transform:uppercase;letter-spacing:.3em;
-    }
-    .marquee-item strong{color:rgba(212,201,176,.25);font-weight:600}
-
-    /* ─── Section ─── */
-    section{padding:7rem 2rem;position:relative}
-    .container{max-width:1200px;margin:0 auto}
-    .section-eyebrow{
-      font-size:.65rem;text-transform:uppercase;letter-spacing:.25em;
-      color:rgba(212,201,176,.4);text-align:center;margin-bottom:.8rem;
-      font-weight:500;
-    }
-    .section-title{
-      font-family:'Playfair Display',serif;
-      font-size:clamp(2.2rem,5vw,4rem);font-weight:700;
-      margin-bottom:.6rem;text-align:center;letter-spacing:-.03em;
-      color:var(--cream);
-    }
-    .section-title .accent{
-      background:var(--accent-grad);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    }
-    .section-sub{
-      text-align:center;color:var(--text-muted);
-      max-width:520px;margin:0 auto 3.5rem;
-      font-size:.95rem;line-height:1.7;font-weight:300;
-    }
-
-    /* ─── Reveal ─── */
-    .reveal{opacity:0;transform:translateY(50px);transition:all .9s cubic-bezier(.16,1,.3,1)}
-    .reveal.visible{opacity:1;transform:translateY(0)}
-    .reveal-s{opacity:0;transform:scale(.88);transition:all .9s cubic-bezier(.16,1,.3,1)}
-    .reveal-s.visible{opacity:1;transform:scale(1)}
-    .reveal-l{
-      opacity:0;transform:translateX(-40px);
-      transition:all .7s cubic-bezier(.16,1,.3,1);
-    }
-    .reveal-l.visible{opacity:1;transform:translateX(0)}
-    .reveal-r{
-      opacity:0;transform:translateX(40px);
-      transition:all .7s cubic-bezier(.16,1,.3,1);
-    }
-    .reveal-r.visible{opacity:1;transform:translateX(0)}
-
-    /* ─── Glass Card ─── */
-    .glass{
-      background:var(--glass-bg);
-      backdrop-filter:blur(24px) saturate(1.3);
-      -webkit-backdrop-filter:blur(24px) saturate(1.3);
-      border:1px solid var(--border-subtle);
-    }
-
-    /* ─── Stats ─── */
-    .stats-row{
-      display:flex;justify-content:center;gap:5rem;flex-wrap:wrap;
-      padding:2.5rem 0;
-    }
-    .stat{text-align:center}
-    .stat-num{
-      font-family:'Playfair Display',serif;
-      font-size:3.5rem;font-weight:700;
-      background:linear-gradient(180deg,#fff,rgba(255,255,255,.4));
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    }
-    .stat .accent-num{
-      background:var(--accent-grad);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    }
-    .stat-label{
-      font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;
-      color:rgba(255,255,255,.2);margin-top:.3rem;font-weight:400;
-    }
-
-    /* ─── Menu ─── */
-    .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto}
-    @media(max-width:1024px){.menu-grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:640px){.menu-grid{grid-template-columns:1fr}}
-    .menu-card{
-      background:var(--card-bg);backdrop-filter:blur(24px) saturate(1.3);
-      -webkit-backdrop-filter:blur(24px) saturate(1.3);
-      border:1px solid var(--border-subtle);
-      border-radius:20px;padding:2rem 1.8rem;
-      transition:all .5s cubic-bezier(.16,1,.3,1);text-align:center;
-      position:relative;overflow:hidden;cursor:default;
-    }
-    .menu-card::before{
-      content:'';position:absolute;inset:0;
-      background:radial-gradient(ellipse at 50% 0%,rgba(212,201,176,.04),transparent 70%);
-      opacity:0;transition:opacity .6s;
-    }
-    .menu-card:hover::before{opacity:1}
-    .menu-card:hover{
-      transform:translateY(-8px) scale(1.01);
-      border-color:rgba(212,201,176,.1);
-      box-shadow:0 30px 60px rgba(0,0,0,.5);
-    }
-    .menu-card .badge{
-      display:inline-block;padding:.2rem .6rem;
-      background:rgba(212,201,176,.06);border-radius:4px;
-      font-size:.55rem;font-weight:600;text-transform:uppercase;
-      letter-spacing:.1em;color:var(--cyan);margin-bottom:.8rem;
-    }
-    .menu-card h3{
-      font-family:'Playfair Display',serif;
-      font-size:1.3rem;font-weight:700;color:var(--cream);margin-bottom:.4rem;
-    }
-    .menu-card .desc{
-      font-size:.8rem;color:rgba(255,255,255,.35);line-height:1.5;
-      margin-bottom:1.2rem;font-weight:300;
-    }
-    .menu-card .price-row{
-      display:flex;justify-content:center;align-items:center;gap:1.2rem;
-    }
-    .menu-card .price{font-size:1.6rem;font-weight:700;color:var(--cyan)}
-    .menu-card .price .cents{font-size:.9rem;font-weight:400;opacity:.7}
-    .menu-card .add-btn{
-      padding:.45rem 1.1rem;border-radius:100px;
-      background:var(--accent-grad);color:var(--dark-bg);
-      font-size:.7rem;font-weight:700;text-decoration:none;
-      transition:all .3s;border:none;cursor:pointer;
-    }
-    .menu-card .add-btn:hover{transform:scale(1.06);box-shadow:0 6px 20px rgba(212,201,176,.2)}
-
-    /* ─── Reviews ─── */
-    .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1000px;margin:0 auto}
-    @media(max-width:768px){.reviews-grid{grid-template-columns:1fr}}
-    .review-card{
-      background:var(--card-bg);backdrop-filter:blur(20px);
-      border:1px solid var(--border-subtle);
-      border-radius:16px;padding:1.8rem;
-      transition:all .4s cubic-bezier(.16,1,.3,1);
-    }
-    .review-card:hover{
-      border-color:rgba(212,201,176,.08);
-      transform:translateY(-4px);
-    }
-    .review-card .stars{color:var(--warm-gold);font-size:1rem;margin-bottom:.8rem;letter-spacing:2px}
-    .review-card .text{
-      font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.6;
-      font-weight:300;font-style:italic;
-      margin-bottom:1.2rem;
-    }
-    .review-card .author{
-      display:flex;align-items:center;gap:.7rem;
-    }
-    .review-card .author .avatar{
-      width:32px;height:32px;border-radius:50%;
-      background:linear-gradient(135deg,rgba(212,201,176,.2),rgba(212,201,176,.05));
-      display:flex;align-items:center;justify-content:center;
-      font-size:.7rem;color:var(--cyan);font-weight:600;
-    }
-    .review-card .author .name{font-size:.75rem;font-weight:500;color:rgba(255,255,255,.55)}
-    .review-card .author .handle{font-size:.65rem;color:rgba(255,255,255,.18)}
-    .review-card .source{
-      display:inline-flex;align-items:center;gap:.3rem;
-      font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;
-      color:rgba(212,201,176,.25);margin-top:.8rem;
-    }
-
-    /* ─── Gallery ─── */
-    .gallery-grid{
-      display:grid;grid-template-columns:repeat(4,1fr);
-      grid-template-rows:repeat(2,200px);gap:.8rem;
-      max-width:1000px;margin:0 auto;
-    }
-    .gallery-grid .g-item{
-      border-radius:12px;overflow:hidden;position:relative;
-      background:var(--card-bg);border:1px solid var(--border-subtle);
-      transition:all .4s;
-    }
-    .gallery-grid .g-item:hover{transform:scale(1.02);border-color:rgba(212,201,176,.1)}
-    .gallery-grid .g-item:first-child{grid-column:span 2;grid-row:span 2}
-    .gallery-grid .g-item .img-placeholder{
-      width:100%;height:100%;object-fit:cover;
-      display:flex;align-items:center;justify-content:center;
-      font-size:2.5rem;color:rgba(212,201,176,.12);
-      background:linear-gradient(135deg,rgba(212,201,176,.02),rgba(0,0,0,.4));
-    }
-    .gallery-grid .g-item .label{
-      position:absolute;bottom:.8rem;left:.8rem;
-      font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;
-      color:rgba(255,255,255,.2);font-weight:500;
-    }
-    @media(max-width:768px){
-      .gallery-grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,160px)}
-      .gallery-grid .g-item:first-child{grid-column:span 2;grid-row:span 2}
-    }
-
-    /* ─── Experience ─── */
-    .exp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1000px;margin:0 auto}
-    @media(max-width:768px){.exp-grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:480px){.exp-grid{grid-template-columns:1fr}}
-    .exp-card{
-      background:var(--card-bg);backdrop-filter:blur(24px);
-      border:1px solid var(--border-subtle);border-radius:16px;
-      padding:2rem 1.5rem;text-align:center;transition:all .4s;
-    }
-    .exp-card:hover{transform:translateY(-5px);border-color:rgba(212,201,176,.08)}
-    .exp-card .icon{font-size:2rem;margin-bottom:.8rem}
-    .exp-card h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;margin-bottom:.4rem;color:var(--cream)}
-    .exp-card p{font-size:.8rem;color:rgba(255,255,255,.35);line-height:1.5;font-weight:300}
-
-    /* ─── Parallax Quote ─── */
-    .parallax-section{
-      padding:8rem 2rem;text-align:center;position:relative;
-      overflow:hidden;
-    }
-    .parallax-section::before{
-      content:'';position:absolute;inset:0;
-      background:radial-gradient(ellipse at center,rgba(212,201,176,.03),transparent 60%);
-    }
-    .parallax-section blockquote{
-      font-family:'Playfair Display',serif;
-      font-size:clamp(1.5rem,4vw,2.8rem);font-weight:600;
-      max-width:700px;margin:0 auto;line-height:1.3;
-      color:rgba(255,255,255,.6);font-style:italic;
-    }
-    .parallax-section blockquote .accent{color:var(--cyan)}
-    .parallax-section .attribution{
-      margin-top:1.5rem;font-size:.75rem;color:rgba(255,255,255,.18);font-weight:300;
-    }
-
-    /* ─── Contact ─── */
-    .contact-wrap{
-      display:grid;grid-template-columns:1fr 1fr;gap:2rem;
-      max-width:900px;margin:0 auto;
-    }
-    @media(max-width:640px){.contact-wrap{grid-template-columns:1fr}}
-    .contact-info{display:flex;flex-direction:column;gap:1rem}
-    .contact-item{
-      background:var(--card-bg);backdrop-filter:blur(20px);
-      border:1px solid var(--border-subtle);border-radius:14px;
-      padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.2rem;
-      transition:all .3s;
-    }
-    .contact-item:hover{border-color:rgba(212,201,176,.08)}
-    .contact-item .icon{font-size:1.3rem;width:40px;height:40px;border-radius:50%;background:rgba(212,201,176,.05);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .contact-item .info h4{font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:rgba(212,201,176,.4);margin-bottom:.2rem}
-    .contact-item .info p,.contact-item .info a{font-size:.85rem;color:rgba(255,255,255,.4);text-decoration:none;font-weight:300}
-    .contact-item .info a:hover{color:var(--cyan)}
-    .hours-card{
-      background:var(--card-bg);backdrop-filter:blur(20px);
-      border:1px solid var(--border-subtle);border-radius:14px;
-      padding:1.5rem;
-    }
-    .hours-card h4{
-      font-family:'Playfair Display',serif;
-      font-size:1rem;font-weight:600;color:var(--cream);margin-bottom:1rem;
-    }
-    .hours-card .row{display:flex;justify-content:space-between;padding:.4rem 0;font-size:.8rem;color:rgba(255,255,255,.35);font-weight:300}
-    .hours-card .row .day{color:rgba(255,255,255,.2)}
-    .hours-card .row .time{font-weight:400}
-    .social-links{display:flex;justify-content:center;gap:1rem;margin-top:2rem}
-    .social-links a{
-      width:44px;height:44px;border-radius:50%;
-      border:1px solid var(--border-subtle);
-      display:flex;align-items:center;justify-content:center;
-      font-size:1.2rem;text-decoration:none;color:rgba(212,201,176,.25);
-      transition:all .3s;
-    }
-    .social-links a:hover{border-color:var(--cyan);color:var(--beige);transform:translateY(-3px)}
-
-    footer{
-      text-align:center;padding:2.5rem;
-      border-top:1px solid var(--border-subtle);
-      font-size:.75rem;color:rgba(255,255,255,.12);font-weight:300;
-    }
-    footer .made-by{color:rgba(212,201,176,.4)}
-
-    /* ─── Order Modal ─── */
-    #orderModal{
-      position:fixed;inset:0;z-index:200;
-      display:none;align-items:center;justify-content:center;
-      padding:1rem;
-    }
-    #orderModal.active{display:flex}
-    #orderModal .overlay{
-      position:absolute;inset:0;background:rgba(0,0,0,.8);
-      backdrop-filter:blur(20px);
-    }
-    #orderModal .modal{
-      position:relative;max-width:500px;width:100%;
-      background:rgba(10,9,8,.95);backdrop-filter:blur(40px);
-      border:1px solid var(--border-subtle);
-      border-radius:20px;padding:2.5rem;z-index:1;
-      transform:scale(.9);opacity:0;transition:all .4s cubic-bezier(.16,1,.3,1);
-    }
-    #orderModal.active .modal{transform:scale(1);opacity:1}
-    #orderModal .modal .close{
-      position:absolute;top:1rem;right:1.2rem;font-size:1.5rem;
-      color:rgba(255,255,255,.15);cursor:pointer;background:none;border:none;
-      transition:color .3s;
-    }
-    #orderModal .modal .close:hover{color:var(--cyan)}
-    #orderModal .modal h2{
-      font-family:'Playfair Display',serif;
-      font-size:1.6rem;font-weight:700;margin-bottom:.3rem;color:var(--cream);
-    }
-    #orderModal .modal .sub{font-size:.8rem;color:var(--text-muted);margin-bottom:1.5rem}
-    #orderModal .modal .item{
-      display:flex;justify-content:space-between;align-items:center;
-      padding:.8rem 0;border-bottom:1px solid var(--border-subtle);
-    }
-    #orderModal .modal .item .name{font-size:.85rem;color:rgba(255,255,255,.55)}
-    #orderModal .modal .item .qty{
-      display:flex;align-items:center;gap:.6rem;
-    }
-    #orderModal .modal .item .qty button{
-      width:26px;height:26px;border-radius:50%;
-      border:1px solid rgba(212,201,176,.1);background:transparent;
-      color:var(--cyan);cursor:pointer;font-size:.85rem;
-      transition:all .3s;display:flex;align-items:center;justify-content:center;
-    }
-    #orderModal .modal .item .qty button:hover{background:rgba(212,201,176,.08)}
-    #orderModal .modal .item .qty span{font-size:.85rem;color:#fff;min-width:20px;text-align:center}
-    #orderModal .modal .item .price-opt{font-size:.85rem;color:var(--cyan);font-weight:600}
-    #orderModal .modal .total{
-      display:flex;justify-content:space-between;
-      padding:1rem 0;font-size:1rem;font-weight:600;
-      border-top:1px solid rgba(212,201,176,.08);margin-top:.5rem;
-    }
-    #orderModal .modal .total .amount{color:var(--cyan)}
-    #orderModal .modal .checkout-btn{
-      width:100%;padding:1rem;border-radius:100px;
-      background:var(--accent-grad);color:var(--dark-bg);
-      font-weight:700;font-size:.9rem;border:none;cursor:pointer;
-      transition:all .3s;margin-top:.5rem;
-    }
-    #orderModal .modal .checkout-btn:hover{transform:scale(1.02);box-shadow:0 8px 30px rgba(212,201,176,.2)}
-
-    /* ─── Animations ─── */
-    @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
-    @keyframes fadeIn{to{opacity:1}}
-    @keyframes scrollAnim{0%,100%{transform:translateX(-50%) translateY(0);opacity:1}50%{transform:translateX(-50%) translateY(6px);opacity:.3}}
-    @keyframes marqueeScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Smashie V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:#0a0908;color:#fff;overflow-x:hidden;
+}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:#0a0908}
+::-webkit-scrollbar-thumb{background:rgba(212,201,176,.15);border-radius:4px}
+:root{
+  --cream:#f0ebe0;
+  --beige:#d4c9b0;
+  --gold:#c9a94e;
+  --light-cream:#f5f0e5;
+  --dark:#0a0908;
+  --border:rgba(212,201,176,.08);
+}
+#bg-scrim{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:url('smashie_background.jpg') center/cover no-repeat fixed;
+  filter:brightness(0.5) saturate(0.5);
+}
+#bg-scrim .overlay{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(10,9,8,.5),rgba(10,9,8,.15) 40%,rgba(10,9,8,.3) 70%,rgba(10,9,8,.6));
+}
+#bg-canvas{
+  position:fixed;top:0;left:0;width:100vw;height:100vh;
+  z-index:0;pointer-events:none;
+}
+.content{position:relative;z-index:1}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:.9rem 2.5rem;display:flex;justify-content:space-between;align-items:center;
+  background:rgba(10,9,8,.6);backdrop-filter:blur(40px);
+  border-bottom:1px solid var(--border);
+  transition:transform .4s;
+}
+nav.hidden{transform:translateY(-100%)}
+nav .logo-img{height:36px;width:auto;opacity:.9}
+nav .links{display:flex;gap:2.5rem;align-items:center}
+nav .links a{
+  color:rgba(255,255,255,.4);text-decoration:none;font-size:.75rem;
+  font-weight:500;letter-spacing:.1em;text-transform:uppercase;transition:color .3s;
+}
+nav .links a:hover{color:rgba(255,255,255,.8)}
+nav .links .order-btn{
+  padding:.55rem 1.6rem;
+  background:linear-gradient(135deg,var(--beige),var(--gold));
+  border-radius:100px;color:var(--dark)!important;font-weight:700;border:none;font-size:.75rem;
+}
+.mobile-toggle{display:none;font-size:1.5rem;cursor:pointer;color:rgba(255,255,255,.5);background:none;border:none}
+@media(max-width:768px){
+  nav{padding:.7rem 1.2rem}
+  nav .logo-img{height:28px}
+  nav .links{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;
+    background:rgba(10,9,8,.98);backdrop-filter:blur(40px);padding:1.5rem;gap:1.2rem;
+    border-bottom:1px solid var(--border)}
+  nav .links.open{display:flex}
+  .mobile-toggle{display:block}
+}
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding:8rem 2rem 4rem;
+}
+.hero .tag{
+  display:inline-flex;align-items:center;gap:.6rem;
+  padding:.35rem 1rem;background:rgba(212,201,176,.06);
+  border:1px solid rgba(212,201,176,.1);border-radius:100px;
+  font-size:.65rem;letter-spacing:.2em;color:var(--beige);margin-bottom:1.8rem;
+}
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(3.5rem,14vw,9rem);font-weight:800;
+  line-height:.92;letter-spacing:-.04em;
+}
+.hero h1 .accent{background:linear-gradient(135deg,var(--beige),var(--light-cream));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .sub{font-size:clamp(.95rem,1.8vw,1.15rem);color:rgba(255,255,255,.35);max-width:460px;line-height:1.7;margin-top:1.5rem}
+.hero .buttons{margin-top:2.5rem;display:flex;gap:1rem}
+.hero .btn{padding:1rem 2.5rem;border-radius:100px;font-weight:600;font-size:.85rem;text-decoration:none;cursor:pointer;border:none}
+.hero .btn-primary{background:linear-gradient(135deg,var(--beige),var(--gold));color:var(--dark)}
+.hero .btn-outline{border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);background:transparent}
+.hero .btn-outline:hover{border-color:var(--beige);color:#fff}
+</style>
 </head>
 <body>
 
-  <!-- ─── Background Backdrop ─── -->
-  <div id="bg-scrim">
-    <div class="overlay"></div>
+<div id="bg-scrim"><div class="overlay"></div></div>
+<div id="bg-canvas"></div>
+
+<nav id="nav">
+  <img src="logo-2.png" alt="Smashie" class="logo-img" />
+  <div class="links" id="navLinks">
+    <a href="#menu">Menu</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#experience">Experience</a>
+    <a href="#contact">Contact</a>
+    <a href="#" class="order-btn">Order Now</a>
   </div>
+  <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+</nav>
 
-  <!-- ─── Loader ─── -->
-  <div id="loader">
-    <img src="logo-2.png" alt="" class="loader-logo" />
-    <div class="logo-text">Smashie.</div>
-    <div class="bar"></div>
+<div class="content">
+<section class="hero">
+  <div class="tag">✦ Est. 2025 · Athens</div>
+  <h1>Smash<br><span class="accent">Perfection.</span></h1>
+  <p class="sub">Angus beef, aged cheddar, caramelized onions. Every bite is a moment.</p>
+  <div class="buttons">
+    <a href="#menu" class="btn btn-primary">Explore Menu</a>
+    <a href="#reviews" class="btn btn-outline">See Reviews</a>
   </div>
+</section>
+</div>
 
-  <!-- ─── 3D Canvas ─── -->
-  <div id="bg-canvas"></div>
+<script>
+// ─── Minimal Three.js scene ───
+const script = document.createElement('script');
+script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+script.onload = function() {
 
-  <!-- ─── Nav ─── -->
-  <nav id="nav">
-    <a href="#" class="logo-link"><img src="logo-2.png" alt="Smashie" class="logo-img" /></a>
-    <div class="links" id="navLinks">
-      <a href="#menu">Menu</a>
-      <a href="#reviews">Reviews</a>
-      <a href="#experience">Experience</a>
-      <a href="#contact">Contact</a>
-      <a href="#" class="order-btn" onclick="openOrderModal();return false">Order Now</a>
-    </div>
-    <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
-  </nav>
+  const canvas = document.getElementById('bg-canvas');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, premultipliedAlpha: false });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  renderer.domElement.style.background = 'transparent';
+  canvas.appendChild(renderer.domElement);
 
-  <div class="content">
+  // Lights
+  scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+  const dl = new THREE.DirectionalLight(0xffffff, 2.0);
+  dl.position.set(2, 5, 3);
+  scene.add(dl);
 
-    <!-- ─── Hero ─── -->
-    <section class="hero">
-      <div class="tag"><span class="dot"></span> Est. 2025 · Athens</div>
-      <h1>
-        Smash<br>
-        <span class="accent">Perfection.</span>
-      </h1>
-      <p class="sub">Angus beef, aged cheddar, caramelized onions. Every bite is a moment.</p>
-      <div class="buttons">
-        <a href="#menu" class="btn btn-primary">Explore Menu</a>
-        <a href="#reviews" class="btn btn-outline">See Reviews</a>
-      </div>
-      <div class="scroll-mouse">
-        <div class="mouse"></div>
-        <span class="label">Scroll</span>
-      </div>
-    </section>
+  // Logo
+  const tex = new THREE.TextureLoader().load('logo-2.png');
+  const logo = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.5, 2.5),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, side: THREE.DoubleSide })
+  );
+  logo.position.set(0, 0.3, -3);
+  scene.add(logo);
 
-    <!-- ─── Marquee ─── -->
-    <div class="marquee">
-      <div class="marquee-track">
-        <span class="marquee-item">✦ <strong>100%</strong> Angus Beef</span>
-        <span class="marquee-item">✦ <strong>Smashed</strong> at 197°</span>
-        <span class="marquee-item">✦ <strong>Aged</strong> Artisan Cheese</span>
-        <span class="marquee-item">✦ <strong>Fresh</strong> Brioche Daily</span>
-        <span class="marquee-item">✦ <strong>Cast Iron</strong> Griddle</span>
-        <span class="marquee-item">✦ <strong>4.9</strong> ★ Rating</span>
-        <span class="marquee-item">✦ <strong>100%</strong> Angus Beef</span>
-        <span class="marquee-item">✦ <strong>Smashed</strong> at 197°</span>
-        <span class="marquee-item">✦ <strong>Aged</strong> Artisan Cheese</span>
-        <span class="marquee-item">✦ <strong>Fresh</strong> Brioche Daily</span>
-        <span class="marquee-item">✦ <strong>Cast Iron</strong> Griddle</span>
-        <span class="marquee-item">✦ <strong>4.9</strong> ★ Rating</span>
-      </div>
-    </div>
-
-    <!-- ─── Stats ─── -->
-    <section style="padding:2.5rem 2rem">
-      <div class="stats-row container">
-        <div class="stat reveal"><div class="stat-num accent-num" data-count="100">0<span>%</span></div><div class="stat-label">Angus Beef</div></div>
-        <div class="stat reveal"><div class="stat-num accent-num" data-count="12">0</div><div class="stat-label">Signature Burgers</div></div>
-        <div class="stat reveal"><div class="stat-num" data-count="4.9">0</div><div class="stat-label">★ Rating</div></div>
-        <div class="stat reveal"><div class="stat-num" data-count="197">0<span>°</span></div><div class="stat-label">Grill Temp</div></div>
-      </div>
-    </section>
-
-    <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
-
-    <!-- ─── Menu ─── -->
-    <section id="menu" class="container">
-      <p class="section-eyebrow reveal">Signature Selection</p>
-      <h2 class="section-title reveal-s">The <span class="accent">Menu</span></h2>
-      <p class="section-sub reveal">Crafted with premium ingredients. Smashed to perfection. Served with soul.</p>
-      <div class="menu-grid">
-        <div class="menu-card reveal">
-          <div class="badge">Best Seller</div>
-          <h3>The Classic Smash</h3>
-          <p class="desc">Double Angus patty, aged cheddar, pickles, secret sauce, brioche bun</p>
-          <div class="price-row">
-            <span class="price">12<span class="cents">.90</span></span>
-            <button class="add-btn" onclick="addToCart('The Classic Smash',12.9)">Add</button>
-          </div>
-        </div>
-        <div class="menu-card reveal">
-          <div class="badge">Spicy</div>
-          <h3>Smoke &amp; Fire</h3>
-          <p class="desc">Smoked brisket patty, jalapeños, pepper jack, chipotle aioli, toasted brioche</p>
-          <div class="price-row">
-            <span class="price">15<span class="cents">.50</span></span>
-            <button class="add-btn" onclick="addToCart('Smoke & Fire',15.5)">Add</button>
-          </div>
-        </div>
-        <div class="menu-card reveal">
-          <div class="badge">For Two</div>
-          <h3>Double Trouble</h3>
-          <p class="desc">Two smashed patties, double cheese, bacon jam, caramelized onions, garlic aioli</p>
-          <div class="price-row">
-            <span class="price">16<span class="cents">.90</span></span>
-            <button class="add-btn" onclick="addToCart('Double Trouble',16.9)">Add</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
-
-    <!-- ─── Gallery ─── -->
-    <section class="container">
-      <p class="section-eyebrow reveal">The Visuals</p>
-      <h2 class="section-title reveal-s">Our <span class="accent">Kitchen</span></h2>
-      <p class="section-sub reveal">Where the magic happens — from griddle to plate.</p>
-      <div class="gallery-grid">
-        <div class="g-item reveal-s">
-          <div class="img-placeholder">🍔</div>
-          <span class="label">Signature Smash</span>
-        </div>
-        <div class="g-item reveal">
-          <div class="img-placeholder">🥩</div>
-          <span class="label">Angus Patties</span>
-        </div>
-        <div class="g-item reveal">
-          <div class="img-placeholder">🧀</div>
-          <span class="label">Aged Cheese</span>
-        </div>
-        <div class="g-item reveal">
-          <div class="img-placeholder">🍞</div>
-          <span class="label">Fresh Brioche</span>
-        </div>
-        <div class="g-item reveal">
-          <div class="img-placeholder">🔥</div>
-          <span class="label">Cast Iron</span>
-        </div>
-      </div>
-    </section>
-
-    <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
-
-    <!-- ─── Reviews ─── -->
-    <section id="reviews" class="container">
-      <p class="section-eyebrow reveal">What They Say</p>
-      <h2 class="section-title reveal-s">Customer <span class="accent">Love</span></h2>
-      <p class="section-sub reveal">Real reviews from real people who love a great smash.</p>
-      <div class="reviews-grid">
-        <div class="review-card reveal">
-          <div class="stars">★★★★★</div>
-          <p class="text">"Best burger in Athens. The Double Trouble is absolutely insane — the bacon jam alone is worth the visit."</p>
-          <div class="author">
-            <div class="avatar">AK</div>
-            <div><div class="name">Alex K.</div><div class="handle">@alex_eats</div></div>
-          </div>
-          <div class="source">Google Reviews</div>
-        </div>
-        <div class="review-card reveal">
-          <div class="stars">★★★★★</div>
-          <p class="text">"Finally, a smash burger that actually has crispy edges. The brioche is pillowy perfection. 10/10."</p>
-          <div class="author">
-            <div class="avatar">MC</div>
-            <div><div class="name">Maria C.</div><div class="handle">@maria_foodie</div></div>
-          </div>
-          <div class="source">TripAdvisor</div>
-        </div>
-        <div class="review-card reveal">
-          <div class="stars">★★★★★</div>
-          <p class="text">"The Smoke & Fire changed my life. Perfect amount of heat, the chipotle aioli is next level."</p>
-          <div class="author">
-            <div class="avatar">DP</div>
-            <div><div class="name">Dimitris P.</div><div class="handle">@dimibites</div></div>
-          </div>
-          <div class="source">Google Reviews</div>
-        </div>
-      </div>
-    </section>
-
-    <div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
-
-    <!-- ─── Experience ─── -->
-    <section id="experience" class="container">
-      <p class="section-eyebrow reveal">Craft &amp; Care</p>
-      <h2 class="section-title reveal-s">The <span class="accent">Experience</span></h2>
-      <p class="section-sub reveal">Every detail matters. From sourcing to griddle to your plate.</p>
-      <div class="exp-grid">
-        <div class="exp-card reveal"><div class="icon">🥩</div><h4>Premium Angus</h4><p>100% fresh Angus beef, ground daily, smashed at 197° on a cast-iron flat-top.</p></div>
-        <div class="exp-card reveal"><div class="icon">🧀</div><h4>Aged Cheese</h4><p>Affineur-selected cheddar, Gruyère, and smoked Gouda. No processed slices.</p></div>
-        <div class="exp-card reveal"><div class="icon">🍞</div><h4>Brioche Perfection</h4><p>Egg-washed, sesame-seeded brioche buns baked fresh every morning.</p></div>
-        <div class="exp-card reveal"><div class="icon">🔥</div><h4>Cast Iron Smash</h4><p>Thin, lacy, crispy edges. A Maillard reaction masterpiece on every patty.</p></div>
-      </div>
-    </section>
-
-    <!-- ─── Parallax Quote ─── -->
-    <section class="parallax-section">
-      <blockquote class="reveal-s">
-        "A <span class="accent">smash burger</span> isn't just food.<br>It's a <span class="accent">moment</span>."
-      </blockquote>
-      <p class="attribution reveal">— Smashie Kitchen, Athens</p>
-    </section>
-
-    <!-- ─── Contact ─── -->
-    <section id="contact" class="container">
-      <p class="section-eyebrow reveal">Get in Touch</p>
-      <h2 class="section-title reveal-s">Find <span class="accent">Us</span></h2>
-      <p class="section-sub reveal">Come taste the difference. Walk-ins welcome.</p>
-      <div class="contact-wrap">
-        <div class="contact-info">
-          <div class="contact-item reveal-l">
-            <div class="icon">📍</div>
-            <div class="info"><h4>Address</h4><p>25 Kolokotroni Street, Athens, Greece</p></div>
-          </div>
-          <div class="contact-item reveal-l">
-            <div class="icon">📞</div>
-            <div class="info"><h4>Call</h4><p>+30 210 000 0000</p></div>
-          </div>
-          <div class="contact-item reveal-l">
-            <div class="icon">📱</div>
-            <div class="info"><h4>Order Online</h4><a href="#" onclick="openOrderModal();return false">order@smashie.gr</a></div>
-          </div>
-        </div>
-        <div class="hours-card reveal-r">
-          <h4>Opening Hours</h4>
-          <div class="row"><span class="day">Mon — Fri</span><span class="time">11:00 — 23:00</span></div>
-          <div class="row"><span class="day">Saturday</span><span class="time">12:00 — 00:00</span></div>
-          <div class="row"><span class="day">Sunday</span><span class="time">13:00 — 22:00</span></div>
-          <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border-subtle);display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:rgba(212,201,176,.3)">
-            <span style="width:6px;height:6px;border-radius:50%;background:#5a8a4a;display:inline-block"></span>
-            Open now
-          </div>
-        </div>
-      </div>
-      <div class="social-links">
-        <a href="#" target="_blank">📸</a>
-        <a href="#" target="_blank">📘</a>
-        <a href="#" target="_blank">🐦</a>
-        <a href="#" target="_blank">🔗</a>
-      </div>
-    </section>
-
-    <footer>
-      <p>© 2026 Smashie · Burgers with Soul</p>
-      <p class="made-by" style="margin-top:.4rem">Made by Mac 🍜</p>
-    </footer>
-
-  </div>
-
-  <!-- ─── Order Modal ─── -->
-  <div id="orderModal">
-    <div class="overlay" onclick="closeOrderModal()"></div>
-    <div class="modal">
-      <button class="close" onclick="closeOrderModal()">✕</button>
-      <h2>Your Order</h2>
-      <p class="sub">Smashie · Pickup &amp; Delivery</p>
-      <div id="cartItems">
-        <p style="color:rgba(255,255,255,.2);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>
-      </div>
-      <div id="cartTotal" style="display:none">
-        <div class="total"><span>Total</span><span class="amount" id="totalAmount">€0.00</span></div>
-        <button class="checkout-btn">Place Order</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── Three.js ─── -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
+  // Particles (steam effect)
+  const geo = new THREE.BufferGeometry();
+  const particleCount = 300;
+  const pos = new Float32Array(particleCount * 3);
+  const vel = new Float32Array(particleCount);
+  for (let i = 0; i < particleCount; i++) {
+    pos[i*3] = (Math.random()-0.5)*4;
+    pos[i*3+1] = (Math.random()-0.5)*3 + 2;
+    pos[i*3+2] = (Math.random()-0.5)*4;
+    vel[i] = 0.02 + Math.random() * 0.05;
   }
-  </script>
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const pMat = new THREE.PointsMaterial({
+    color: 0xd4c9b0, transparent: true, opacity: 0.15,
+    size: 0.12, blending: THREE.AdditiveBlending, depthWrite: false
+  });
+  const particles = new THREE.Points(geo, pMat);
+  scene.add(particles);
 
-  <script type="module">
-    import * as THREE from 'three';
+  camera.position.set(0, 0.3, 5);
+  camera.lookAt(0, 0.3, 0);
 
+  let mx = 0, my = 0;
+  document.addEventListener('mousemove', e => {
+    mx = (e.clientX / window.innerWidth) * 2 - 1;
+    my = -(e.clientY / window.innerHeight) * 2 + 1;
+  });
 
-    const canvas = document.getElementById('bg-canvas');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, window.innerWidth/window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, premultipliedAlpha: false });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-    // CRITICAL: make the canvas background truly transparent
-    renderer.domElement.style.background = 'transparent';
-    canvas.appendChild(renderer.domElement);
-    document.getElementById('loader').classList.add('hidden');
+  function animate() {
+    requestAnimationFrame(animate);
+    const t = performance.now() / 1000;
+    
+    logo.rotation.y = t * 0.3 + mx * 0.3;
+    logo.position.y = 0.3 + Math.sin(t * 0.8) * 0.1;
 
-
-
-    // ─── Lights ───
-    const ambient = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambient);
-
-    const mainLight = new THREE.DirectionalLight(0xffffff, 2.0);
-    mainLight.position.set(3, 5, 4);
-    scene.add(mainLight);
-
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.6);
-    fillLight.position.set(-3, 0, 3);
-    scene.add(fillLight);
-
-
-
-
-
-    // ─── 3D Logo ───
-    const logoTexture = new THREE.TextureLoader().load('logo-2.png');
-    logoTexture.colorSpace = THREE.SRGBColorSpace;
-    const logo3D = new THREE.Mesh(
-      new THREE.PlaneGeometry(3, 3),
-      new THREE.MeshStandardMaterial({
-        map: logoTexture, transparent: true, side: THREE.DoubleSide,
-        roughness: 0.3, metalness: 0.2,
-        emissive: new THREE.Color(0xd4c9b0), emissiveIntensity: 0.15,
-        depthWrite: true,
-      })
-    );
-    logo3D.position.set(0, 0.5, -3);
-    logo3D.scale.set(0, 0, 0);
-    scene.add(logo3D);
-
-    let logoInStart = null;
-    function logoIn(t) {
-      if (!logoInStart) logoInStart = t;
-      const p = Math.min((t - logoInStart) / 2000, 1);
-      logo3D.scale.setScalar(1 - Math.pow(1 - p, 3));
-      if (p < 1) requestAnimationFrame(logoIn);
-    }
-    setTimeout(() => requestAnimationFrame(logoIn), 800);
-
-    // ─── Particle glow texture ───
-    function makeGlow(ctx, size) {
-      const c = document.createElement('canvas'); c.width = c.height = size;
-      const cx = c.getContext('2d');
-      const g = cx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
-      g.addColorStop(0, 'rgba(255,255,255,1)');
-      g.addColorStop(0.15, 'rgba(255,255,255,0.8)');
-      g.addColorStop(0.4, 'rgba(212,201,176,0.25)');
-      g.addColorStop(0.7, 'rgba(212,201,176,0.04)');
-      g.addColorStop(1, 'rgba(212,201,176,0)');
-      cx.fillStyle = g; cx.fillRect(0, 0, size, size);
-      return new THREE.CanvasTexture(c);
-    }
-    const glowTex = makeGlow(64);
-
-    // ─── Steam ─── (reduced)
-    const sCnt = 250;
-    const sGeo = new THREE.BufferGeometry();
-    const sPos = new Float32Array(sCnt * 3);
-    const sVel = new Float32Array(sCnt);
-    const sPh = new Float32Array(sCnt);
-    for (let i = 0; i < sCnt; i++) {
-      sPos[i*3] = (Math.random()-0.5)*2.5;
-      sPos[i*3+1] = 1.3+Math.random()*2;
-      sPos[i*3+2] = (Math.random()-0.5)*2.5;
-      sVel[i] = 0.1+Math.random()*0.2;
-      sPh[i] = Math.random()*Math.PI*2;
-    }
-    sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
-    const steam = new THREE.Points(sGeo, new THREE.PointsMaterial({
-      map: glowTex, color: 0xffffff, transparent: true, opacity: 0.12,
-      size: 0.25, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-    }));
-    scene.add(steam);
-
-    // ─── Embers ─── (reduced)
-    const eCnt = 200;
-    const eGeo = new THREE.BufferGeometry();
-    const ePos = new Float32Array(eCnt * 3);
-    const eVel = new Float32Array(eCnt);
-    const ePh = new Float32Array(eCnt);
-    for (let i = 0; i < eCnt; i++) {
-      const a = Math.random()*Math.PI*2;
-      const r = 1.5+Math.random()*4;
-      ePos[i*3] = Math.cos(a)*r;
-      ePos[i*3+1] = -2+Math.random()*3;
-      ePos[i*3+2] = Math.sin(a)*r;
-      eVel[i] = 0.05+Math.random()*0.12;
-      ePh[i] = Math.random()*Math.PI*2;
-    }
-    eGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
-    const embers = new THREE.Points(eGeo, new THREE.PointsMaterial({
-      map: glowTex, color: 0xd4c9b0, transparent: true, opacity: 0.2,
-      size: 0.15, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-    }));
-    scene.add(embers);
-
-    // ─── Dust ─── (reduced)
-    const dCnt = 300;
-    const dGeo = new THREE.BufferGeometry();
-    const dPos = new Float32Array(dCnt * 3);
-    for (let i = 0; i < dCnt; i++) {
-      dPos[i*3] = (Math.random()-0.5)*16;
-      dPos[i*3+1] = (Math.random()-0.5)*8;
-      dPos[i*3+2] = (Math.random()-0.5)*12-4;
-    }
-    dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
-    const dust = new THREE.Points(dGeo, new THREE.PointsMaterial({
-      map: glowTex, color: 0xffffff, transparent: true, opacity: 0.04,
-      size: 0.08, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-    }));
-    scene.add(dust);
-
-    // ─── Sparks ─── (reduced)
-    const pCnt = 100;
-    const pGeo = new THREE.BufferGeometry();
-    const pPos = new Float32Array(pCnt * 3);
-    const pPh = new Float32Array(pCnt);
-    for (let i = 0; i < pCnt; i++) {
-      const a = Math.random()*Math.PI*2;
-      const r = 1+Math.random()*4;
-      pPos[i*3] = Math.cos(a)*r;
-      pPos[i*3+1] = -0.5+Math.random()*3;
-      pPos[i*3+2] = Math.sin(a)*r-0.5;
-      pPh[i] = Math.random()*Math.PI*2;
-    }
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-    const sparks = new THREE.Points(pGeo, new THREE.PointsMaterial({
-      map: glowTex, color: 0xc9a94e, transparent: true, opacity: 0.3,
-      size: 0.04, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
-    }));
-    scene.add(sparks);
-
-    camera.position.set(0, 0.8, 6);
-    camera.lookAt(0, 0.5, -1);
-
-    // ─── Mouse ───
-    let mx = 0, my = 0, tx = 0, ty = 0;
-    document.addEventListener('mousemove', e => {
-      tx = (e.clientX / window.innerWidth) * 2 - 1;
-      ty = -(e.clientY / window.innerHeight) * 2 + 1;
-    });
-    document.addEventListener('touchmove', e => {
-      const t = e.touches[0];
-      if (t) { tx = (t.clientX/window.innerWidth)*2-1; ty = -(t.clientY/window.innerHeight)*2+1; }
-    }, { passive: true });
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // ─── Scroll-Based Navigation ───
-    let lastScroll = 0;
-    let logoRevealed = false;
-    window.addEventListener('scroll', () => {
-      const s = window.scrollY;
-      const nav = document.getElementById('nav');
-      if (s > lastScroll && s > 80) nav.classList.add('hidden');
-      else nav.classList.remove('hidden');
-      lastScroll = s;
-
-      // 3D fade
-      const opacity = Math.max(0, 1 - s / 400);
-      if (steam) steam.material.opacity = opacity * 0.05;
-      if (embers) embers.material.opacity = opacity * 0.08;
-      if (sparks) sparks.material.opacity = opacity * 0.15;
-
-
-      // Logo appears on scroll
-      if (s > 150 && !logoRevealed) {
-        logoRevealed = true;
-      } else if (s < 50) {
-        logoRevealed = false;
+    const p = particles.geometry.attributes.position.array;
+    for (let i = 0; i < particleCount; i++) {
+      p[i*3] += Math.sin(t + i) * 0.003;
+      p[i*3+1] += vel[i] * 0.02;
+      p[i*3+2] += Math.cos(t * 0.5 + i) * 0.003;
+      if (p[i*3+1] > 5) {
+        p[i*3] = (Math.random()-0.5)*4;
+        p[i*3+1] = 0;
+        p[i*3+2] = (Math.random()-0.5)*4;
       }
-    });
-
-    // ─── Animate ───
-    const clock = new THREE.Clock();
-    function animate() {
-      requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-
-      mx += (tx - mx) * 0.15;
-      my += (ty - my) * 0.15;
-
-      // ─── 3D Logo ───
-      if (logo3D.scale.x >= 0.99) {
-        logo3D.rotation.y = t * 0.5 + mx * 0.5;
-        logo3D.rotation.x += my * 0.02;
-        logo3D.position.y = 0.5 + Math.sin(t * 0.6) * 0.15;
-        logo3D.material.emissiveIntensity = 0.15 + Math.sin(t * 1.2) * 0.05;
-      }
-
-      // ─── Steam ───
-      if (steam) {
-        const sp = steam.geometry.attributes.position.array;
-        for (let i = 0; i < sCnt; i++) {
-          const i3 = i*3;
-          sp[i3] += Math.sin(t + sPh[i]) * 0.002;
-          sp[i3+1] += sVel[i] * 0.006;
-          sp[i3+2] += Math.cos(t*0.5 + sPh[i]) * 0.002;
-          if (sp[i3+1] > 4.5) { sp[i3] = (Math.random()-0.5)*2.5; sp[i3+1] = 1.3; sp[i3+2] = (Math.random()-0.5)*2.5; }
-        }
-        steam.geometry.attributes.position.needsUpdate = true;
-      }
-
-      // ─── Embers ───
-      if (embers) {
-        const ep = embers.geometry.attributes.position.array;
-        for (let i = 0; i < eCnt; i++) {
-          const i3 = i*3;
-          ep[i3] += Math.sin(t*0.3 + ePh[i]) * 0.004;
-          ep[i3+1] += eVel[i] * 0.004;
-          ep[i3+2] += Math.cos(t*0.4 + ePh[i]) * 0.004;
-          if (ep[i3+1] > 3.5) { const a=Math.random()*Math.PI*2; const r=1.5+Math.random()*4; ep[i3]=Math.cos(a)*r; ep[i3+1]=-1.5; ep[i3+2]=Math.sin(a)*r; }
-        }
-        embers.geometry.attributes.position.needsUpdate = true;
-      }
-
-      // ─── Dust ───
-      if (dust) {
-        const dp = dust.geometry.attributes.position.array;
-        for (let i = 0; i < dCnt; i++) {
-          dp[i*3] += Math.sin(t*0.1+i) * 0.002;
-          dp[i*3+1] += Math.sin(t*0.08+i*0.5) * 0.001;
-          dp[i*3+2] += Math.cos(t*0.05+i*0.3) * 0.001;
-        }
-        dust.geometry.attributes.position.needsUpdate = true;
-      }
-
-      // ─── Sparks ───
-      if (sparks) {
-        const sk = sparks.geometry.attributes.position.array;
-        for (let i = 0; i < pCnt; i++) {
-          const i3 = i*3;
-          sk[i3] += Math.sin(t*0.5+pPh[i]) * 0.002;
-          sk[i3+1] += Math.sin(t*0.4+pPh[i]*1.3) * 0.003;
-          sk[i3+2] += Math.cos(t*0.3+pPh[i]*0.7) * 0.002;
-        }
-        sparks.geometry.attributes.position.needsUpdate = true;
-        sparks.material.size = 0.04 + Math.sin(t*2) * 0.015;
-        sparks.material.opacity = 0.2 + Math.sin(t*1.5+1) * 0.1;
-      }
-
-      // ─── Camera ───
-      camera.position.x += (mx * 2 - camera.position.x) * 0.04;
-      camera.position.y += (my * 1.5 + 0.8 - camera.position.y) * 0.04;
-      camera.lookAt(0, 0.5, -1);
-
-      // ─── Lights ───
-      mainLight.intensity = 2.0 + Math.sin(t*0.6) * 0.1;
-
-      renderer.render(scene, camera);
     }
-    animate();
-  </script>
+    particles.geometry.attributes.position.needsUpdate = true;
 
-  <!-- ─── Vanilla JS ─── -->
-  <script>
-    // ─── Loader timeout fallback ───
-    setTimeout(() => document.getElementById('loader').classList.add('hidden'), 5000);
+    camera.position.x += (mx * 1.5 - camera.position.x) * 0.05;
+    camera.position.y += (my * 1.0 + 0.3 - camera.position.y) * 0.05;
+    camera.lookAt(0, 0.3, -1);
 
-    // ─── Scroll Reveal ───
-    document.addEventListener('DOMContentLoaded', () => {
-      const obs = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add('visible');
-            if (e.target.dataset.count) animateCount(e.target);
-          }
-        });
-      }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
-      document.querySelectorAll('.reveal, .reveal-s, .reveal-l, .reveal-r').forEach(el => obs.observe(el));
-
-      document.querySelectorAll('.links a').forEach(a => {
-        a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
-      });
-    });
-
-    // ─── Count-Up ───
-    function animateCount(el) {
-      if (el.dataset.animated) return;
-      el.dataset.animated = 'true';
-      const target = parseFloat(el.dataset.count);
-      const suffix = el.querySelector('span')?.outerHTML || '';
-      const isDecimal = target % 1 !== 0;
-      const duration = 2000;
-      const start = performance.now();
-      function tick(now) {
-        const p = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - p, 3);
-        const val = target * eased;
-        if (isDecimal) el.textContent = val.toFixed(1) + suffix;
-        else el.textContent = Math.round(val) + suffix;
-        if (p < 1) requestAnimationFrame(tick);
-        else el.textContent = target + suffix;
-      }
-      requestAnimationFrame(tick);
-    }
-
-    // ─── Cart ───
-    let cart = [];
-    function addToCart(name, price) {
-      const existing = cart.find(i => i.name === name);
-      if (existing) existing.qty++;
-      else cart.push({ name, price, qty: 1 });
-      renderCart();
-      openOrderModal();
-    }
-    function removeFromCart(name) {
-      const idx = cart.findIndex(i => i.name === name);
-      if (idx > -1) {
-        cart[idx].qty--;
-        if (cart[idx].qty <= 0) cart.splice(idx, 1);
-      }
-      renderCart();
-    }
-    function renderCart() {
-      const el = document.getElementById('cartItems');
-      const totalEl = document.getElementById('cartTotal');
-      if (cart.length === 0) {
-        el.innerHTML = '<p style="color:rgba(255,255,255,.2);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>';
-        totalEl.style.display = 'none';
-        return;
-      }
-      let html = '';
-      let total = 0;
-      cart.forEach(item => {
-        const itemTotal = item.price * item.qty;
-        total += itemTotal;
-        html += `
-          <div class="item">
-            <div>
-              <div class="name">${item.name}</div>
-              <div style="font-size:.65rem;color:rgba(255,255,255,.15);margin-top:.2rem">€${item.price.toFixed(2)}</div>
-            </div>
-            <div class="qty">
-              <button onclick="removeFromCart('${item.name}')">−</button>
-              <span>${item.qty}</span>
-              <button onclick="addToCart('${item.name}',${item.price})">+</button>
-              <span class="price-opt">€${itemTotal.toFixed(2)}</span>
-            </div>
-          </div>`;
-      });
-      el.innerHTML = html;
-      totalEl.style.display = 'block';
-      document.getElementById('totalAmount').textContent = '€' + total.toFixed(2);
-    }
-
-    function openOrderModal() {
-      document.getElementById('orderModal').classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeOrderModal() {
-      document.getElementById('orderModal').classList.remove('active');
-      document.body.style.overflow = '';
-    }
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeOrderModal();
-    });
-  </script>
+    renderer.render(scene, camera);
+  }
+  animate();
+};
+document.head.appendChild(script);
+</script>
 
 </body>
 </html>
