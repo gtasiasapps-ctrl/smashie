@@ -199,7 +199,7 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 .magnetic{display:inline-block;transition:transform .2s cubic-bezier(.16,1,.3,1);will-change:transform}
 
 /* ── Scroll progress bar ── */
-#progress-bar{position:fixed;top:0;left:0;height:2px;z-index:9998;background:linear-gradient(90deg,var(--beige),var(--gold));width:0%;transition:width .1s;pointer-events:none}
+#progress-bar{position:fixed;top:0;left:0;height:3px;z-index:10001;background:linear-gradient(90deg,var(--beige),var(--gold));width:0%;transition:width .1s;pointer-events:none;box-shadow:0 0 12px rgba(201,169,78,.3),0 0 4px rgba(212,201,176,.2)}
 
 /* ── Section transition overlay ── */
 #section-overlay{position:fixed;bottom:0;left:0;right:0;height:3px;z-index:2;background:linear-gradient(90deg,var(--gold),var(--beige),transparent);opacity:0;transition:opacity .6s;pointer-events:none}
@@ -237,6 +237,13 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 /* Staggered reveal items */
 .reveal-stag{opacity:0;transform:translateY(40px);transition:all .7s cubic-bezier(.16,1,.3,1)}
 .reveal-stag.visible{opacity:1;transform:translateY(0)}
+
+/* ── Reverse reveal (appears on scroll down, disappears on scroll up) ── */
+.reveal-rev{opacity:0;transform:translateY(40px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+.reveal-rev.in-view{opacity:1;transform:translateY(0)}
+
+.stagger-card-rev{opacity:0;transform:translateY(50px) scale(.95);filter:blur(4px);transition:all .7s cubic-bezier(.16,1,.3,1)}
+.stagger-card-rev.in-view{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
 
 /* Glow pulse for buttons */
 @keyframes glow-pulse{0%,100%{box-shadow:0 0 20px rgba(212,201,176,.1)}50%{box-shadow:0 0 40px rgba(212,201,176,.25)}}
@@ -566,56 +573,79 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 <script>
 // ─── Effects ───
 document.addEventListener('DOMContentLoaded', function() {
-  // Reveal (single)
-  // ── General reveal ──
-  function ioHandler(entries) { entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); }); }
-  var ioOpts = { threshold: 0.15, rootMargin: '0px 0px -60px 0px' };
-  var revealObs = new IntersectionObserver(ioHandler, ioOpts);
-  document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-clip,.reveal-clip-right').forEach(function(el) { revealObs.observe(el); });
+  // ── Scroll direction tracking ──
+  var scrollDir = 'down';
+  var lastY = window.pageYOffset;
+  window.addEventListener('scroll', function() {
+    var y = window.pageYOffset;
+    scrollDir = y > lastY ? 'down' : 'up';
+    lastY = y;
+  }, { passive: true });
 
-  // ── Stagger card reveal ──
-  var staggerObs = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) {
-        var cards = e.target.querySelectorAll('.stagger-card');
-        cards.forEach(function(c, i) {
-          var delay = parseFloat(c.getAttribute('data-delay')) || i * 0.12;
-          setTimeout(function() { c.classList.add('visible'); }, delay * 1000);
-        });
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.stagger-grid').forEach(function(el) { staggerObs.observe(el); });
-
-  // ── Split text animation ──
-  var splitEls = document.querySelectorAll('[data-split]');
-  if (splitEls.length) {
-    splitEls.forEach(function(el) {
-      var text = el.innerHTML;
-      var words = text.split(' ');
-      var html = words.map(function(w) {
-        if (w.startsWith('<')) return w;
-        return '<span class="word">' + w + '</span>';
-      }).join(' ');
-      el.innerHTML = '<span class="split-text">' + html + '</span>';
-      // Observe this split element's section
-      var section = el.closest('section');
-      if (section) {
-        new IntersectionObserver(function(entries) {
-          entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
-              var wds = el.querySelectorAll('.word');
-              wds.forEach(function(w, i) {
-                setTimeout(function() { w.classList.add('visible'); }, i * 50);
-              });
-            }
-          });
-        }, { threshold: 0.2 }).observe(section);
-      }
-    });
+  // ── Bidirectional reveal (adds class on enter, removes on exit) ──
+  function makeBiObserver(selector, cls, opts) {
+    opts = opts || { threshold: 0.15, rootMargin: '0px 0px -60px 0px' };
+    var els = document.querySelectorAll(selector);
+    if (!els.length) return;
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) entry.target.classList.add(cls);
+        else entry.target.classList.remove(cls);
+      });
+    }, opts);
+    els.forEach(function(el) { obs.observe(el); });
   }
+  makeBiObserver('.reveal', 'visible');
+  makeBiObserver('.reveal-left', 'visible');
+  makeBiObserver('.reveal-right', 'visible');
+  makeBiObserver('.reveal-scale', 'visible');
+  makeBiObserver('.reveal-clip', 'visible');
+  makeBiObserver('.reveal-clip-right', 'visible');
 
-  // ── Counter animation for stats ──
+  // ── Stagger grid: bidirectional ──
+  document.querySelectorAll('.stagger-grid').forEach(function(grid) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var cards = grid.querySelectorAll('.stagger-card');
+        if (entry.isIntersecting) {
+          cards.forEach(function(c, i) {
+            var delay = parseFloat(c.getAttribute('data-delay')) || i * 0.12;
+            setTimeout(function() { c.classList.add('in-view'); }, delay * 1000);
+          });
+        } else {
+          cards.forEach(function(c) { c.classList.remove('in-view'); });
+        }
+      });
+    }, { threshold: 0.1 });
+    obs.observe(grid);
+  });
+
+  // ── Split text (bidirectional) ──
+  var splitEls = document.querySelectorAll('[data-split]');
+  splitEls.forEach(function(el) {
+    var text = el.innerHTML;
+    var words = text.split(' ');
+    var html = words.map(function(w) {
+      if (w.startsWith('<')) return w;
+      return '<span class="word">' + w + '</span>';
+    }).join(' ');
+    el.innerHTML = '<span class="split-text">' + html + '</span>';
+    var section = el.closest('section');
+    if (section) {
+      new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          var wds = el.querySelectorAll('.word');
+          if (entry.isIntersecting) {
+            wds.forEach(function(w, i) { setTimeout(function() { w.classList.add('visible'); }, i * 50); });
+          } else {
+            wds.forEach(function(w) { w.classList.remove('visible'); });
+          }
+        });
+      }, { threshold: 0.2 }).observe(section);
+    }
+  });
+
+  // ── Counter animation (once) ──
   var statsRow = document.querySelector('.stats-row');
   if (statsRow) {
     var countersDone = false;
@@ -666,21 +696,16 @@ document.addEventListener('DOMContentLoaded', function() {
       card.style.transform = 'rotateY(' + (x * 8) + 'deg) rotateX(' + (-y * 8) + 'deg) translateZ(0)';
     });
   });
-  // Reset on leave
   document.addEventListener('mouseleave', function() {
-    document.querySelectorAll('.tilt-card').forEach(function(card) {
-      card.style.transform = '';
-    });
+    document.querySelectorAll('.tilt-card').forEach(function(card) { card.style.transform = ''; });
   });
 
-  // ── Glow hover on cards (mouse tracking glow) ──
+  // ── Glow hover on cards ──
   document.querySelectorAll('.glow-hover').forEach(function(card) {
     card.addEventListener('mousemove', function(e) {
       var rect = this.getBoundingClientRect();
-      var x = ((e.clientX - rect.left) / rect.width) * 100;
-      var y = ((e.clientY - rect.top) / rect.height) * 100;
-      this.style.setProperty('--mx', x + '%');
-      this.style.setProperty('--my', y + '%');
+      this.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+      this.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
     });
   });
 
@@ -688,13 +713,9 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.magnetic').forEach(function(btn) {
     btn.addEventListener('mousemove', function(e) {
       var rect = this.getBoundingClientRect();
-      var x = (e.clientX - rect.left - rect.width/2) * 0.3;
-      var y = (e.clientY - rect.top - rect.height/2) * 0.3;
-      this.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      this.style.transform = 'translate(' + ((e.clientX - rect.left - rect.width/2) * 0.3) + 'px,' + ((e.clientY - rect.top - rect.height/2) * 0.3) + 'px)';
     });
-    btn.addEventListener('mouseleave', function() {
-      this.style.transform = '';
-    });
+    btn.addEventListener('mouseleave', function() { this.style.transform = ''; });
   });
 
   // ── Parallax depth layers ──
@@ -711,37 +732,30 @@ document.addEventListener('DOMContentLoaded', function() {
   var bg = document.getElementById('bg-scrim');
   if (bg) {
     window.addEventListener('scroll', function() {
-      var y = window.pageYOffset;
-      bg.style.backgroundPosition = 'center ' + (50 + y * 0.03) + '%';
+      bg.style.backgroundPosition = 'center ' + (50 + window.pageYOffset * 0.03) + '%';
     }, { passive: true });
   }
 
-  // ── Section badge (page indicator) ──
+  // ── Section badge ──
   var sections = document.querySelectorAll('section:not(.hero)');
   var labels = ['Hero','Menu','Reviews','Experience','Contact'];
   var badge = document.getElementById('section-badge');
   var badgeNum = document.getElementById('sectionNum');
   var badgeLabel = document.getElementById('sectionLabel');
   if (badge && sections.length) {
-    var sectionObs = new IntersectionObserver(function(entries) {
+    new IntersectionObserver(function(entries) {
       entries.forEach(function(e) {
         if (e.isIntersecting) {
           var idx = Array.from(sections).indexOf(e.target) + 1;
           badgeNum.textContent = '0' + (idx + 1);
           badgeLabel.textContent = labels[idx + 1] || e.target.id || 'Section';
-          // Pulse effect
           badgeNum.style.transition = 'none';
           badgeNum.style.transform = 'scale(1.3)';
           setTimeout(function() { badgeNum.style.transition = 'transform .4s cubic-bezier(.16,1,.3,1)'; badgeNum.style.transform = 'scale(1)'; }, 50);
         }
       });
     }, { threshold: 0.3 });
-    sections.forEach(function(s) { sectionObs.observe(s); });
-    // Show badge after scroll
-    var badgeShown = false;
-    window.addEventListener('scroll', function() {
-      if (!badgeShown && window.pageYOffset > 200) { badge.classList.add('show'); badgeShown = true; }
-    }, { passive: true });
+    sections.forEach(function(s) { new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){badge.classList.add('show');}})},{threshold:0.3}).observe(s); });
   }
 
   // ── Scroll progress bar ──
@@ -749,13 +763,13 @@ document.addEventListener('DOMContentLoaded', function() {
   if (progressBar) {
     window.addEventListener('scroll', function() {
       var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      progressBar.style.width = (scrollTop / docHeight * 100) + '%';
+      var docHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight;
+      progressBar.style.width = Math.min(100, (scrollTop / Math.max(1,docHeight)) * 100) + '%';
       var overlay = document.getElementById('section-overlay');
       if (overlay) {
-        var diff = Math.abs(scrollTop - (window.lastScrollY || 0));
+        var diff = Math.abs(scrollTop - (window.lastProgressY || 0));
         overlay.style.opacity = diff > 5 ? '1' : diff > 1 ? '0.5' : '0';
-        window.lastScrollY = scrollTop;
+        window.lastProgressY = scrollTop;
       }
     }, { passive: true });
   }
