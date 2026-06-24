@@ -53,11 +53,7 @@ nav .links .order-btn::after{display:none}
 
 /* Hero */
 .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:8rem 2rem 4rem;position:relative}
-.hero .tag{display:inline-flex;align-items:center;gap:.6rem;padding:.35rem 1rem;background:rgba(212,201,176,.06);border:1px solid rgba(212,201,176,.1);border-radius:100px;font-size:.65rem;font-weight:500;letter-spacing:.2em;color:var(--beige);margin-bottom:1.8rem;text-transform:uppercase}
-.hero h1{font-family:'Sora',sans-serif;font-size:clamp(3.5rem,14vw,9rem);font-weight:800;line-height:.92;letter-spacing:-.04em}
 .hero h1 .accent{background:linear-gradient(135deg,var(--beige),var(--light-cream));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero .sub{font-size:clamp(.95rem,1.8vw,1.15rem);color:rgba(255,255,255,.35);max-width:460px;line-height:1.7;margin-top:1.5rem;text-transform:uppercase;letter-spacing:.25em}
-.hero .buttons{margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
 .hero .btn{padding:1rem 2.5rem;border-radius:100px;font-weight:600;font-size:.85rem;text-decoration:none;transition:all .3s;cursor:pointer;border:none}
 .hero .btn-primary{background:linear-gradient(135deg,var(--beige),var(--gold));color:var(--dark)}
 .hero .btn-primary:hover{transform:scale(1.05);box-shadow:0 12px 40px rgba(212,201,176,.2)}
@@ -134,6 +130,52 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 /* Reveal */
 .reveal{opacity:0;transform:translateY(50px);transition:all .9s cubic-bezier(.16,1,.3,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── Burger joint extras ── */
+
+/* Marquee */
+.marquee-wrap{overflow:hidden;width:100%;background:rgba(212,201,176,.04);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:.5rem 0;position:relative;z-index:2}
+.marquee-inner{display:flex;gap:3rem;animation:marquee 28s linear infinite;white-space:nowrap;will-change:transform}
+.marquee-inner span{color:rgba(212,201,176,.25);font-size:.65rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase}
+.marquee-inner span em{font-style:normal;color:var(--gold);margin:0 .3rem}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* Counter */
+.stat-num{font-family:'Sora',sans-serif;font-size:3.5rem;font-weight:700;background:linear-gradient(180deg,#fff,rgba(255,255,255,.4));-webkit-background-clip:text;transition:all .6s}
+.stat-num.counted{background:linear-gradient(135deg,var(--beige),var(--gold));-webkit-background-clip:text;transform:scale(1.05)}
+
+/* Menu card sizzle */
+.menu-card{position:relative;overflow:hidden}
+.menu-card::before{content:'';position:absolute;inset:-2px;border-radius:22px;background:conic-gradient(from var(--angle,0deg),transparent,rgba(212,201,176,.08),rgba(201,169,78,.06),rgba(212,201,176,.12),transparent);opacity:0;transition:opacity .6s;z-index:-1}
+@property --angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+.menu-card:hover::before{opacity:1;animation:sizzle-border 2s linear infinite}
+@keyframes sizzle-border{to{--angle:360deg}}
+
+/* Staggered reveal items */
+.reveal-stag{opacity:0;transform:translateY(40px);transition:all .7s cubic-bezier(.16,1,.3,1)}
+.reveal-stag.visible{opacity:1;transform:translateY(0)}
+
+/* Glow pulse for buttons */
+@keyframes glow-pulse{0%,100%{box-shadow:0 0 20px rgba(212,201,176,.1)}50%{box-shadow:0 0 40px rgba(212,201,176,.25)}}
+.hero .btn-primary{animation:glow-pulse 3s ease-in-out infinite}
+
+/* Cursor sparkle */
+.cursor-sparkle{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9999;animation:sparkle-out .6s ease forwards}
+@keyframes sparkle-out{0%{transform:scale(1);opacity:1}100%{transform:scale(4);opacity:0}}
+.cursor-sparkle.gold{background:var(--gold);box-shadow:0 0 10px var(--gold)}
+.cursor-sparkle.beige{background:var(--beige);box-shadow:0 0 8px var(--beige)}
+
+/* Section dividers - sizzle lines */
+.sizzle-div{width:60px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.15),rgba(201,169,78,.1),rgba(212,201,176,.15),transparent);position:relative}
+.sizzle-div::after{content:'✦';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:.4rem;color:rgba(212,201,176,.15)}
+
+/* Hero typewriter effect */
+.hero .tag{display:inline-flex;align-items:center;gap:.6rem;padding:.35rem 1rem;background:rgba(212,201,176,.06);border:1px solid rgba(212,201,176,.1);border-radius:100px;font-size:.65rem;font-weight:500;letter-spacing:.2em;color:var(--beige);margin-bottom:1.8rem;text-transform:uppercase;opacity:0;animation:fadeIn .6s .3s forwards}
+@keyframes fadeIn{to{opacity:1}}
+
+.hero h1{font-family:'Sora',sans-serif;font-size:clamp(3.5rem,14vw,9rem);font-weight:800;line-height:.92;letter-spacing:-.04em;opacity:0;animation:fadeIn .8s .6s forwards}
+.hero .sub{font-size:clamp(.95rem,1.8vw,1.15rem);color:rgba(255,255,255,.35);max-width:460px;line-height:1.7;margin-top:1.5rem;text-transform:uppercase;letter-spacing:.25em;opacity:0;animation:fadeIn .6s 1s forwards}
+.hero .buttons{margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeIn .6s 1.3s forwards}
 </style>
 </head>
 <body>
@@ -176,6 +218,14 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 
 <div class="content">
 
+<!-- ─── Marquee ─── -->
+<div class="marquee-wrap">
+  <div class="marquee-inner">
+    <span>✦ Smashie <em>·</em> Premium Angus <em>·</em> Smashed to Order <em>·</em> Open Daily 11—23 <em>·</em> ✦</span>
+    <span>✦ Smashie <em>·</em> Premium Angus <em>·</em> Smashed to Order <em>·</em> Open Daily 11—23 <em>·</em> ✦</span>
+  </div>
+</div>
+
 <section class="hero">
   <div class="tag">✦ Est. 2025 · Athens</div>
   <h1>Smash<br><span class="accent">Perfection.</span></h1>
@@ -195,40 +245,40 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
   </div>
 </section>
 
-<div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
+<div class="sizzle-div"></div>
 
 <section id="menu" class="container">
   <h2 class="section-title">The <span class="accent">Menu</span></h2>
   <p class="section-sub">Crafted with premium ingredients. Smashed to perfection.</p>
   <div class="menu-grid">
-    <div class="menu-card"><div class="badge">Best Seller</div><h3>The Classic Smash</h3><p class="desc">Double Angus patty, aged cheddar, pickles, secret sauce, brioche bun</p><div class="price-row"><span class="price">12<span class="cents">.90</span></span><button class="add-btn" onclick="addToCart('The Classic Smash',12.9)">Add</button></div></div>
-    <div class="menu-card"><div class="badge">Spicy</div><h3>Smoke &amp; Fire</h3><p class="desc">Smoked brisket patty, jalapeños, pepper jack, chipotle aioli, toasted brioche</p><div class="price-row"><span class="price">15<span class="cents">.50</span></span><button class="add-btn" onclick="addToCart('Smoke & Fire',15.5)">Add</button></div></div>
-    <div class="menu-card"><div class="badge">For Two</div><h3>Double Trouble</h3><p class="desc">Two smashed patties, double cheese, bacon jam, caramelized onions, garlic aioli</p><div class="price-row"><span class="price">16<span class="cents">.90</span></span><button class="add-btn" onclick="addToCart('Double Trouble',16.9)">Add</button></div></div>
+    <div class="menu-card reveal-stag" style="transition-delay:0s"><div class="badge">Best Seller</div><h3>The Classic Smash</h3><p class="desc">Double Angus patty, aged cheddar, pickles, secret sauce, brioche bun</p><div class="price-row"><span class="price">12<span class="cents">.90</span></span><button class="add-btn" onclick="addToCart('The Classic Smash',12.9)">Add</button></div></div>
+    <div class="menu-card reveal-stag" style="transition-delay:.15s"><div class="badge">Spicy</div><h3>Smoke &amp; Fire</h3><p class="desc">Smoked brisket patty, jalapeños, pepper jack, chipotle aioli, toasted brioche</p><div class="price-row"><span class="price">15<span class="cents">.50</span></span><button class="add-btn" onclick="addToCart('Smoke & Fire',15.5)">Add</button></div></div>
+    <div class="menu-card reveal-stag" style="transition-delay:.3s"><div class="badge">For Two</div><h3>Double Trouble</h3><p class="desc">Two smashed patties, double cheese, bacon jam, caramelized onions, garlic aioli</p><div class="price-row"><span class="price">16<span class="cents">.90</span></span><button class="add-btn" onclick="addToCart('Double Trouble',16.9)">Add</button></div></div>
   </div>
 </section>
 
-<div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
+<div class="sizzle-div"></div>
 
 <section id="reviews" class="container">
   <h2 class="section-title">Customer <span class="accent">Love</span></h2>
   <p class="section-sub">Real reviews from real people.</p>
   <div class="reviews-grid">
-    <div class="review-card"><div class="stars">★★★★★</div><p class="text">"Best burger in Athens. The Double Trouble is absolutely insane."</p><div class="author"><div class="avatar">AK</div><div><div class="name">Alex K.</div><div class="handle">@alex_eats</div></div></div></div>
-    <div class="review-card"><div class="stars">★★★★★</div><p class="text">"Finally, a smash burger that actually has crispy edges. 10/10."</p><div class="author"><div class="avatar">MC</div><div><div class="name">Maria C.</div><div class="handle">@maria_foodie</div></div></div></div>
-    <div class="review-card"><div class="stars">★★★★★</div><p class="text">"The Smoke &amp; Fire changed my life. Perfect amount of heat."</p><div class="author"><div class="avatar">DP</div><div><div class="name">Dimitris P.</div><div class="handle">@dimibites</div></div></div></div>
+    <div class="review-card reveal-stag" style="transition-delay:0s"><div class="stars">★★★★★</div><p class="text">"Best burger in Athens. The Double Trouble is absolutely insane."</p><div class="author"><div class="avatar">AK</div><div><div class="name">Alex K.</div><div class="handle">@alex_eats</div></div></div></div>
+    <div class="review-card reveal-stag" style="transition-delay:.15s"><div class="stars">★★★★★</div><p class="text">"Finally, a smash burger that actually has crispy edges. 10/10."</p><div class="author"><div class="avatar">MC</div><div><div class="name">Maria C.</div><div class="handle">@maria_foodie</div></div></div></div>
+    <div class="review-card reveal-stag" style="transition-delay:.3s"><div class="stars">★★★★★</div><p class="text">"The Smoke &amp; Fire changed my life. Perfect amount of heat."</p><div class="author"><div class="avatar">DP</div><div><div class="name">Dimitris P.</div><div class="handle">@dimibites</div></div></div></div>
   </div>
 </section>
 
-<div style="width:40px;height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,rgba(212,201,176,.1),transparent)"></div>
+<div class="sizzle-div"></div>
 
 <section id="experience" class="container">
   <h2 class="section-title">The <span class="accent">Experience</span></h2>
   <p class="section-sub">Every detail matters.</p>
   <div class="exp-grid">
-    <div class="exp-card"><div class="icon">🥩</div><h4>Premium Angus</h4><p>100% fresh Angus beef, ground daily, smashed at 197° on a cast-iron flat-top.</p></div>
-    <div class="exp-card"><div class="icon">🧀</div><h4>Aged Cheese</h4><p>Affineur-selected cheddar, Gruyère, and smoked Gouda. No processed slices.</p></div>
-    <div class="exp-card"><div class="icon">🍞</div><h4>Brioche Perfection</h4><p>Egg-washed, sesame-seeded brioche buns baked fresh every morning.</p></div>
-    <div class="exp-card"><div class="icon">🔥</div><h4>Cast Iron Smash</h4><p>Thin, lacy, crispy edges. A Maillard reaction masterpiece.</p></div>
+    <div class="exp-card reveal-stag" style="transition-delay:0s"><div class="icon">🥩</div><h4>Premium Angus</h4><p>100% fresh Angus beef, ground daily, smashed at 197° on a cast-iron flat-top.</p></div>
+    <div class="exp-card reveal-stag" style="transition-delay:.1s"><div class="icon">🧀</div><h4>Aged Cheese</h4><p>Affineur-selected cheddar, Gruyère, and smoked Gouda. No processed slices.</p></div>
+    <div class="exp-card reveal-stag" style="transition-delay:.2s"><div class="icon">🍞</div><h4>Brioche Perfection</h4><p>Egg-washed, sesame-seeded brioche buns baked fresh every morning.</p></div>
+    <div class="exp-card reveal-stag" style="transition-delay:.3s"><div class="icon">🔥</div><h4>Cast Iron Smash</h4><p>Thin, lacy, crispy edges. A Maillard reaction masterpiece.</p></div>
   </div>
 </section>
 
@@ -258,6 +308,11 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
   var s = document.createElement('script');
   s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
   s.onload = function() {
+    // GLTF loader script
+    var gload = document.createElement('script');
+    gload.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+    gload.onload = function() {
+
     var canvas = document.getElementById('bg-canvas');
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
@@ -266,13 +321,21 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     renderer.domElement.style.background = 'transparent';
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
     canvas.appendChild(renderer.domElement);
 
     // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
     var dl = new THREE.DirectionalLight(0xffffff, 2.0);
     dl.position.set(2, 5, 3);
+    dl.castShadow = true;
     scene.add(dl);
+    var dl2 = new THREE.DirectionalLight(0xd4c9b0, 1.5);
+    dl2.position.set(-2, -1, 2);
+    scene.add(dl2);
 
     // Logo
     var tex = new THREE.TextureLoader().load('logo-2.png');
@@ -283,6 +346,24 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     );
     logo.position.set(0, 0.3, -3);
     scene.add(logo);
+
+    // ── 3D Burger Model ──
+    var burger, burgerGroup = new THREE.Group();
+    var loader = new THREE.GLTFLoader();
+    loader.load('burger.glb', function(gltf) {
+      burger = gltf.scene;
+      burger.scale.set(0.6, 0.6, 0.6);
+      burger.position.set(0, -2.5, -5.5);
+      burger.traverse(function(node) {
+        if (node.isMesh) {
+          node.castShadow = true;
+          node.receiveShadow = true;
+        }
+      });
+      scene.add(burger);
+      // Fade in
+      burger.traverse(function(n) { if (n.isMesh) { n.material.transparent = true; n.material.opacity = 0; } });
+    });
 
     // Particles as Sprites (guaranteed circular glow)
     var glowCanvas = document.createElement('canvas');
@@ -298,15 +379,21 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     ctx.fillRect(0, 0, 64, 64);
     var tex = new THREE.CanvasTexture(glowCanvas);
     tex.needsUpdate = true;
-    var pCount = 150;
+    var pCount = 200;
     var particles = [];
+    var goldColor = new THREE.Color(0xc9a94e);
+    var beigeColor = new THREE.Color(0xd4c9b0);
+    var whiteColor = new THREE.Color(0xffffff);
     for (var i = 0; i < pCount; i++) {
-      var mat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.08 + Math.random()*0.07, blending: THREE.AdditiveBlending, depthWrite: false });
+      var mat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0.06 + Math.random()*0.08, blending: THREE.AdditiveBlending, depthWrite: false });
       var spr = new THREE.Sprite(mat);
-      spr.position.set((Math.random()-0.5)*4, 1+Math.random()*3, (Math.random()-0.5)*4);
-      spr.scale.set(0.15 + Math.random()*0.2, 0.15 + Math.random()*0.2, 1);
-      spr.userData.velY = 0.05 + Math.random()*0.1;
+      spr.position.set((Math.random()-0.5)*6, 1+Math.random()*4, (Math.random()-0.5)*6);
+      spr.scale.set(0.1 + Math.random()*0.25, 0.1 + Math.random()*0.25, 1);
+      spr.userData.velY = 0.03 + Math.random()*0.08;
       spr.userData.phase = Math.random()*Math.PI*2;
+      // Mix gold/beige/white
+      if (Math.random() < 0.3) { mat.color.copy(goldColor); spr.userData.isGold = true; }
+      else if (Math.random() < 0.6) { mat.color.copy(beigeColor); spr.userData.isGold = false; }
       scene.add(spr);
       particles.push(spr);
     }
@@ -348,6 +435,7 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     }
     setTimeout(hideLoader, 500);
 
+    var burgerLoaded = false, burgerFadeStart = null;
     function animate() {
       requestAnimationFrame(animate);
       var t = performance.now() / 1000;
@@ -361,13 +449,24 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
         + 0.10 * Math.sin(t * 7.3 + 1.2)
         + 0.08 * Math.sin(t * 23.1 + 4.5);
       flicker = Math.max(0.08, Math.min(1, flicker));
-      // Occasional deep dips (bad bulb)
       var dip = 1;
       if (Math.sin(t * 2.7 + 0.5) > 0.92) dip = 0.55;
       if (Math.sin(t * 4.3 + 2.1) > 0.94) dip = 0.35;
       if (Math.sin(t * 3.1 + 3.8) > 0.96) dip = 0.12;
       flicker *= dip;
       logoMat.opacity = flicker;
+
+      // ── 3D Burger ──
+      if (burger) {
+        if (!burgerLoaded) { burgerLoaded = true; burgerFadeStart = t; }
+        var fadeElapsed = burgerFadeStart !== null ? t - burgerFadeStart : 0;
+        var fadeProgress = Math.min(1, fadeElapsed / 2);
+        burger.traverse(function(n) {
+          if (n.isMesh) n.material.opacity = fadeProgress;
+        });
+        burger.rotation.y = t * 0.15 + Math.sin(t * 0.2) * 0.05;
+        burger.position.y = -2.5 + Math.sin(t * 0.4) * 0.1;
+      }
 
       for (var i = 0; i < pCount; i++) {
         var spr = particles[i];
@@ -389,20 +488,83 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
       renderer.render(scene, camera);
     }
     animate();
+    }; // end GLTF load
   };
+  document.head.appendChild(gload);
   document.head.appendChild(s);
 })();
 </script>
 
 <script>
-// ─── Reveal on scroll ───
+// ─── Effects ───
 document.addEventListener('DOMContentLoaded', function() {
+  // Reveal (single)
   var obs = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
       if (e.isIntersecting) e.target.classList.add('visible');
     });
   }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
   document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+
+  // Staggered reveal
+  var stagObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        setTimeout(function() { e.target.classList.add('visible'); }, 200);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal-stag').forEach(function(el) { stagObs.observe(el); });
+
+  // ── Counter animation for stats ──
+  var countersDone = false;
+  var counterObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting && !countersDone) {
+        countersDone = true;
+        document.querySelectorAll('.stat-num').forEach(function(el) {
+          var target = parseFloat(el.textContent.replace(/[^0-9.]/g,''));
+          var suffix = el.textContent.includes('%') ? '%' : el.textContent.includes('°') ? '°' : '';
+          var duration = 1200;
+          var startTime = performance.now();
+          function tick(now) {
+            var progress = Math.min(1, (now - startTime) / duration);
+            var eased = 1 - Math.pow(1 - progress, 3);
+            var current = Math.round(eased * target * 10) / 10;
+            if (Number.isInteger(target)) current = Math.round(eased * target);
+            el.textContent = current + suffix;
+            el.classList.add('counted');
+            if (progress < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
+      }
+    });
+  }, { threshold: 0.5 });
+  var statsRow = document.querySelector('.stats-row');
+  if (statsRow) counterObs.observe(statsRow);
+
+  // ── Cursor sparkle trail ──
+  var sparkleTimer = 0;
+  document.addEventListener('mousemove', function(e) {
+    sparkleTimer++;
+    if (sparkleTimer % 4 !== 0) return;
+    var dot = document.createElement('div');
+    dot.className = 'cursor-sparkle ' + (Math.random() > 0.5 ? 'gold' : 'beige');
+    dot.style.left = (e.clientX - 3) + 'px';
+    dot.style.top = (e.clientY - 3) + 'px';
+    document.body.appendChild(dot);
+    setTimeout(function() { dot.remove(); }, 700);
+  });
+
+  // ── Parallax background ──
+  var bg = document.getElementById('bg-scrim');
+  if (bg) {
+    window.addEventListener('scroll', function() {
+      var y = window.pageYOffset * 0.3;
+      bg.style.backgroundPosition = 'center ' + (50 + y * 0.02) + '%';
+    }, { passive: true });
+  }
 
   // Cart
   var cart = [];
