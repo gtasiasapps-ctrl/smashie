@@ -568,12 +568,9 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 document.addEventListener('DOMContentLoaded', function() {
   // Reveal (single)
   // ── General reveal ──
+  function ioHandler(entries) { entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); }); }
   var ioOpts = { threshold: 0.15, rootMargin: '0px 0px -60px 0px' };
-  var revealObs = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) e.target.classList.add('visible');
-    });
-  }, ioOpts);
+  var revealObs = new IntersectionObserver(ioHandler, ioOpts);
   document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-clip,.reveal-clip-right').forEach(function(el) { revealObs.observe(el); });
 
   // ── Stagger card reveal ──
@@ -582,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (e.isIntersecting) {
         var cards = e.target.querySelectorAll('.stagger-card');
         cards.forEach(function(c, i) {
-          var delay = parseFloat(c.getAttribute('data-delay')) || parseFloat(c.style.transitionDelay) || i * 0.12;
+          var delay = parseFloat(c.getAttribute('data-delay')) || i * 0.12;
           setTimeout(function() { c.classList.add('visible'); }, delay * 1000);
         });
       }
@@ -590,80 +587,61 @@ document.addEventListener('DOMContentLoaded', function() {
   }, { threshold: 0.1 });
   document.querySelectorAll('.stagger-grid').forEach(function(el) { staggerObs.observe(el); });
 
-  // ── Zoom reveal ──
-  new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) e.target.classList.add('visible');
-    });
-  }, { threshold: 0.2 }).observe(document.querySelector('.zoom-reveal'));
-
   // ── Split text animation ──
-  function doSplit(els) {
-    els.forEach(function(el) {
+  var splitEls = document.querySelectorAll('[data-split]');
+  if (splitEls.length) {
+    splitEls.forEach(function(el) {
       var text = el.innerHTML;
-      // Don't split markup, just text nodes
       var words = text.split(' ');
       var html = words.map(function(w) {
         if (w.startsWith('<')) return w;
         return '<span class="word">' + w + '</span>';
       }).join(' ');
       el.innerHTML = '<span class="split-text">' + html + '</span>';
+      // Observe this split element's section
+      var section = el.closest('section');
+      if (section) {
+        new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              var wds = el.querySelectorAll('.word');
+              wds.forEach(function(w, i) {
+                setTimeout(function() { w.classList.add('visible'); }, i * 50);
+              });
+            }
+          });
+        }, { threshold: 0.2 }).observe(section);
+      }
     });
   }
-  doSplit(document.querySelectorAll('[data-split]'));
-  new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) {
-        var words = e.target.querySelectorAll('.word');
-        words.forEach(function(w, i) {
-          setTimeout(function() { w.classList.add('visible'); }, i * 40);
-        });
-      }
-    });
-  }, { threshold: 0.3 }).observe(document.querySelectorAll('[data-split]').length > 0 ? document.querySelectorAll('[data-split]')[0].closest('section') : null);
-  // Observe all split texts individually
-  document.querySelectorAll('[data-split]').forEach(function(el) {
-    var section = el.closest('section');
-    if (section) {
-      new IntersectionObserver(function(entries) {
-        entries.forEach(function(e) {
-          if (e.isIntersecting) {
-            var words = el.querySelectorAll('.word');
-            words.forEach(function(w, i) {
-              setTimeout(function() { w.classList.add('visible'); }, i * 40);
-            });
-          }
-        });
-      }, { threshold: 0.2 }).observe(section);
-    }
-  });
 
   // ── Counter animation for stats ──
-  var countersDone = false;
-  new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting && !countersDone) {
-        countersDone = true;
-        document.querySelectorAll('.stat-num').forEach(function(el) {
-          var target = parseFloat(el.textContent.replace(/[^0-9.]/g,''));
-          var suffix = el.textContent.includes('%') ? '%' : el.textContent.includes('°') ? '°' : '';
-          var duration = 1200, startTime = performance.now();
-          function tick(now) {
-            var p = Math.min(1, (now - startTime) / duration);
-            var eased = 1 - Math.pow(1 - p, 3);
-            var c = Math.round(eased * target * 10) / 10;
-            if (Number.isInteger(target)) c = Math.round(eased * target);
-            el.textContent = c + suffix;
-            el.classList.add('counted');
-            if (p < 1) requestAnimationFrame(tick);
-          }
-          requestAnimationFrame(tick);
-        });
-      }
-    });
-  }, { threshold: 0.5 });
   var statsRow = document.querySelector('.stats-row');
-  if (statsRow) new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting&&!countersDone){countersDone=true;}});},{threshold:0.5}).observe(statsRow);
+  if (statsRow) {
+    var countersDone = false;
+    new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !countersDone) {
+          countersDone = true;
+          document.querySelectorAll('.stat-num').forEach(function(el) {
+            var target = parseFloat(el.textContent.replace(/[^0-9.]/g,''));
+            var suffix = el.textContent.includes('%') ? '%' : el.textContent.includes('°') ? '°' : '';
+            var duration = 1200, startTime = performance.now();
+            function tick(now) {
+              var p = Math.min(1, (now - startTime) / duration);
+              var eased = 1 - Math.pow(1 - p, 3);
+              var c = Math.round(eased * target * 10) / 10;
+              if (Number.isInteger(target)) c = Math.round(eased * target);
+              el.textContent = c + suffix;
+              el.classList.add('counted');
+              if (p < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+          });
+        }
+      });
+    }, { threshold: 0.5 }).observe(statsRow);
+  }
 
   // ── Cursor sparkle trail ──
   var sparkleTimer = 0;
