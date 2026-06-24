@@ -131,6 +131,30 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 .reveal{opacity:0;transform:translateY(50px);transition:all .9s cubic-bezier(.16,1,.3,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
+/* ── Section entrance variants ── */
+.reveal-left{opacity:0;transform:translateX(-60px);transition:all .9s cubic-bezier(.16,1,.3,1)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(60px);transition:all .9s cubic-bezier(.16,1,.3,1)}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.reveal-scale{opacity:0;transform:scale(0.85);transition:all 1s cubic-bezier(.16,1,.3,1)}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
+
+/* ── Scroll progress bar ── */
+#progress-bar{position:fixed;top:0;left:0;height:2px;z-index:9998;background:linear-gradient(90deg,var(--beige),var(--gold));width:0%;transition:width .1s;pointer-events:none}
+
+/* ── Section transition overlay ── */
+#section-overlay{position:fixed;bottom:0;left:0;right:0;height:3px;z-index:2;background:linear-gradient(90deg,var(--gold),var(--beige),transparent);opacity:0;transition:opacity .6s;pointer-events:none}
+
+/* ── Bouncy menu card ── */
+.menu-card:hover{transform:translateY(-8px) scale(1.02);border-color:rgba(212,201,176,.1);box-shadow:0 30px 60px rgba(0,0,0,.5),0 0 40px rgba(212,201,176,.05)}
+
+/* ── Swoosh dividers between sections ── */
+.section-swoosh{position:relative;height:80px;overflow:hidden;pointer-events:none}
+.section-swoosh::before{content:'';position:absolute;left:-10%;right:-10%;top:0;height:100%;background:rgba(212,201,176,.015);border-radius:50%/100% 100% 0 0;transform:rotate(180deg)}
+
+/* ── Floating elements (decorative) ── */
+.float-particle{position:fixed;width:4px;height:4px;border-radius:50%;pointer-events:none;z-index:0;background:rgba(212,201,176,.08);box-shadow:0 0 6px rgba(212,201,176,.04)}
+
 /* ── Burger joint extras ── */
 
 /* Marquee */
@@ -180,6 +204,8 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 </head>
 <body>
 
+<div id="progress-bar"></div>
+<div id="section-overlay"></div>
 <div id="bg-scrim"><div class="overlay"></div></div>
 
 <!-- ─── Loader ─── -->
@@ -338,90 +364,18 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     logo.position.set(0, 0.3, -3);
     scene.add(logo);
 
-    // ── Procedural 3D Burger ──
-    var burger = new THREE.Group();
+    // ── Ambient glow ring ──
+    var glowMat = new THREE.MeshBasicMaterial({ color: 0xd4c9b0, transparent: true, opacity: 0.04, side: THREE.DoubleSide });
+    var glowRing = new THREE.Mesh(new THREE.RingGeometry(2.8, 3.5, 48), glowMat);
+    glowRing.rotation.x = -Math.PI / 2;
+    glowRing.position.set(0, -1.5, -6);
+    scene.add(glowRing);
 
-    // Colors
-    var bunColor = 0xd4a053, bunDark = 0xb8862e, pattyColor = 0x4a2c1a;
-    var cheeseColor = 0xf5d742, lettuceColor = 0x4caf50, tomatoColor = 0xd32f2f;
-
-    // Helper to add a burger layer
-    function addLayer(geo, color, y, scaleX, scaleZ, opacity) {
-      var mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.7, metalness: 0, transparent: opacity < 1, opacity: opacity });
-      var mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(0, y, 0);
-      mesh.scale.set(scaleX, 1, scaleZ);
-      mesh.receiveShadow = true;
-      burger.add(mesh);
-      return mesh;
-    }
-
-    // Top bun (half sphere)
-    var topBun = addLayer(new THREE.SphereGeometry(1.0, 32, 20, 0, Math.PI*2, 0, Math.PI/2.5), bunColor, 1.1, 1.0, 1.0, 1);
-    topBun.position.y = 0.9;
-
-    // Top bun lid (flattened sphere)
-    var bunLid = addLayer(new THREE.SphereGeometry(1.1, 32, 16, 0, Math.PI*2, 0, Math.PI/2), bunDark, 1.3, 1.0, 1.0, 1);
-    bunLid.position.y = 1.2;
-    bunLid.scale.set(1.0, 0.5, 1.0);
-
-    // Sesame seeds (small spheres on top)
-    for (var si = 0; si < 7; si++) {
-      var angle = (si / 7) * Math.PI * 2;
-      var rad = 0.65 + Math.random() * 0.15;
-      var seed = addLayer(new THREE.SphereGeometry(0.04, 6, 6), 0xf0e0b0, 
-        1.45 + Math.random() * 0.05, 1, 1, 1);
-      seed.position.set(Math.cos(angle) * rad, 1.45, Math.sin(angle) * rad);
-    }
-
-    // Lettuce (wavy disc)
-    var lettuceGeo = new THREE.CylinderGeometry(1.15, 1.2, 0.06, 48);
-    // Make it wavy
-    var pos = lettuceGeo.attributes.position;
-    for (var pi = 0; pi < pos.count; pi++) {
-      var x = pos.getX(pi), z = pos.getZ(pi);
-      var dist = Math.sqrt(x*x + z*z);
-      if (dist > 0.3) {
-        pos.setY(pi, Math.sin(x * 12 + z * 10) * 0.04);
-      }
-    }
-    pos.needsUpdate = true;
-    lettuceGeo.computeVertexNormals();
-    addLayer(lettuceGeo, lettuceColor, 0.7, 1.0, 1.0, 1);
-
-    // Tomato slice
-    addLayer(new THREE.CylinderGeometry(0.95, 1.0, 0.08, 32), tomatoColor, 0.55, 1.0, 1.0, 1);
-
-    // Cheese slice
-    var cheeseGeo = new THREE.BoxGeometry(1.3, 0.04, 1.3);
-    // Dracula cheese corners
-    var cpos = cheeseGeo.attributes.position;
-    for (var ci = 0; ci < cpos.count; ci++) {
-      var cx = cpos.getX(ci), cz = cpos.getZ(ci);
-      if (Math.abs(cx) > 0.5 && Math.abs(cz) > 0.5) {
-        cpos.setY(ci, Math.sin(cx*5+cz*3)*0.01 - 0.01);
-      }
-    }
-    cpos.needsUpdate = true;
-    cheeseGeo.computeVertexNormals();
-    addLayer(cheeseGeo, cheeseColor, 0.4, 1.0, 1.0, 1);
-
-    // Patty
-    addLayer(new THREE.CylinderGeometry(0.9, 1.0, 0.2, 32), pattyColor, 0.1, 1.0, 1.0, 1);
-
-    // Bottom bun
-    addLayer(new THREE.SphereGeometry(1.0, 32, 24), bunColor, -0.5, 1.0, 1.0, 1).scale.set(1, 0.35, 1);
-
-    // Base plate (invisible, just for shadow)
-    var plateMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5, metalness: 0.3, transparent: true, opacity: 0.2 });
-    var plate = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.8, 0.1, 32), plateMat);
-    plate.position.set(0, -0.8, 0);
-    plate.receiveShadow = true;
-    burger.add(plate);
-
-    burger.position.set(0, -3.2, -5.5);
-    burger.scale.set(0.35, 0.35, 0.35);
-    scene.add(burger);
+    var glowMat2 = new THREE.MeshBasicMaterial({ color: 0xc9a94e, transparent: true, opacity: 0.02, side: THREE.DoubleSide });
+    var glowRing2 = new THREE.Mesh(new THREE.RingGeometry(2.0, 3.0, 48), glowMat2);
+    glowRing2.rotation.x = -Math.PI / 2;
+    glowRing2.position.set(0, -1.8, -6);
+    scene.add(glowRing2);
 
     // Particles as Sprites
     var glowCanvas = document.createElement('canvas');
@@ -513,9 +467,11 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
       flicker *= dip;
       logoMat.opacity = flicker;
 
-      // ── 3D Burger rotation ──
-      burger.rotation.y = t * 0.2 + Math.sin(t * 0.15) * 0.03;
-      burger.position.y = -3.2 + Math.sin(t * 0.35) * 0.08;
+      // ── Glow rings ──
+      glowRing.rotation.z = t * 0.06;
+      glowRing2.rotation.z = -t * 0.04;
+      glowRing.material.opacity = 0.03 + Math.sin(t * 0.5) * 0.015;
+      glowRing2.material.opacity = 0.015 + Math.sin(t * 0.7 + 1) * 0.01;
 
       for (var i = 0; i < pCount; i++) {
         var spr = particles[i];
@@ -612,6 +568,64 @@ document.addEventListener('DOMContentLoaded', function() {
       bg.style.backgroundPosition = 'center ' + (50 + y * 0.02) + '%';
     }, { passive: true });
   }
+
+  // ── Scroll progress bar ──
+  var progressBar = document.getElementById('progress-bar');
+  if (progressBar) {
+    function updateProgress() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      var progress = (scrollTop / docHeight) * 100;
+      progressBar.style.width = progress + '%';
+      // Fade in/out overlay at section boundaries
+      var overlay = document.getElementById('section-overlay');
+      if (overlay) {
+        var vel = Math.abs(window.lastScrollY || 0) > 0;
+        var diff = Math.abs(scrollTop - (window.lastScrollY || 0));
+        overlay.style.opacity = diff > 5 ? '1' : diff > 1 ? '0.5' : '0';
+        window.lastScrollY = scrollTop;
+      }
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+  }
+
+  // ── Floating BG particles ──
+  for (var fi = 0; fi < 15; fi++) {
+    var fp = document.createElement('div');
+    fp.className = 'float-particle';
+    fp.style.left = Math.random() * 100 + '%';
+    fp.style.top = Math.random() * 100 + '%';
+    fp.style.width = fp.style.height = (2 + Math.random() * 4) + 'px';
+    fp.style.animation = 'float' + (fi % 3) + ' ' + (8 + Math.random() * 12) + 's ease-in-out infinite';
+    fp.style.animationDelay = (Math.random() * 10) + 's';
+    document.body.appendChild(fp);
+  }
+  // Add float keyframes dynamically
+  var floatStyle = document.createElement('style');
+  floatStyle.textContent = '@keyframes float0{0%,100%{transform:translateY(0)}50%{transform:translateY(-30px)}}@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}}@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-15px,-25px)}}';
+  document.head.appendChild(floatStyle);
+
+  // ── Smooth reveal observers for all variants ──
+  ['reveal-left','reveal-right','reveal-scale'].forEach(function(cls) {
+    var o = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.' + cls).forEach(function(el) { o.observe(el); });
+  });
+
+  // ── Smooth nav scroll ──
+  document.querySelectorAll('nav a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
 
   // Cart
   var cart = [];
