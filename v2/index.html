@@ -308,10 +308,6 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
   var s = document.createElement('script');
   s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
   s.onload = function() {
-    // GLTF loader script
-    var gload = document.createElement('script');
-    gload.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
-    gload.onload = function() {
 
     var canvas = document.getElementById('bg-canvas');
     var scene = new THREE.Scene();
@@ -321,19 +317,14 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     renderer.domElement.style.background = 'transparent';
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
     canvas.appendChild(renderer.domElement);
 
     // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
     var dl = new THREE.DirectionalLight(0xffffff, 2.0);
     dl.position.set(2, 5, 3);
-    dl.castShadow = true;
     scene.add(dl);
-    var dl2 = new THREE.DirectionalLight(0xd4c9b0, 1.5);
+    var dl2 = new THREE.DirectionalLight(0xd4c9b0, 1.0);
     dl2.position.set(-2, -1, 2);
     scene.add(dl2);
 
@@ -347,25 +338,92 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     logo.position.set(0, 0.3, -3);
     scene.add(logo);
 
-    // ── 3D Burger Model ──
-    var burger, burgerGroup = new THREE.Group();
-    var loader = new THREE.GLTFLoader();
-    loader.load('burger.glb', function(gltf) {
-      burger = gltf.scene;
-      burger.scale.set(0.6, 0.6, 0.6);
-      burger.position.set(0, -2.5, -5.5);
-      burger.traverse(function(node) {
-        if (node.isMesh) {
-          node.castShadow = true;
-          node.receiveShadow = true;
-        }
-      });
-      scene.add(burger);
-      // Fade in
-      burger.traverse(function(n) { if (n.isMesh) { n.material.transparent = true; n.material.opacity = 0; } });
-    });
+    // ── Procedural 3D Burger ──
+    var burger = new THREE.Group();
 
-    // Particles as Sprites (guaranteed circular glow)
+    // Colors
+    var bunColor = 0xd4a053, bunDark = 0xb8862e, pattyColor = 0x4a2c1a;
+    var cheeseColor = 0xf5d742, lettuceColor = 0x4caf50, tomatoColor = 0xd32f2f;
+
+    // Helper to add a burger layer
+    function addLayer(geo, color, y, scaleX, scaleZ, opacity) {
+      var mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.7, metalness: 0, transparent: opacity < 1, opacity: opacity });
+      var mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(0, y, 0);
+      mesh.scale.set(scaleX, 1, scaleZ);
+      mesh.receiveShadow = true;
+      burger.add(mesh);
+      return mesh;
+    }
+
+    // Top bun (half sphere)
+    var topBun = addLayer(new THREE.SphereGeometry(1.0, 32, 20, 0, Math.PI*2, 0, Math.PI/2.5), bunColor, 1.1, 1.0, 1.0, 1);
+    topBun.position.y = 0.9;
+
+    // Top bun lid (flattened sphere)
+    var bunLid = addLayer(new THREE.SphereGeometry(1.1, 32, 16, 0, Math.PI*2, 0, Math.PI/2), bunDark, 1.3, 1.0, 1.0, 1);
+    bunLid.position.y = 1.2;
+    bunLid.scale.set(1.0, 0.5, 1.0);
+
+    // Sesame seeds (small spheres on top)
+    for (var si = 0; si < 7; si++) {
+      var angle = (si / 7) * Math.PI * 2;
+      var rad = 0.65 + Math.random() * 0.15;
+      var seed = addLayer(new THREE.SphereGeometry(0.04, 6, 6), 0xf0e0b0, 
+        1.45 + Math.random() * 0.05, 1, 1, 1);
+      seed.position.set(Math.cos(angle) * rad, 1.45, Math.sin(angle) * rad);
+    }
+
+    // Lettuce (wavy disc)
+    var lettuceGeo = new THREE.CylinderGeometry(1.15, 1.2, 0.06, 48);
+    // Make it wavy
+    var pos = lettuceGeo.attributes.position;
+    for (var pi = 0; pi < pos.count; pi++) {
+      var x = pos.getX(pi), z = pos.getZ(pi);
+      var dist = Math.sqrt(x*x + z*z);
+      if (dist > 0.3) {
+        pos.setY(pi, Math.sin(x * 12 + z * 10) * 0.04);
+      }
+    }
+    pos.needsUpdate = true;
+    lettuceGeo.computeVertexNormals();
+    addLayer(lettuceGeo, lettuceColor, 0.7, 1.0, 1.0, 1);
+
+    // Tomato slice
+    addLayer(new THREE.CylinderGeometry(0.95, 1.0, 0.08, 32), tomatoColor, 0.55, 1.0, 1.0, 1);
+
+    // Cheese slice
+    var cheeseGeo = new THREE.BoxGeometry(1.3, 0.04, 1.3);
+    // Dracula cheese corners
+    var cpos = cheeseGeo.attributes.position;
+    for (var ci = 0; ci < cpos.count; ci++) {
+      var cx = cpos.getX(ci), cz = cpos.getZ(ci);
+      if (Math.abs(cx) > 0.5 && Math.abs(cz) > 0.5) {
+        cpos.setY(ci, Math.sin(cx*5+cz*3)*0.01 - 0.01);
+      }
+    }
+    cpos.needsUpdate = true;
+    cheeseGeo.computeVertexNormals();
+    addLayer(cheeseGeo, cheeseColor, 0.4, 1.0, 1.0, 1);
+
+    // Patty
+    addLayer(new THREE.CylinderGeometry(0.9, 1.0, 0.2, 32), pattyColor, 0.1, 1.0, 1.0, 1);
+
+    // Bottom bun
+    addLayer(new THREE.SphereGeometry(1.0, 32, 24), bunColor, -0.5, 1.0, 1.0, 1).scale.set(1, 0.35, 1);
+
+    // Base plate (invisible, just for shadow)
+    var plateMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5, metalness: 0.3, transparent: true, opacity: 0.2 });
+    var plate = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.8, 0.1, 32), plateMat);
+    plate.position.set(0, -0.8, 0);
+    plate.receiveShadow = true;
+    burger.add(plate);
+
+    burger.position.set(0, -3.2, -5.5);
+    burger.scale.set(0.35, 0.35, 0.35);
+    scene.add(burger);
+
+    // Particles as Sprites
     var glowCanvas = document.createElement('canvas');
     glowCanvas.width = glowCanvas.height = 64;
     var ctx = glowCanvas.getContext('2d');
@@ -435,7 +493,6 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     }
     setTimeout(hideLoader, 500);
 
-    var burgerLoaded = false, burgerFadeStart = null;
     function animate() {
       requestAnimationFrame(animate);
       var t = performance.now() / 1000;
@@ -456,17 +513,9 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
       flicker *= dip;
       logoMat.opacity = flicker;
 
-      // ── 3D Burger ──
-      if (burger) {
-        if (!burgerLoaded) { burgerLoaded = true; burgerFadeStart = t; }
-        var fadeElapsed = burgerFadeStart !== null ? t - burgerFadeStart : 0;
-        var fadeProgress = Math.min(1, fadeElapsed / 2);
-        burger.traverse(function(n) {
-          if (n.isMesh) n.material.opacity = fadeProgress;
-        });
-        burger.rotation.y = t * 0.15 + Math.sin(t * 0.2) * 0.05;
-        burger.position.y = -2.5 + Math.sin(t * 0.4) * 0.1;
-      }
+      // ── 3D Burger rotation ──
+      burger.rotation.y = t * 0.2 + Math.sin(t * 0.15) * 0.03;
+      burger.position.y = -3.2 + Math.sin(t * 0.35) * 0.08;
 
       for (var i = 0; i < pCount; i++) {
         var spr = particles[i];
@@ -488,9 +537,7 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
       renderer.render(scene, camera);
     }
     animate();
-    }; // end GLTF load
   };
-  document.head.appendChild(gload);
   document.head.appendChild(s);
 })();
 </script>
