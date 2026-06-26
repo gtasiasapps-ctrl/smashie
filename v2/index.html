@@ -6,6 +6,7 @@
 <title>Smashie V2 — Burgers with Soul</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lenis@1.3.2/dist/lenis.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -266,6 +267,120 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 .hero h1{font-family:'Sora',sans-serif;font-size:clamp(3.5rem,14vw,9rem);font-weight:800;line-height:.92;letter-spacing:-.04em;opacity:0;animation:fadeIn .8s .6s forwards}
 .hero .sub{font-size:clamp(.95rem,1.8vw,1.15rem);color:rgba(255,255,255,.35);max-width:460px;line-height:1.7;margin-top:1.5rem;text-transform:uppercase;letter-spacing:.25em;opacity:0;animation:fadeIn .6s 1s forwards}
 .hero .buttons{margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeIn .6s 1.3s forwards}
+/* ═══════════════════════════════════════════ */
+/* 🚀 MEGA UPGRADE — Premium Animations Suite  */
+/* ═══════════════════════════════════════════ */
+
+/* ── Lenis smooth scroll ── */
+html.lenis{scroll-behavior:auto}
+html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+
+/* ── Custom Cursor ── */
+body{cursor:none!important}
+#custom-cursor{position:fixed;pointer-events:none;z-index:99999;width:0;height:0;top:0;left:0;mix-blend-mode:difference}
+#cursor-ring{position:fixed;pointer-events:none;z-index:99998;width:32px;height:32px;border:1.5px solid rgba(212,201,176,.5);border-radius:50%;top:0;left:0;transition:width .3s cubic-bezier(.16,1,.3,1),height .3s cubic-bezier(.16,1,.3,1),border-color .3s;transform:translate(-50%,-50%);will-change:transform}
+#cursor-ring.hovering{width:56px;height:56px;border-color:var(--gold);background:rgba(201,169,78,.05)}
+#cursor-dot{position:fixed;pointer-events:none;z-index:99999;width:4px;height:4px;background:var(--beige);border-radius:50%;top:0;left:0;transform:translate(-50%,-50%);will-change:transform;box-shadow:0 0 8px var(--gold)}
+.cursor-trail{position:fixed;pointer-events:none;border-radius:50%;z-index:99997;background:var(--beige);opacity:.2;transform:translate(-50%,-50%);will-change:transform,opacity;animation:cursorTrailFade .8s ease forwards}
+@keyframes cursorTrailFade{0%{opacity:.3;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(0)}}
+
+/* ── Shimmer text on section titles ── */
+.shimmer-title{background:linear-gradient(110deg,var(--cream) 25%,var(--gold) 38%,var(--beige) 45%,var(--cream) 55%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmerMove 4s ease-in-out infinite}
+@keyframes shimmerMove{0%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* ── Hero zoom entrance ── */
+.hero-zoom{opacity:0;transform:scale(1.12);filter:blur(6px);animation:heroZoomIn 1.8s cubic-bezier(.16,1,.3,1) .2s forwards}
+@keyframes heroZoomIn{to{opacity:1;transform:scale(1);filter:blur(0)}}
+
+/* ── Section morph transition ── */
+.section-morph{position:relative;overflow:hidden}
+.section-morph::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at var(--morph-x,50%) var(--morph-y,0%),rgba(212,201,176,.04) 0%,transparent 60%);pointer-events:none;transition:all .8s;z-index:0}
+.section-morph.in-view::before{opacity:1}
+
+/* ── Slide-up text lines ── */
+.text-line{display:block;overflow:hidden}
+.text-line .inner{display:block;transform:translateY(100%);transition:transform .8s cubic-bezier(.16,1,.3,1)}
+.text-line.in-view .inner{transform:translateY(0)}
+
+/* ── Noise overlay ── */
+#noise-overlay{position:fixed;inset:0;z-index:9995;pointer-events:none;opacity:.015;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:256px 256px}
+
+/* ── Gradient ambient mesh bg ── */
+#ambient-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;transition:opacity 1.5s}
+#ambient-mesh canvas{width:100%;height:100%}
+
+/* ── Section color shift ── */
+.color-shift{transition:background .8s}
+.color-shift-1{background:rgba(10,9,8,1)}
+.color-shift-2{background:rgba(15,12,10,1)}
+.color-shift-3{background:rgba(8,10,14,1)}
+.color-shift-4{background:rgba(12,8,10,1)}
+
+/* ── 3D scroll perspective wrapper ── */
+#perspective-wrap{transform-style:preserve-3d;perspective:1200px;transition:transform .1s ease-out;will-change:transform}
+
+/* ── Reveal with scale + blur combo ── */
+.reveal-blur{opacity:0;transform:translateY(30px) scale(.97);filter:blur(8px);transition:all 1s cubic-bezier(.16,1,.3,1)}
+.reveal-blur.visible{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+
+/* ── Slide + 3D rotation reveal ── */
+.reveal-3d{opacity:0;transform:translateY(40px) rotateX(12deg);transition:all 1s cubic-bezier(.16,1,.3,1)}
+.reveal-3d.visible{opacity:1;transform:translateY(0) rotateX(0)}
+
+/* ── Bouncy card entrance (spring-like) ── */
+@keyframes bounceIn{0%{opacity:0;transform:scale(.7) translateY(60px)}50%{transform:scale(1.03) translateY(-4px)}70%{transform:scale(.98) translateY(2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.bounce-card{opacity:0}
+.bounce-card.bounced{animation:bounceIn .7s cubic-bezier(.16,1,.3,1) forwards}
+
+/* ── Gradient border glow on cards ── */
+.glow-border{position:relative;overflow:hidden}
+.glow-border::before{content:'';position:absolute;inset:-2px;border-radius:inherit;background:conic-gradient(from var(--g-angle,0deg),transparent 0%,rgba(212,201,176,.08) 20%,transparent 40%,rgba(201,169,78,.06) 60%,transparent 80%);z-index:-1;opacity:0;transition:opacity .6s;animation:glowSpin 3s linear infinite}
+.glow-border:hover::before{opacity:1}
+@property --g-angle{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes glowSpin{to{--g-angle:360deg}}
+
+/* ── Scroll-driven counter flash ── */
+.counter-flash{display:inline-block;transition:all .3s}
+.counter-flash.flash{animation:counterPulse .2s ease}
+@keyframes counterPulse{0%{transform:scale(1)}50%{transform:scale(1.1);text-shadow:0 0 20px var(--gold)}100%{transform:scale(1)}}
+
+/* ── Divider sizzle line (animated) ── */
+.divider-glow{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(212,201,176,.03),rgba(201,169,78,.02),rgba(212,201,176,.03),transparent);position:relative;margin:0 auto;overflow:visible}
+.divider-glow::after{content:'';position:absolute;top:-2px;left:-20%;width:40%;height:5px;background:linear-gradient(90deg,transparent,var(--gold),transparent);filter:blur(8px);animation:dividerSweep 3s ease-in-out infinite}
+@keyframes dividerSweep{0%{left:-20%}50%{left:80%}100%{left:-20%}}
+
+/* ── Scroll-driven zoom on hero bg ── */
+#hero-bg-zoom{position:fixed;inset:0;z-index:0;pointer-events:none;background:url('smashie_background.jpg') center/cover no-repeat;filter:brightness(0.4) saturate(0.5);transform:scale(1);will-change:transform;transition:transform .1s linear}
+
+/* ── Floating decorative emoji ── */
+.food-float{position:fixed;font-size:1.2rem;opacity:.04;pointer-events:none;z-index:0;animation:foodFloat 12s ease-in-out infinite}
+@keyframes foodFloat{0%,100%{transform:translate(0,0) rotate(0deg)}25%{transform:translate(30px,-40px) rotate(10deg)}50%{transform:translate(-20px,-80px) rotate(-5deg)}75%{transform:translate(15px,-40px) rotate(8deg)}}
+
+/* ── Scroll-triggered gradient section overlays ── */
+.section-glow{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.2s;z-index:0}
+.section-glow.active{opacity:1}
+
+/* ── Pulse ring on hero buttons ── */
+.btn-primary{position:relative}
+.btn-primary::after{content:'';position:absolute;inset:-4px;border-radius:inherit;border:1px solid rgba(212,201,176,.15);opacity:0;animation:btnPulseRing 2.5s ease-in-out infinite}
+@keyframes btnPulseRing{0%,100%{opacity:0;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+
+/* ── Section divider sparkle ── */
+.sparkle-div{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(212,201,176,.04),transparent);position:relative;margin:0 auto}
+.sparkle-div .spark{position:absolute;top:-4px;width:8px;height:8px;background:var(--gold);border-radius:50%;filter:blur(2px);animation:sparkMove 4s ease-in-out infinite}
+@keyframes sparkMove{0%{left:0;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:100%;opacity:0}}
+
+/* ── Animated underline for nav links ── */
+nav .links a::after{transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.16,1,.3,1)}
+nav .links a:hover::after{transform:scaleX(1)}
+
+/* ── Better mobile nav animation ── */
+nav .links{transition:all .4s cubic-bezier(.16,1,.3,1)}
+
+/* ── Reduced motion support ── */
+@media (prefers-reduced-motion:reduce){#noise-overlay,.food-float,.cursor-trail,#custom-cursor,#cursor-ring,#cursor-dot{display:none!important}body{cursor:auto!important}*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
@@ -276,6 +391,11 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 <div id="depth-layer-2"></div>
 <div id="section-badge"><div class="num" id="sectionNum">01</div><div class="line"></div><div class="label" id="sectionLabel">Hero</div></div>
 <div id="bg-scrim"><div class="overlay"></div></div>
+<div id="noise-overlay"></div>
+<div id="ambient-mesh"></div>
+<div id="cursor-ring"></div>
+<div id="cursor-dot"></div>
+<div id="custom-cursor"></div>
 
 <!-- ─── Loader ─── -->
 <div id="loader">
@@ -311,7 +431,7 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
   <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
 </nav>
 
-<div class="content">
+<div id="perspective-wrap"><div class="content">
 
 <!-- ─── Marquee ─── -->
 <div class="marquee-wrap">
@@ -321,7 +441,7 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
   </div>
 </div>
 
-<section class="hero">
+<section class="hero hero-zoom">
   <div class="hero-float" style="width:300px;height:300px;top:-5%;right:-5%"></div>
   <div class="hero-float" style="width:200px;height:200px;bottom:10%;left:-3%;animation-delay:-3s"></div>
   <div class="hero-float" style="width:150px;height:150px;top:40%;right:10%;animation-delay:-6s"></div>
@@ -398,10 +518,12 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 </section>
 
 <footer><p>© 2026 Smashie · Burgers with Soul</p></footer>
-</div>
+</div></div>
 
 <script>
-// ─── Three.js ───
+// ═══════════════════════════════════════════
+// 🚀 THREE.JS — UPGRADED: more particles, ribbons, morphing glow
+// ═══════════════════════════════════════════
 (function() {
   var s = document.createElement('script');
   s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
@@ -419,11 +541,9 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.8));
     var dl = new THREE.DirectionalLight(0xffffff, 2.0);
-    dl.position.set(2, 5, 3);
-    scene.add(dl);
+    dl.position.set(2, 5, 3); scene.add(dl);
     var dl2 = new THREE.DirectionalLight(0xd4c9b0, 1.0);
-    dl2.position.set(-2, -1, 2);
-    scene.add(dl2);
+    dl2.position.set(-2, -1, 2); scene.add(dl2);
 
     var tex = new THREE.TextureLoader().load('logo-2.png');
     var logoMat = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, transparent: true, depthWrite: false, side: THREE.DoubleSide });
@@ -431,109 +551,90 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
     logo.position.set(0, 0.3, -3);
     scene.add(logo);
 
-    var glowMat = new THREE.MeshBasicMaterial({ color: 0xd4c9b0, transparent: true, opacity: 0.04, side: THREE.DoubleSide });
-    var glowRing = new THREE.Mesh(new THREE.RingGeometry(2.8, 3.5, 48), glowMat);
-    glowRing.rotation.x = -Math.PI / 2;
-    glowRing.position.set(0, -1.5, -6);
-    scene.add(glowRing);
-
-    var glowMat2 = new THREE.MeshBasicMaterial({ color: 0xc9a94e, transparent: true, opacity: 0.02, side: THREE.DoubleSide });
-    var glowRing2 = new THREE.Mesh(new THREE.RingGeometry(2.0, 3.0, 48), glowMat2);
-    glowRing2.rotation.x = -Math.PI / 2;
-    glowRing2.position.set(0, -1.8, -6);
-    scene.add(glowRing2);
-
-    // ── 3D laser grid ──
-    var gridHelper = new THREE.GridHelper(14, 24, 0xd4c9b0, 0x444444);
-    gridHelper.position.y = -2.8;
-    gridHelper.material.transparent = true;
-    gridHelper.material.opacity = 0.12;
-    scene.add(gridHelper);
-
-    // ── Floating vertical light beams ──
-    var beams = [];
-    for (var bi = 0; bi < 10; bi++) {
-      var bm = new THREE.MeshBasicMaterial({ color: 0xd4c9b0, transparent: true, opacity: 0.02 + Math.random()*0.02 });
-      var beam = new THREE.Mesh(new THREE.BoxGeometry(0.015, 2 + Math.random()*4, 0.015), bm);
-      beam.position.set((Math.random()-0.5)*9, Math.random()*2-1, (Math.random()-0.5)*9-2);
-      beam.material.color.setHSL(0.08 + Math.random()*0.06, 0.3, 0.4 + Math.random()*0.3);
-      beam.userData = { rs: 0.2+Math.random()*0.6, fs: 0.3+Math.random()*0.5, ph: Math.random()*6 };
-      scene.add(beam);
-      beams.push(beam);
+// ── Elevated glow rings (3 rings with different speeds/colors) ──
+    function makeRing(inner, outer, color, opacity) {
+      var m = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: opacity, side: THREE.DoubleSide });
+      var r = new THREE.Mesh(new THREE.RingGeometry(inner, outer, 48), m);
+      r.rotation.x = -Math.PI / 2;
+      return r;
     }
+    var ring1 = makeRing(2.8, 3.5, 0xd4c9b0, 0.04); ring1.position.set(0, -1.5, -6); scene.add(ring1);
+    var ring2 = makeRing(2.0, 3.0, 0xc9a94e, 0.02); ring2.position.set(0, -1.8, -6); scene.add(ring2);
+    var ring3 = makeRing(3.2, 4.0, 0xffffff, 0.015); ring3.position.set(0, -2.2, -5); scene.add(ring3);
+    // ── Morphing glow blob ──
+    var blobGeo = new THREE.SphereGeometry(0.5, 32, 32);
+    var blobMat = new THREE.MeshBasicMaterial({ color: 0xc9a94e, transparent: true, opacity: 0.03, wireframe: true });
+    var blob = new THREE.Mesh(blobGeo, blobMat);
+    blob.position.set(0, 0, -7);
+    scene.add(blob);
+    var blobPos = new Float32Array(blob.geometry.attributes.position.array);
 
-    // ── Ember/fire particles ──
-    var eCanvas = document.createElement('canvas');
-    eCanvas.width = eCanvas.height = 32;
-    var ectx = eCanvas.getContext('2d');
-    var eg = ectx.createRadialGradient(16, 16, 0, 16, 16, 16);
-    eg.addColorStop(0, 'rgba(255,200,100,1)');
-    eg.addColorStop(0.3, 'rgba(255,150,50,0.8)');
-    eg.addColorStop(0.6, 'rgba(200,80,20,0.3)');
-    eg.addColorStop(1, 'rgba(200,80,20,0)');
-    ectx.fillStyle = eg;
-    ectx.fillRect(0, 0, 32, 32);
-    var eTex = new THREE.CanvasTexture(eCanvas);
-    eTex.needsUpdate = true;
-    var embers = [];
-    for (var ei = 0; ei < 150; ei++) {
-      var eMat = new THREE.SpriteMaterial({ map: eTex, transparent: true, opacity: 0.2+Math.random()*0.5, blending: THREE.AdditiveBlending, depthWrite: false });
-      var eSpr = new THREE.Sprite(eMat);
-      eSpr.position.set((Math.random()-0.5)*11, -1+Math.random()*4, (Math.random()-0.5)*9-3);
-      eSpr.scale.set(0.03+Math.random()*0.12, 0.03+Math.random()*0.12, 1);
-      eSpr.userData = { vy: 0.01+Math.random()*0.05, vx: (Math.random()-0.5)*0.015, ph: Math.random()*6 };
-      scene.add(eSpr);
-      embers.push(eSpr);
+// ── Floating ribbon (particle line) ──
+    var ribbonCount = 40;
+    var ribbonGeo = new THREE.BufferGeometry();
+    var ribbonPos = new Float32Array(ribbonCount * 3);
+    for (var ri = 0; ri < ribbonCount; ri++) {
+      var t = ri / ribbonCount;
+      ribbonPos[ri*3] = (t-0.5)*4;
+      ribbonPos[ri*3+1] = Math.sin(t * Math.PI * 4) * 0.3 + 0.5;
+      ribbonPos[ri*3+2] = -4 - t * 2;
     }
+    ribbonGeo.setAttribute('position', new THREE.BufferAttribute(ribbonPos, 3));
+    var ribbonMat = new THREE.PointsMaterial({ color: 0xd4c9b0, size: 0.03, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending });
+    var ribbon = new THREE.Points(ribbonGeo, ribbonMat);
+    scene.add(ribbon);
 
-    // ── Glow particles ──
-    var gCanvas = document.createElement('canvas');
-    gCanvas.width = gCanvas.height = 64;
-    var ctx = gCanvas.getContext('2d');
-    var gr = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    gr.addColorStop(0, 'rgba(255,255,255,1)');
-    gr.addColorStop(0.15, 'rgba(255,255,255,0.8)');
-    gr.addColorStop(0.4, 'rgba(212,201,176,0.25)');
-    gr.addColorStop(0.7, 'rgba(212,201,176,0.04)');
-    gr.addColorStop(1, 'rgba(212,201,176,0)');
-    ctx.fillStyle = gr;
+    // ── Particles (400 now) ──
+    var glowCanvas = document.createElement('canvas');
+    glowCanvas.width = glowCanvas.height = 64;
+    var ctx = glowCanvas.getContext('2d');
+    var g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.15, 'rgba(255,255,255,0.8)');
+    g.addColorStop(0.4, 'rgba(212,201,176,0.25)');
+    g.addColorStop(0.7, 'rgba(212,201,176,0.04)');
+    g.addColorStop(1, 'rgba(212,201,176,0)');
+    ctx.fillStyle = g;
     ctx.fillRect(0, 0, 64, 64);
-    var ptTex = new THREE.CanvasTexture(gCanvas);
-    ptTex.needsUpdate = true;
-    var goldColor = new THREE.Color(0xc9a94e);
-    var beigeColor = new THREE.Color(0xd4c9b0);
+    var pTex = new THREE.CanvasTexture(glowCanvas);
+    pTex.needsUpdate = true;
+
+    var pCount = 400;
     var particles = [];
-    for (var i = 0; i < 300; i++) {
-      var mat = new THREE.SpriteMaterial({ map: ptTex, transparent: true, opacity: 0.03+Math.random()*0.08, blending: THREE.AdditiveBlending, depthWrite: false });
+    var palettes = [new THREE.Color(0xc9a94e), new THREE.Color(0xd4c9b0), new THREE.Color(0xffffff), new THREE.Color(0xffd700)];
+    for (var i = 0; i < pCount; i++) {
+      var mat = new THREE.SpriteMaterial({ map: pTex, transparent: true, opacity: 0.04 + Math.random()*0.1, blending: THREE.AdditiveBlending, depthWrite: false });
       var spr = new THREE.Sprite(mat);
-      spr.position.set((Math.random()-0.5)*9, 1+Math.random()*6, (Math.random()-0.5)*9);
-      spr.scale.set(0.1+Math.random()*0.4, 0.1+Math.random()*0.4, 1);
-      spr.userData = { vy: 0.02+Math.random()*0.1, vx: (Math.random()-0.5)*0.01, ph: Math.random()*6.28 };
-      if (Math.random()<0.3) mat.color.copy(goldColor);
-      else if (Math.random()<0.6) mat.color.copy(beigeColor);
-      scene.add(spr);
+      spr.position.set((Math.random()-0.5)*8, Math.random()*5, (Math.random()-0.5)*6);
+      spr.scale.set(0.08 + Math.random()*0.3, 0.08 + Math.random()*0.3, 1);
+      spr.userData.velY = 0.02 + Math.random()*0.1;
+      spr.userData.velX = (Math.random()-0.5)*0.02;
+      spr.userData.phase = Math.random()*Math.PI*2;
+      spr.userData.wobble = Math.random()*5;
+      mat.color.copy(palettes[Math.floor(Math.random()*palettes.length)]);      scene.add(spr);
       particles.push(spr);
     }
 
     camera.position.set(0, 0.3, 6);
     camera.lookAt(0, 0.3, 0);
 
-    var mx = 0, my = 0, scrollY = 0;
-    document.addEventListener('mousemove', function(e) {
-      mx = (e.clientX/window.innerWidth)*2-1;
-      my = -(e.clientY/window.innerHeight)*2+1;
-    });
+    var mx = 0, my = 0;
     var lastScroll = 0;
+    document.addEventListener('mousemove', function(e) {
+      mx = (e.clientX / window.innerWidth) * 2 - 1;
+      my = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+
     window.addEventListener('scroll', function() {
-      scrollY = window.pageYOffset;
       var s = window.pageYOffset;
       var nav = document.getElementById('nav');
-      if (s>lastScroll && s>80) nav.classList.add('hidden');
+      if (s > lastScroll && s > 80) nav.classList.add('hidden');
       else nav.classList.remove('hidden');
       lastScroll = s;
     });
+
     window.addEventListener('resize', function() {
-      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
@@ -548,71 +649,70 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 
     function animate() {
       requestAnimationFrame(animate);
-      var t = performance.now()/1000;
-      var so = scrollY * 0.001;
+      var t = performance.now() / 1000;
 
-      // Logo: multi-axis rotation + scroll response + neon flicker
-      logo.rotation.y = t*0.3 + mx*0.3 + so*0.5;
-      logo.rotation.x = Math.sin(t*0.2)*0.05;
-      logo.position.y = 0.3 + Math.sin(t*0.8)*0.1;
-      logo.position.z = -3;
+      // Logo rotation + float
+      logo.rotation.y = t * 0.3 + mx * 0.3;
+      logo.rotation.x = Math.sin(t * 0.5) * 0.05;
+      logo.position.y = 0.3 + Math.sin(t * 0.8) * 0.12;
 
-      var flicker = 0.85 + 0.15*Math.sin(t*12) + 0.1*Math.sin(t*7.3+1.2) + 0.08*Math.sin(t*23.1+4.5);
+      // ── Neon flicker ──
+      var flicker = 0.85 + 0.15*Math.sin(t*12.0) + 0.10*Math.sin(t*7.3+1.2) + 0.08*Math.sin(t*23.1+4.5);
       flicker = Math.max(0.08, Math.min(1, flicker));
       var dip = 1;
       if (Math.sin(t*2.7+0.5)>0.92) dip=0.55;
       if (Math.sin(t*4.3+2.1)>0.94) dip=0.35;
       if (Math.sin(t*3.1+3.8)>0.96) dip=0.12;
-      flicker *= dip;
-      logoMat.opacity = flicker;
-      logoMat.color.setHSL(0.1+Math.sin(t*0.15)*0.03, 0.2, 0.8);
+      logoMat.opacity = flicker * dip;
 
-      // Glow rings
-      glowRing.rotation.z = t*0.06 + so*0.3;
-      glowRing.rotation.x = -Math.PI/2 + Math.sin(t*0.3)*0.1;
-      glowRing2.rotation.z = -t*0.04 + so*0.2;
-      glowRing.material.opacity = 0.03 + Math.sin(t*0.5)*0.015;
-      glowRing2.material.opacity = 0.015 + Math.sin(t*0.7+1)*0.01;
+      // ── Morphing glow rings with orbital motion ──
+      ring1.rotation.z = t * 0.06; ring1.material.opacity = 0.03 + Math.sin(t*0.5)*0.015;
+      ring2.rotation.z = -t * 0.04; ring2.material.opacity = 0.015 + Math.sin(t*0.7+1)*0.01;
+      ring3.rotation.z = t * 0.08; ring3.material.opacity = 0.01 + Math.sin(t*0.6+2)*0.008;
 
-      // Grid pulse with scroll
-      gridHelper.material.opacity = 0.08 + Math.sin(t*0.8)*0.05;
-      gridHelper.position.y = -2.8 + Math.sin(t*0.3)*0.2;
-      gridHelper.rotation.y = so * 0.5;
-
-      // Beams
-      for (var bi=0; bi<beams.length; bi++) {
-        var b = beams[bi];
-        b.rotation.x = t*b.userData.rs*0.2 + b.userData.ph;
-        b.rotation.z = t*b.userData.rs*0.15;
-        b.position.y += Math.sin(t*b.userData.fs+b.userData.ph)*0.002;
-        b.material.opacity = 0.02 + Math.sin(t*0.5+b.userData.ph)*0.015;
+      // ── Morphing blob ──
+      var pos = blob.geometry.attributes.position.array;
+      for (var bi = 0; bi < pos.length; bi+=3) {
+        var bx = blobPos[bi], by = blobPos[bi+1], bz = blobPos[bi+2];
+        var dist = Math.sqrt(bx*bx + by*by + bz*bz);
+        var scale = 1 + Math.sin(t*0.8 + dist*3 + by*2)*0.15;
+        pos[bi] = bx * scale;
+        pos[bi+1] = by * scale;
+        pos[bi+2] = bz * scale;
       }
+      blob.geometry.attributes.position.needsUpdate = true;
+      blob.rotation.x = Math.sin(t*0.2)*0.3;
+      blob.rotation.z = t*0.1;
 
-      // Embers
-      for (var ei=0; ei<embers.length; ei++) {
-        var e = embers[ei];
-        e.position.y += e.userData.vy*0.04;
-        e.position.x += e.userData.vx*0.02 + Math.sin(t+e.userData.ph)*0.003;
-        e.material.opacity = 0.2 + Math.sin(t*2+e.userData.ph)*0.15;
-        if (e.position.y > 3.5) { e.position.x=(Math.random()-0.5)*9; e.position.y=-1; e.position.z=(Math.random()-0.5)*9-3; }
+      // ── Floating ribbon ──
+      var rPos = ribbon.geometry.attributes.position.array;
+      for (var ri = 0; ri < ribbonCount; ri++) {
+        var rt = ri / ribbonCount;
+        rPos[ri*3+1] = Math.sin(rt*Math.PI*4 + t*1.2) * 0.3 + 0.5 + Math.sin(rt*Math.PI*2 + t*0.7)*0.1;
+        rPos[ri*3+2] = -4 - rt*2 - Math.sin(t*0.5)*0.3;
       }
+      ribbon.geometry.attributes.position.needsUpdate = true;
 
-      // Particles
-      for (var i=0; i<particles.length; i++) {
+      // ── 400 particles ──
+      for (var i = 0; i < pCount; i++) {
         var spr = particles[i];
-        spr.position.x += spr.userData.vx*0.01 + Math.sin(t+spr.userData.ph)*0.004;
-        spr.position.y += spr.userData.vy*0.015;
-        spr.position.z += Math.cos(t*0.5+spr.userData.ph)*0.004;
-        spr.material.opacity = 0.05 + Math.sin(t+spr.userData.ph)*0.04;
-        if (spr.position.y > 6.5) { spr.position.x=(Math.random()-0.5)*7; spr.position.y=0.5; spr.position.z=(Math.random()-0.5)*7; }
+        spr.position.x += spr.userData.velX + Math.sin(t*0.5 + spr.userData.phase)*0.002;
+        spr.position.y += spr.userData.velY * 0.012;
+        spr.position.z += Math.cos(t*0.4 + spr.userData.phase)*0.003;
+        spr.material.opacity = 0.06 + Math.sin(t + spr.userData.phase)*0.04;
+        var s = 0.08 + Math.sin(t*2 + spr.userData.phase)*0.05;
+        spr.scale.set(s+0.15, s+0.15, 1);
+        if (spr.position.y > 5) {
+          spr.position.x = (Math.random()-0.5)*6;
+          spr.position.y = 0.3;
+          spr.position.z = (Math.random()-0.5)*5;
+        }
       }
 
-      // Camera follows mouse + scroll
-      camera.position.x += (mx*1.8 - camera.position.x) * 0.05;
-      camera.position.y += (my*1.2 + 0.3 - camera.position.y) * 0.05;
-      camera.position.z = 6 - scrollY*0.002;
-      camera.lookAt(0, 0.3+so, -1);
-
+      // Camera follow
+      camera.position.x += (mx*1.5 - camera.position.x)*0.05;
+      camera.position.y += (my*1.0+0.3 - camera.position.y)*0.05;
+      camera.lookAt(0, 0.3, -1);
       renderer.render(scene, camera);
     }
     animate();
@@ -623,80 +723,253 @@ footer{text-align:center;padding:2.5rem;border-top:1px solid var(--border);font-
 ;
 
 <script>
-// ─── Effects ───
+// ═══════════════════════════════════════════════
+// 🚀 MEGA UPGRADE — Premium Scroll/UI Animations
+// ═══════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
 
-  // ── Scroll direction tracking ──
-  var scrollDir='down',lastY=window.pageYOffset;
-  window.addEventListener('scroll',function(){var y=window.pageYOffset;scrollDir=y>lastY?'down':'up';lastY=y;},{passive:true});
-
-  // ── Bidirectional reveal observers ──
-  function makeBiObserver(sel,cls,opts){
-    opts=opts||{threshold:0.15,rootMargin:'0px 0px -60px 0px'};
-    var els=document.querySelectorAll(sel);if(!els.length)return;
-    var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting&&!e.target.classList.contains(cls)){e.target.classList.add(cls);}}});},opts);
-    els.forEach(function(el){obs.observe(el);});
+// ─── 1. LENIS SMOOTH SCROLL ───
+  if (window.Lenis) {
+    var lenis = new Lenis({
+      duration: 1.6,
+      easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -10*t)) }, // smooth ease-out
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5
+    });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+    // Expose for nav clicks
+    window.lenis = lenis;
   }
-  makeBiObserver('.reveal','visible');
-  makeBiObserver('.reveal-left','visible');
-  makeBiObserver('.reveal-right','visible');
-  makeBiObserver('.reveal-scale','visible');
-  makeBiObserver('.reveal-clip','visible');
-  makeBiObserver('.reveal-clip-right','visible');
 
-  // ── Stagger grid ──
-  document.querySelectorAll('.stagger-grid').forEach(function(grid){
-    var obs=new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        var cards=grid.querySelectorAll('.stagger-card');
-        if(entry.isIntersecting){cards.forEach(function(c,i){if(!c.classList.contains('in-view')){var d=parseFloat(c.getAttribute('data-delay'))||i*0.12;setTimeout(function(){c.classList.add('in-view');},d*1000);}});}
+  // ─── 2. CUSTOM CURSOR ───
+  var cursorRing = document.getElementById('cursor-ring');
+  var cursorDot = document.getElementById('cursor-dot');
+  var cursorEl = document.getElementById('custom-cursor');
+  if (cursorRing && cursorDot) {
+    var cx = 0, cy = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', function(e) {
+      cx = e.clientX; cy = e.clientY;
+      cursorDot.style.left = cx + 'px';
+      cursorDot.style.top = cy + 'px';
+      // Trails
+      if (Math.random() < 0.2) {
+        var trail = document.createElement('div');
+        trail.className = 'cursor-trail';
+        trail.style.left = cx + 'px';
+        trail.style.top = cy + 'px';
+        trail.style.width = trail.style.height = (8 + Math.random()*12) + 'px';
+        document.body.appendChild(trail);
+        setTimeout(function() { trail.remove(); }, 800);
+      }
+    });
+    // Smooth ring follow
+    function cursorRaf() {
+      rx += (cx - rx) * 0.12;
+      ry += (cy - ry) * 0.12;
+      if (cursorRing) { cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px'; }
+      requestAnimationFrame(cursorRaf);
+    }
+    requestAnimationFrame(cursorRaf);
+    // Hover states
+    document.querySelectorAll('a, button, .menu-card, .review-card, .exp-card, .magntic, .btn, .tilt-card, .contact-item, .hours-card').forEach(function(el) {
+      el.addEventListener('mouseenter', function() { cursorRing.classList.add('hovering'); });
+      el.addEventListener('mouseleave', function() { cursorRing.classList.remove('hovering'); });
+    });
+    document.addEventListener('mouseleave', function() {
+      cursorRing.style.opacity = '0';
+      cursorDot.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', function() {
+      cursorRing.style.opacity = '1';
+      cursorDot.style.opacity = '1';
+    });
+  }
+
+  // ─── 3. SCROLL DIRECTION TRACKING ───
+  var scrollDir = 'down';
+  var lastY = window.pageYOffset || 0;
+  function trackScroll() {
+    var y = window.pageYOffset || (window.lenis ? window.lenis.scroll : 0);
+    scrollDir = y > lastY ? 'down' : 'up';
+    lastY = y;
+  }
+  window.addEventListener('scroll', trackScroll, { passive: true });
+
+  // ─── 4. SECTION COLOR MORPH (ambient shift) ───
+  var sectionColors = [
+    { bg: 'rgba(10,9,8,0)', glow: 'rgba(212,201,176,0)' },
+    { bg: 'rgba(10,9,8,0)', glow: 'rgba(212,201,176,0.03)' },
+    { bg: 'rgba(15,12,10,0)', glow: 'rgba(212,201,176,0.02)' },
+    { bg: 'rgba(10,9,8,0)', glow: 'rgba(201,169,78,0.02)' },
+    { bg: 'rgba(10,9,8,0)', glow: 'rgba(212,201,176,0.03)' }
+  ];
+  var sections = document.querySelectorAll('section');
+  var currentSectionIdx = 0;
+  var ambientMesh = document.getElementById('ambient-mesh');
+  if (ambientMesh && sections.length) {
+    var sectionObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          var idx = Array.from(sections).indexOf(e.target);
+          if (idx >= 0 && idx < sectionColors.length) {
+            var c = sectionColors[idx];
+            ambientMesh.style.background = 'radial-gradient(ellipse at 50% 0%, ' + c.glow + ' 0%, transparent 70%)';
+          }
+        }
       });
-    },{threshold:0.1});obs.observe(grid);
+    }, { threshold: 0.3 });
+    sections.forEach(function(s) { sectionObs.observe(s); });
+  }
+
+  // ─── 5. ENHANCED BIDIRECTIONAL REVEALS ───
+  function makeBiObserver(selector, cls, opts) {
+    opts = opts || { threshold: 0.15, rootMargin: '0px 0px -60px 0px' };
+    var els = document.querySelectorAll(selector);
+    if (!els.length) return;
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) entry.target.classList.add(cls);
+        else entry.target.classList.remove(cls);
+      });
+    }, opts);
+    els.forEach(function(el) { obs.observe(el); });
+  }
+  makeBiObserver('.reveal', 'visible');
+  makeBiObserver('.reveal-left', 'visible');
+  makeBiObserver('.reveal-right', 'visible');
+  makeBiObserver('.reveal-scale', 'visible');
+  makeBiObserver('.reveal-clip', 'visible');
+  makeBiObserver('.reveal-clip-right', 'visible');
+  makeBiObserver('.reveal-blur', 'visible');
+  makeBiObserver('.reveal-3d', 'visible');
+
+  // ─── 6. STAGGER GRID — with bouncy spring effect ───
+  document.querySelectorAll('.stagger-grid').forEach(function(grid) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var cards = grid.querySelectorAll('.stagger-card');
+        if (entry.isIntersecting) {
+          cards.forEach(function(c, i) {
+            var delay = parseFloat(c.getAttribute('data-delay')) || i * 0.12;
+            setTimeout(function() { c.classList.add('in-view'); }, delay * 1000);
+          });
+        } else {
+          cards.forEach(function(c) { c.classList.remove('in-view'); });
+        }
+      });
+    }, { threshold: 0.08 });
+    obs.observe(grid);
   });
 
-  // ── Split text ──
-  function splitTextNode(node){
-    if(node.nodeType===3){var t=node.textContent.trim();if(!t)return null;var w=t.split(/\s+/);var f=document.createDocumentFragment();w.forEach(function(wd,i){if(i>0)f.appendChild(document.createTextNode(' '));var s=document.createElement('span');s.className='word';s.textContent=wd;f.appendChild(s);});return f;}
-    else if(node.nodeType===1){Array.from(node.childNodes).forEach(function(c){var r=splitTextNode(c);if(r)c.parentNode.replaceChild(r,c);});return null;}
+  // ─── 7. SPLIT TEXT (preserved) ───
+  function splitTextNode(node) {
+    if (node.nodeType === 3) {
+      var text = node.textContent.trim();
+      if (!text) return null;
+      var words = text.split(/\s+/);
+      var frag = document.createDocumentFragment();
+      words.forEach(function(w, i) {
+        if (i > 0) frag.appendChild(document.createTextNode(' '));
+        var span = document.createElement('span');
+        span.className = 'word';
+        span.textContent = w;
+        frag.appendChild(span);
+      });
+      return frag;
+    } else if (node.nodeType === 1) {
+      var children = Array.from(node.childNodes);
+      children.forEach(function(child) {
+        var result = splitTextNode(child);
+        if (result) child.parentNode.replaceChild(result, child);
+      });
+      return null;
+    }
     return null;
   }
-  document.querySelectorAll('[data-split]').forEach(function(el){
-    var w=document.createElement('span');w.className='split-text';
-    while(el.firstChild)w.appendChild(el.firstChild);el.appendChild(w);splitTextNode(w);
-    var sec=el.closest('section');
-    if(sec){new IntersectionObserver(function(entries){entries.forEach(function(e){var wds=w.querySelectorAll('.word');if(e.isIntersecting){wds.forEach(function(wd,i){if(!wd.classList.contains('visible')){setTimeout(function(){wd.classList.add('visible');},i*50);}});}});},{threshold:0.2}).observe(sec);}
+  document.querySelectorAll('[data-split]').forEach(function(el) {
+    var wrapper = document.createElement('span');
+    wrapper.className = 'split-text';
+    while (el.firstChild) wrapper.appendChild(el.firstChild);
+    el.appendChild(wrapper);
+    splitTextNode(wrapper);
+    var section = el.closest('section');
+    if (section) {
+      new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          var wds = wrapper.querySelectorAll('.word');
+          if (entry.isIntersecting) {
+            wds.forEach(function(w, i) { setTimeout(function() { w.classList.add('visible'); }, i * 50); });
+          } else {
+            wds.forEach(function(w) { w.classList.remove('visible'); });
+          }
+        });
+      }, { threshold: 0.2 }).observe(section);
+    }
   });
 
-  // ── Counter animation ──
-  var statsRow=document.querySelector('.stats-row');
-  if(statsRow){var countersDone=false;new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting&&!countersDone){countersDone=true;document.querySelectorAll('.stat-num').forEach(function(el){var target=parseFloat(el.textContent.replace(/[^0-9.]/g,''));var suffix=el.textContent.includes('%')?'%':el.textContent.includes('\u00b0')?'\u00b0':'';var duration=1200,st=performance.now();(function tick(now){var p=Math.min(1,(now-st)/duration),eased=1-Math.pow(1-p,3),c=Math.round(eased*target*10)/10;if(Number.isInteger(target))c=Math.round(eased*target);el.textContent=c+suffix;el.classList.add('counted');if(p<1)requestAnimationFrame(tick);})(st);});}});},{threshold:0.5}).observe(statsRow);}
+  // ─── 8. COUNTER ANIMATION (now flash-animated) ───
+  var statsRow = document.querySelector('.stats-row');
+  if (statsRow) {
+    var countersDone = false;
+    new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !countersDone) {
+          countersDone = true;
+          document.querySelectorAll('.stat-num').forEach(function(el) {
+            var target = parseFloat(el.textContent.replace(/[^0-9.]/g,''));
+            var suffix = el.textContent.includes('%') ? '%' : el.textContent.includes('°') ? '°' : '';
+            var duration = 1200, startTime = performance.now();
+            function tick(now) {
+              var p = Math.min(1, (now - startTime) / duration);
+              var eased = 1 - Math.pow(1 - p, 3);
+              var c = Math.round(eased * target * 10) / 10;
+              if (Number.isInteger(target)) c = Math.round(eased * target);
+              el.textContent = c + suffix;
+              el.classList.add('counted');
+              // Flash effect
+              if (Math.floor(eased * 10) !== Math.floor((eased - 0.05) * 10)) { el.classList.add('flash'); setTimeout(function() { el.classList.remove('flash'); }, 200); }
+              if (p < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+          });
+          // Bounce effect on the whole row
+          statsRow.style.transition = 'transform .4s cubic-bezier(.16,1,.3,1)';
+          statsRow.style.transform = 'scale(1.02)';
+          setTimeout(function() { statsRow.style.transform = 'scale(1)'; }, 400);
+        }
+      });
+    }, { threshold: 0.4 }).observe(statsRow);
+  }
 
-  // ── Cursor sparkle trail ──
-  var st=0;
-  document.addEventListener('mousemove',function(e){
-    st++;if(st%2!==0)return;
-    for(var si=0;si<2;si++){var dot=document.createElement('div');dot.className='cursor-sparkle '+(Math.random()>0.4?'gold':'beige');dot.style.left=(e.clientX-3+(Math.random()-0.5)*10)+'px';dot.style.top=(e.clientY-3+(Math.random()-0.5)*10)+'px';document.body.appendChild(dot);setTimeout(function(){dot.remove();},800);}
+  // ─── 9. 3D TILT CARDS (enhanced with depth) ───
+  document.addEventListener('mousemove', function(e) {
+    document.querySelectorAll('.tilt-card').forEach(function(card) {
+      var rect = card.getBoundingClientRect();
+      if (rect.width === 0) return;
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = 'rotateY(' + (x * 12) + 'deg) rotateX(' + (-y * 10) + 'deg) translateZ(0)';
+      // Subtle sub-element lift
+      var content = card.querySelector('.tilt-content');
+      if (content) content.style.transform = 'translateZ(20px)';
+    });
   });
-
-  // ── Ripple click effect ──
-  document.addEventListener('click',function(e){
-    var r=document.createElement('div');r.style.cssText='position:fixed;width:20px;height:20px;border-radius:50%;border:2px solid rgba(212,201,176,0);pointer-events:none;z-index:99999;left:'+(e.clientX-10)+'px;top:'+(e.clientY-10)+'px;animation:rippleOut .8s ease forwards';document.body.appendChild(r);setTimeout(function(){r.remove();},900);
-  });
+  document.addEventListener('mouseleave', function() {
+    document.querySelectorAll('.tilt-card').forEach(function(card) {
+      card.style.transform = '';
+      var content = card.querySelector('.tilt-content');
+      if (content) content.style.transform = '';
+    });  });
   var rs=document.createElement('style');rs.textContent='@keyframes rippleOut{0%{transform:scale(0.3);border-color:rgba(212,201,176,0.6);opacity:1}100%{transform:scale(8);border-color:rgba(212,201,176,0);opacity:0}}';document.head.appendChild(rs);
 
-  // ── Scroll confetti burst ──
-  var cc=document.createElement('div');cc.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:9998;overflow:hidden';document.body.appendChild(cc);
-  var ct=0;var confColors=['#d4c9b0','#c9a94e','#f0ebe0','#f5f0e5','#ffffff','#ff6b35'];
-  window.addEventListener('scroll',function(){ct++;if(ct%8!==0)return;for(var ci=0;ci<4;ci++){var p=document.createElement('div');p.style.cssText='position:absolute;width:'+(3+Math.random()*5)+'px;height:'+(3+Math.random()*5)+'px;background:'+confColors[Math.floor(Math.random()*confColors.length)]+';border-radius:'+(Math.random()>0.5?'50%':'2px')+';left:'+(Math.random()*100)+'vw;top:-10px;opacity:'+(0.3+Math.random()*0.4)+';animation:confettiFall '+(1+Math.random()*2)+'s linear forwards';cc.appendChild(p);setTimeout(function(){p.remove();},3000);}},{passive:true});
-  var cs=document.createElement('style');cs.textContent='@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg) scale(1)}100%{transform:translateY(100vh) rotate(720deg) scale(0.3)}}';document.head.appendChild(cs);
-
-  // ── 3D Tilt cards (stronger) ──
-  document.addEventListener('mousemove',function(e){
-    document.querySelectorAll('.tilt-card').forEach(function(card){
-      var r=card.getBoundingClientRect();if(r.width===0)return;
-      var x=(e.clientX-r.left)/r.width-0.5,y=(e.clientY-r.top)/r.height-0.5;
-      card.style.transform='rotateY('+(x*12)+'deg) rotateX('+(-y*12)+'deg) translateZ(0)';
-    });
+// ─── 10. GLOW HOVER TRACKING ───
+  document.querySelectorAll('.glow-hover').forEach(function(card) {
+    card.addEventListener('mousemove', function(e) {
+      var rect = this.getBoundingClientRect();
+      this.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+      this.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');    });
   });
   document.addEventListener('mouseleave',function(){document.querySelectorAll('.tilt-card').forEach(function(c){c.style.transform='';});});
 
@@ -705,53 +978,198 @@ document.addEventListener('DOMContentLoaded', function() {
     card.addEventListener('mousemove',function(e){var r=this.getBoundingClientRect();this.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');this.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');});
   });
 
-  // ── Magnetic buttons ──
-  document.querySelectorAll('.magnetic').forEach(function(btn){
-    btn.addEventListener('mousemove',function(e){var r=this.getBoundingClientRect();this.style.transform='translate('+((e.clientX-r.left-r.width/2)*0.4)+'px,'+((e.clientY-r.top-r.height/2)*0.4)+'px)';});
-    btn.addEventListener('mouseleave',function(){this.style.transform='';});
+// ─── 11. MAGNETIC BUTTONS ───
+  document.querySelectorAll('.magnetic').forEach(function(btn) {
+    btn.addEventListener('mousemove', function(e) {
+      var rect = this.getBoundingClientRect();
+      var dx = (e.clientX - rect.left - rect.width/2) * 0.35;
+      var dy = (e.clientY - rect.top - rect.height/2) * 0.35;
+      this.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    });
+    btn.addEventListener('mouseleave', function() {
+      this.style.transform = '';
+    });
   });
 
-  // ── Parallax depth layers ──
-  var dl1=document.getElementById('depth-layer-1'),dl2=document.getElementById('depth-layer-2');
-  if(dl1&&dl2){window.addEventListener('scroll',function(){var y=window.pageYOffset;dl1.style.transform='translateY('+(y*0.15)+'px) scale('+(1+y*0.0003)+')';dl2.style.transform='translateY('+(y*0.25)+'px) scale('+(1+y*0.0005)+')';},{passive:true});}
+  // ─── 12. PARALLAX DEPTH LAYERS ───
+  var dl1 = document.getElementById('depth-layer-1'), dl2 = document.getElementById('depth-layer-2');
+  if (dl1 && dl2) {
+    window.addEventListener('scroll', function() {
+      var y = window.pageYOffset;
+      dl1.style.transform = 'translateY(' + (y * 0.15) + 'px)';
+      dl2.style.transform = 'translateY(' + (y * 0.25) + 'px)';
+    }, { passive: true });
+  }
 
-  // ── Parallax bg ──
-  var bg=document.getElementById('bg-scrim');
-  if(bg){window.addEventListener('scroll',function(){bg.style.backgroundPosition='center '+(50+window.pageYOffset*0.05)+'%';},{passive:true});}
+  // ─── 13. PARALLAX BACKGROUND ───
+  var bg = document.getElementById('bg-scrim');
+  if (bg) {
+    window.addEventListener('scroll', function() {
+      bg.style.backgroundPosition = 'center ' + (50 + window.pageYOffset * 0.03) + '%';
+      bg.style.filter = 'brightness(' + (0.5 + window.pageYOffset * 0.0002) + ') saturate(0.5)';
+    }, { passive: true });
+  }
 
-  // ── Section badge ──
-  var sections=document.querySelectorAll('section:not(.hero)'),labels=['Hero','Menu','Reviews','Experience','Contact'],badge=document.getElementById('section-badge'),numEl=document.getElementById('sectionNum'),labelEl=document.getElementById('sectionLabel');
-  if(badge&&sections.length){sections.forEach(function(s){new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){badge.classList.add('show');var idx=Array.from(sections).indexOf(e.target)+1;numEl.textContent='0'+(idx+1);labelEl.textContent=labels[idx+1]||e.target.id||'Section';numEl.style.transition='none';numEl.style.transform='scale(1.3)';setTimeout(function(){numEl.style.transition='transform .4s cubic-bezier(.16,1,.3,1)';numEl.style.transform='scale(1)';},50);}else{var anyVis=Array.from(sections).some(function(s2){var r=s2.getBoundingClientRect();return r.top<window.innerHeight&&r.bottom>0;});if(!anyVis)badge.classList.remove('show');}});},{threshold:0.3}).observe(s);});}
+  // ─── 14. SECTION BADGE ───
+  var allSections = document.querySelectorAll('section:not(.hero)');
+  var labels = ['Hero','Menu','Reviews','Experience','Contact'];
+  var badge = document.getElementById('section-badge');
+  var badgeNum = document.getElementById('sectionNum');
+  var badgeLabel = document.getElementById('sectionLabel');
+  if (badge && allSections.length) {
+    new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          var idx = Array.from(allSections).indexOf(e.target) + 1;
+          badgeNum.textContent = '0' + (idx + 1);
+          badgeLabel.textContent = labels[idx + 1] || e.target.id || 'Section';
+          badgeNum.style.transform = 'scale(1.4)';
+          setTimeout(function() { badgeNum.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1)'; badgeNum.style.transform = 'scale(1)'; }, 30);
+        }
+      });
+    }, { threshold: 0.3 });
+    allSections.forEach(function(s) {
+      new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) badge.classList.add('show');
+        });
+      }, { threshold: 0.3 }).observe(s);
+    });
+  }
 
-  // ── Scroll progress bar ──
-  var pb=document.getElementById('progress-bar');
-  if(pb){window.addEventListener('scroll',function(){var st=window.pageYOffset||document.documentElement.scrollTop,dh=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)-window.innerHeight;pb.style.width=Math.min(100,(st/Math.max(1,dh))*100)+'%';var ov=document.getElementById('section-overlay');if(ov){var diff=Math.abs(st-(window.lastProgressY||0));ov.style.opacity=diff>5?'1':diff>1?'0.5':'0';window.lastProgressY=st;}},{passive:true});}
+  // ─── 15. SCROLL PROGRESS BAR ───
+  var progressBar = document.getElementById('progress-bar');
+  if (progressBar) {
+    window.addEventListener('scroll', function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      var docHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight;
+      progressBar.style.width = Math.min(100, (scrollTop / Math.max(1,docHeight)) * 100) + '%';
+      var overlay = document.getElementById('section-overlay');
+      if (overlay) {
+        var diff = Math.abs(scrollTop - (window.lastProgressY || 0));
+        overlay.style.opacity = diff > 5 ? '1' : diff > 1 ? '0.5' : '0';
+        window.lastProgressY = scrollTop;
+      }
+    }, { passive: true });
+  }
 
-  // ── Background color morph on scroll ──
-  var hueEl=document.getElementById('scroll-hue');
-  if(!hueEl){hueEl=document.createElement('div');hueEl.id='scroll-hue';hueEl.style.cssText='position:fixed;inset:0;z-index:-1;pointer-events:none;transition:background 1s ease;background:rgba(10,9,8,1)';document.body.prepend(hueEl);}
-  window.addEventListener('scroll',function(){var pct=window.pageYOffset/(Math.max(document.body.scrollHeight,document.documentElement.scrollHeight)-window.innerHeight);if(pct<0.2)hueEl.style.background='rgba(10,9,8,1)';else if(pct<0.4)hueEl.style.background='rgba(15,12,10,1)';else if(pct<0.6)hueEl.style.background='rgba(12,15,10,1)';else if(pct<0.8)hueEl.style.background='rgba(10,12,15,1)';else hueEl.style.background='rgba(10,8,12,1)';},{passive:true});
+  // ─── 16. FLOATING BG PARTICLES ───
+  var floatContainer = document.createElement('div');
+  floatContainer.id = 'float-container';
+  floatContainer.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden';
+  document.body.appendChild(floatContainer);
+  for (var fi = 0; fi < 25; fi++) {
+    var fp = document.createElement('div');
+    fp.className = 'float-particle';
+    fp.style.cssText = 'position:absolute;left:' + (Math.random()*100) + '%;top:' + (Math.random()*100) + '%;width:' + (2+Math.random()*4) + 'px;height:' + (2+Math.random()*4) + 'px;border-radius:50%;background:rgba(212,201,176,0.06);animation:float' + (fi%3) + ' ' + (8+Math.random()*14) + 's ease-in-out infinite;animation-delay:' + (Math.random()*12) + 's;box-shadow:0 0 4px rgba(212,201,176,0.02)';
+    floatContainer.appendChild(fp);
+  }
+  var floatStyle = document.createElement('style');
+  floatStyle.textContent = '@keyframes float0{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-40px) scale(1.1)}}@keyframes float1{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(25px,-25px) rotate(10deg)}}@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,-30px)}}';
+  document.head.appendChild(floatStyle);
 
-  // ── Floating BG particles (MORE) ──
-  for(var fi=0;fi<30;fi++){var fp=document.createElement('div');fp.className='float-particle';fp.style.left=Math.random()*100+'%';fp.style.top=Math.random()*100+'%';fp.style.width=fp.style.height=(1+Math.random()*5)+'px';fp.style.animation='float'+(fi%3)+' '+(6+Math.random()*15)+'s ease-in-out infinite';fp.style.animationDelay=(Math.random()*12)+'s';fp.style.background=['rgba(212,201,176,0.06)','rgba(201,169,78,0.04)','rgba(255,255,255,0.03)'][fi%3];fp.style.boxShadow='0 0 '+(3+Math.random()*8)+'px '+fp.style.background;document.body.appendChild(fp);}
-  var fs=document.createElement('style');fs.textContent='@keyframes float0{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-40px) scale(1.3)}}@keyframes float1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-30px) scale(1.2)}}@keyframes float2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-20px,-35px) scale(0.8)}}';document.head.appendChild(fs);
+  // ─── 17. DECORATIVE FOOD FLOATING EMOJI ───
+  var foodEmojis = ['🍔', '🧀', '🥬', '🍅', '🧅', '🔥', '🥩', '🍟'];
+  for (var ei = 0; ei < 6; ei++) {
+    var fe = document.createElement('div');
+    fe.className = 'food-float';
+    fe.textContent = foodEmojis[ei % foodEmojis.length];
+    fe.style.left = (5 + Math.random()*90) + '%';
+    fe.style.top = (10 + Math.random()*80) + '%';
+    fe.style.fontSize = (1 + Math.random()*1.5) + 'rem';
+    fe.style.animationDelay = (Math.random()*8) + 's';
+    fe.style.animationDuration = (10 + Math.random()*10) + 's';
+    document.body.appendChild(fe);
+  }
 
-  // ── Scan line overlay ──
-  var sl=document.createElement('div');sl.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:9997;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.003) 2px,rgba(255,255,255,0.003) 4px);animation:scanMove 8s linear infinite';document.body.appendChild(sl);
-  var ss=document.createElement('style');ss.textContent='@keyframes scanMove{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}';document.head.appendChild(ss);
+  // ─── 18. SPARKLE DIVIDER ───
+  document.querySelectorAll('.sizzle-div').forEach(function(div) {
+    div.classList.add('divider-glow');
+  });
 
-  // ── Smooth nav scroll ──
-  document.querySelectorAll('nav a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(this.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});});});
+  // ─── 19. NAV LINKS SMOOTH SCROLL ───
+  document.querySelectorAll('nav a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        if (window.lenis) {
+          window.lenis.scrollTo(target, { offset: 0, duration: 2, easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -10*t)) } });
+        } else {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
 
-  // Cart
-  var cart=[];
-  window.addToCart=function(name,price){var ex=cart.find(function(i){return i.name===name;});if(ex)ex.qty++;else cart.push({name:name,price:price,qty:1});renderCart();openModal();};
-  function renderCart(){var el=document.getElementById('cartItems'),tot=document.getElementById('cartTotal');if(cart.length===0){el.innerHTML='<p style="color:rgba(255,255,255,.2);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>';tot.style.display='none';return;}var html='',total=0;cart.forEach(function(item){var it=item.price*item.qty;total+=it;html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:.8rem 0;border-bottom:1px solid var(--border)"><div><div style="font-size:.85rem;color:rgba(255,255,255,.55)">'+item.name+'</div><div style="font-size:.65rem;color:rgba(255,255,255,.15);margin-top:.2rem">\u20ac'+item.price.toFixed(2)+'</div></div><div style="display:flex;align-items:center;gap:.6rem"><button onclick="removeFromCart(\''+item.name+'\')" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(212,201,176,.1);background:transparent;color:var(--beige);cursor:pointer">\u2212</button><span style="color:#fff;min-width:20px;text-align:center">'+item.qty+'</span><button onclick="addToCart(\''+item.name+'\','+item.price+')" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(212,201,176,.1);background:transparent;color:var(--beige);cursor:pointer">+</button><span style="color:var(--beige);font-weight:600;font-size:.85rem">\u20ac'+it.toFixed(2)+'</span></div></div>';});el.innerHTML=html;tot.style.display='block';document.getElementById('totalAmount').textContent='\u20ac'+total.toFixed(2);}
-  window.removeFromCart=function(name){var idx=cart.findIndex(function(i){return i.name===name;});if(idx>-1){cart[idx].qty--;if(cart[idx].qty<=0)cart.splice(idx,1);}renderCart();};
-  function openModal(){document.getElementById('orderModal').style.display='flex';document.body.style.overflow='hidden';}
-  document.getElementById('orderModal').addEventListener('click',function(e){if(e.target===this){this.style.display='none';document.body.style.overflow='';}});
-  document.querySelectorAll('.links a').forEach(function(a){a.addEventListener('click',function(){document.getElementById('navLinks').classList.remove('open');});});
-});
+  // ─── 20. SHIMMER TITLES ───
+  document.querySelectorAll('.section-title').forEach(function(title) {
+    title.classList.add('shimmer-title');
+  });
+
+  // ─── 21. SCROLL-DRIVEN 3D PERSPECTIVE ───
+  var pw = document.getElementById('perspective-wrap');
+  if (pw) {
+    window.addEventListener('scroll', function() {
+      var y = window.pageYOffset;
+      var maxY = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight;
+      var progress = Math.min(1, y / Math.max(1, maxY));
+      var tilt = (progress - 0.5) * 1.5;
+      pw.style.transform = 'rotateX(' + tilt + 'deg) translateY(' + (y * 0.015) + 'px)';
+    }, { passive: true });
+  }
+
+  // ─── 22. CART ───
+  var cart = [];
+  window.addToCart = function(name, price) {
+    var existing = cart.find(function(i) { return i.name === name; });
+    if (existing) existing.qty++;
+    else cart.push({ name: name, price: price, qty: 1 });
+    renderCart();
+    openModal();
+  };
+  function renderCart() {
+    var el = document.getElementById('cartItems');
+    var totalEl = document.getElementById('cartTotal');
+    if (cart.length === 0) {
+      el.innerHTML = '<p style="color:rgba(255,255,255,.2);text-align:center;padding:1.5rem 0;font-size:.85rem">Your cart is empty. Add some burgers!</p>';
+      totalEl.style.display = 'none';
+      return;
+    }
+    var html = '';
+    var total = 0;
+    cart.forEach(function(item) {
+      var itemTotal = item.price * item.qty;
+      total += itemTotal;
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:.8rem 0;border-bottom:1px solid var(--border)"><div><div style="font-size:.85rem;color:rgba(255,255,255,.55)">'+item.name+'</div><div style="font-size:.65rem;color:rgba(255,255,255,.15);margin-top:.2rem">€'+item.price.toFixed(2)+'</div></div><div style="display:flex;align-items:center;gap:.6rem"><button onclick="removeFromCart(\''+item.name+'\')" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(212,201,176,.1);background:transparent;color:var(--beige);cursor:pointer">−</button><span style="color:#fff;min-width:20px;text-align:center">'+item.qty+'</span><button onclick="addToCart(\''+item.name+'\','+item.price+')" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(212,201,176,.1);background:transparent;color:var(--beige);cursor:pointer">+</button><span style="color:var(--beige);font-weight:600;font-size:.85rem">€'+itemTotal.toFixed(2)+'</span></div></div>';
+    });
+    el.innerHTML = html;
+    totalEl.style.display = 'block';
+    document.getElementById('totalAmount').textContent = '€' + total.toFixed(2);
+  }
+  window.removeFromCart = function(name) {
+    var idx = cart.findIndex(function(i) { return i.name === name; });
+    if (idx > -1) {
+      cart[idx].qty--;
+      if (cart[idx].qty <= 0) cart.splice(idx, 1);
+    }
+    renderCart();
+  };
+  function openModal() {
+    document.getElementById('orderModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  document.getElementById('orderModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  });
+  document.querySelectorAll('.links a').forEach(function(a) {
+    a.addEventListener('click', function() {
+      document.getElementById('navLinks').classList.remove('open');
+    });
+  });});
 
 </script>
 </body>
